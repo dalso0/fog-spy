@@ -561,7 +561,7 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
 <script>
 /* ===== 미니게임 6종 (미니게임 시안에서 가져옴) ===== */
 const MG=(()=>{
-const IMG={base:"img/base.png",agent:"img/neulgom-head.png",yawn:"img/yawn.png"};
+const IMG={base:"img/ng-base.jpg",agent:"img/neulgom-head.png",yawn:"img/ng-yawn.jpg"};
 const C={sky:"#4aa8f0",grass:"#4cbf62",sun:"#ffc93a",coral:"#ff7564",grape:"#9b82f5",mint:"#3cc6b4"};
 const $=(s,r=document)=>r.querySelector(s);
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
@@ -1355,7 +1355,7 @@ function openOffice(){
 }
 
 /* ---------- 안개 복도 (잠입) ---------- */
-const SPIMG={base:'img/base.png',agent:'img/agent.png',yawn:'img/yawn.png',dance:'img/dance-music.png'};
+const SPIMG={base:'img/ng-base.jpg',agent:'img/neulgom-head.png',yawn:'img/ng-yawn.jpg',dance:'img/ng-dance.jpg'};
 function openFog(){
   sheet('안개 복도','3층 복도 끝 · 잠입 구역',`<div id="sneakHost"></div><p class="note">안개구름에게 들키지 않게 문까지 가요. 하루 3판, 5번째 문마다 안전가옥에서 숨을 고르고 보급상자를 받아요.</p>`, b=>{
     mgStop=SpyPlus.mountSneak(b.querySelector('#sneakHost'),{img:SPIMG, avatarSVG:()=>avatarSVG(S.av)});
@@ -1425,9 +1425,9 @@ function openPrincipal(){
 function openRadio(){
   const d=new Date(); const s=SONGS[(d.getDay()+4)%SONGS.length];
   sheet('본부 라디오','오늘의 추천곡',`
-    <div class="radio"><div class="portrait"><img src="img/dance-music.png" alt="헤드폰 낀 늘곰"></div>
+    <div class="radio"><div class="portrait"><img src="img/ng-dance.jpg" alt="헤드폰 낀 늘곰"></div>
       <div style="min-width:0"><div class="label" style="color:#ffcc33">ON AIR · ${d.getMonth()+1}/${d.getDate()}</div><div class="t">${s.t}</div><div class="a">${s.a}</div><div class="eq"><i></i><i></i><i></i><i></i><i></i></div></div></div>
-    <div class="npc"><div class="portrait" style="width:64px;height:64px"><img src="img/yawn.png" alt="늘곰"></div><div class="bubble"><span class="who">DJ 늘곰</span>${s.note}</div></div>
+    <div class="npc"><div class="portrait" style="width:64px;height:64px"><img src="img/ng-yawn.jpg" alt="늘곰"></div><div class="bubble"><span class="who">DJ 늘곰</span>${s.note}</div></div>
     <div class="row"><a class="bk sky" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.a+' '+s.t)}" target="_blank" rel="noopener">유튜브에서 듣기</a>
       <button class="bk ${S.heart?'red':''}" id="heart">${S.heart?'♥ 좋아요 보냄':'♡ 좋아요'}</button></div>
     <p class="note">곡은 매일 본부(구글 시트)에서 바뀌어요. 위 곡은 예시예요.</p>`, b=>{
@@ -1453,7 +1453,7 @@ function openWeather(){
       <p class="note" style="margin-top:8px">이름 없이 숫자만 모여요. 누가 뭘 골랐는지는 아무도 몰라요.</p></div>`, b=>{
     const rep=b.querySelector('#mReply');
     const show=k=>{ const m=MOODS.find(x=>x.k===k); const heavy=['fog','rain','storm'].includes(k);
-      rep.innerHTML=`<div class="npc"><div class="portrait" style="width:72px;height:72px"><img src="img/base.png" alt="늘곰"></div><div class="bubble"><span class="who">늘곰 소장</span>${m.reply}</div></div>
+      rep.innerHTML=`<div class="npc"><div class="portrait" style="width:72px;height:72px"><img src="img/ng-base.jpg" alt="늘곰"></div><div class="bubble"><span class="who">늘곰 소장</span>${m.reply}</div></div>
       ${heavy?`<div class="row"><button class="bk sky" id="mB">숨 고르기</button><button class="bk" id="mP">이야기할 곳</button></div>`:''}`;
       if(heavy){ rep.querySelector('#mB').onclick=openBreathRoom; rep.querySelector('#mP').onclick=openPhone; } };
     b.querySelectorAll('.mood').forEach(x=>x.onclick=()=>{ S.mood=x.dataset.k; save(); b.querySelectorAll('.mood').forEach(y=>y.setAttribute('aria-pressed',y===x)); show(x.dataset.k); });
@@ -1804,5 +1804,5 @@ $('#hudPet').onclick=openPet;
 SpyPlus.on('xp',()=>{ const h=$('#hudRank'); if(h) h.innerHTML=SpyPlus.rankHTML(); });
 SpyPlus.on('report',()=>{ if(raidSet && !$('#sheet').hidden) raidSet({total:RAID.total+SpyPlus._state().contrib}); });
 lobby();
-if(SpyPlus.isCurfew()) SpyPlus.nightGuard({img:'img/yawn.png', demo:true});
+if(SpyPlus.isCurfew()) SpyPlus.nightGuard({img:'img/ng-yawn.jpg', demo:true});
 </script>

@@ -6,14 +6,14 @@
 /* 레이아웃: 휴대폰 한 화면 게임. 위 HUD / 가운데 학교 지도(회색→색) / 아래 큼직한 블록 도크. 바텀시트로 장면을 띄움.
    의도적으로 한 가지 룩(게임 화면)만 쓰고, 모든 색을 명시함. */
 :root{
-  --ink:#1c2130; --paper:#fffaf0; --panel:#ffffff;
+  --ink:#1a1917; --paper:#f8edd3; --panel:#fffaf0;
   --fog:#a7adb5; --fog-d:#727985; --fog-l:#d7dbe0;
-  --red:#e0522f; --red-d:#a8381c;
-  --yellow:#ffcc33; --yellow-d:#c99a0e;
+  --red:#d4502d; --red-d:#9a3519;
+  --yellow:#f3c744; --yellow-d:#b98f17;
   --green:#3dbb5c; --green-d:#23863c;
   --sky:#4aa6e8; --sky-d:#2a76b3;
-  --grass:#71c26b; --wood:#c58b55;
-  --muted:#5c6372;
+  --grass:#71c26b; --wood:#cfae7f; --tan:#d9bb8c; --bear:#b9663a;
+  --muted:#5f574c;
   --f-display:"Do Hyeon","Gothic A1","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --f-body:"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --r:10px; --bw:3px;
@@ -22,7 +22,7 @@
 html,body{height:100%}
 [hidden]{display:none!important}
 body{margin:0}
-body{background:#2b3140;color:var(--ink);font-family:var(--f-body);-webkit-tap-highlight-color:transparent}
+body{background:#1a1917;color:var(--ink);font-family:var(--f-body);-webkit-tap-highlight-color:transparent}
 #app{position:relative;max-width:460px;height:100%;margin:0 auto;background:var(--fog-l);display:flex;flex-direction:column;overflow:hidden}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
@@ -41,23 +41,28 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .row>.bk{flex:1 1 0;min-width:0}
 
 /* ---------- 로비 ---------- */
-#lobby{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px;padding-block:22px 18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-y:auto;background:
-  radial-gradient(circle at 20% 15%,rgba(255,255,255,.55) 0 60px,transparent 61px),
-  radial-gradient(circle at 85% 30%,rgba(255,255,255,.45) 0 80px,transparent 81px),
-  linear-gradient(#c3c8cf,#9ea4ad)}
-.stamp{font-family:var(--f-display);color:var(--red);border:3px solid var(--red);padding:2px 10px;border-radius:6px;transform:rotate(-4deg);font-size:15px;letter-spacing:.08em;background:rgba(255,250,240,.7)}
+#lobby{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;padding-block:20px 18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-y:auto;background:var(--red)}
+#lobby>*{position:relative;z-index:1}
+.stamp{font-family:var(--f-display);color:var(--ink);border:3px solid var(--ink);padding:2px 10px;border-radius:6px;transform:rotate(-4deg);font-size:14px;letter-spacing:.08em;background:var(--paper)}
 .logo{text-align:center}
-.logo h1{font-size:44px;line-height:1;color:#fff;-webkit-text-stroke:2px var(--ink);text-shadow:0 5px 0 var(--ink)}
-.logo h1 span{color:var(--yellow)}
-.logo p{margin:8px 0 0;font-family:var(--f-display);font-size:18px;color:var(--ink)}
-.avatar-stage{position:relative;width:170px;height:200px;display:grid;place-items:center}
-.avatar-stage::after{content:"";position:absolute;bottom:4px;width:120px;height:18px;border-radius:50%;background:rgba(28,33,48,.25)}
-.avatar-stage svg{position:relative;z-index:1;width:140px;height:auto;animation:bob 2.4s ease-in-out infinite}
+.logo h1{font-size:46px;line-height:1.02;color:var(--ink)}
+.logo h1 span{color:var(--paper);-webkit-text-stroke:2px var(--ink);text-shadow:0 4px 0 var(--ink)}
+.logo p{margin:6px 0 0;font-family:var(--f-display);font-size:16px;color:var(--ink);letter-spacing:.06em}
+.hero{width:100%;max-width:360px;height:230px;display:flex;align-items:flex-end;justify-content:center;gap:2px;padding-bottom:14px}
+.hero::before{content:"";position:absolute;inset:-10px 0 0;z-index:-1;background:var(--paper);clip-path:polygon(22% 0,78% 0,100% 100%,0 100%);background-image:radial-gradient(rgba(26,25,23,.13) 1.2px,transparent 1.4px);background-size:7px 7px;background-color:var(--paper)}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:16px;background:var(--paper);z-index:-1}
+.hero .hbear{height:205px;width:auto;animation:sneak 1.6s ease-in-out infinite;transform-origin:50% 100%}
+.hero .hchick{height:52px;width:auto;margin:0 0 2px -14px;animation:hop .8s ease-in-out infinite}
+@keyframes sneak{50%{transform:translateY(-4px) rotate(-1.5deg)}}
+@keyframes hop{50%{transform:translateY(-7px) rotate(4deg)}}
+.avatar-stage{position:relative;width:74px;height:112px;margin-left:6px;display:grid;place-items:center}
+.avatar-stage::after{content:"";position:absolute;bottom:0;width:56px;height:9px;border-radius:50%;background:rgba(26,25,23,.25)}
+.avatar-stage svg{position:relative;z-index:1;width:70px;height:auto;animation:bob 2.4s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-6px)}}
 .idcard{width:100%;max-width:340px;background:var(--paper);border:var(--bw) solid var(--ink);border-radius:var(--r);padding:10px 14px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;box-shadow:0 4px 0 var(--ink)}
 .idcard dt{color:var(--muted);font-weight:700}
 .idcard dd{margin:0;font-weight:900;font-variant-numeric:tabular-nums}
-.demo{width:100%;max-width:340px;background:rgba(28,33,48,.85);color:#fff;border-radius:var(--r);padding:10px 12px;font-size:13px}
+.demo{width:100%;max-width:340px;background:rgba(26,25,23,.85);color:#fff;border-radius:var(--r);padding:10px 12px;font-size:13px}
 .demo b{font-family:var(--f-display);font-weight:400;font-size:15px;color:var(--yellow)}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .demo .chip{border:2px solid #fff;background:transparent;color:#fff;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:700}
@@ -96,10 +101,10 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .room.out{background:#b9e2a8}
 .room.forest{background:#4f9b55;color:#fff}
 .room.forest small{color:#e2f5dc}
-.room.lock{background:repeating-linear-gradient(-45deg,#ffcc33 0 9px,#1c2130 9px 18px);filter:none;z-index:2}
+.room.lock{background:repeating-linear-gradient(-45deg,#ffcc33 0 9px,#1a1917 9px 18px);filter:none;z-index:2}
 .room.lock .plate{background:#fff;border:2px solid var(--ink);border-radius:4px;padding:2px 6px}
 .room.lock small{background:var(--red);color:#fff;border-radius:3px;padding:1px 4px;font-weight:900}
-.tape{background:repeating-linear-gradient(-45deg,#ffcc33 0 14px,#1c2130 14px 28px);border:var(--bw) solid var(--ink);border-radius:12px;padding:14px;display:grid;place-items:center}
+.tape{background:repeating-linear-gradient(-45deg,#ffcc33 0 14px,#1a1917 14px 28px);border:var(--bw) solid var(--ink);border-radius:12px;padding:14px;display:grid;place-items:center}
 .tape div{background:#fff;border:var(--bw) solid var(--ink);border-radius:8px;padding:10px 14px;text-align:center;transform:rotate(-2deg)}
 .tape b{display:block;font-family:var(--f-display);font-weight:400;font-size:26px;color:var(--red)}
 .tape span{font-size:13px;font-weight:700}
@@ -186,7 +191,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .pfood.b1{-webkit-mask:radial-gradient(circle at 50% 0%,transparent 30%,#000 31%);mask:radial-gradient(circle at 50% 0%,transparent 30%,#000 31%)}
 .pfood.b2{-webkit-mask:radial-gradient(circle at 50% 8%,transparent 46%,#000 47%);mask:radial-gradient(circle at 50% 8%,transparent 46%,#000 47%);transform:translate(-50%,-4px)}
 .pfood.b3{-webkit-mask:radial-gradient(circle at 50% 15%,transparent 66%,#000 67%);mask:radial-gradient(circle at 50% 15%,transparent 66%,#000 67%);transform:translate(-50%,-10px)}
-.pcrumb{position:absolute;left:50%;top:66%;width:5px;height:5px;border-radius:2px;background:#e9b872;border:1px solid #1c2130;pointer-events:none;animation:pcrumb .5s ease-out forwards;z-index:3}
+.pcrumb{position:absolute;left:50%;top:66%;width:5px;height:5px;border-radius:2px;background:#e9b872;border:1px solid #1a1917;pointer-events:none;animation:pcrumb .5s ease-out forwards;z-index:3}
 @keyframes pcrumb{to{transform:translate(var(--dx),var(--dy));opacity:0}}
 .hearts{position:absolute;inset:0;pointer-events:none}
 .hearts i{position:absolute;top:40%;font-style:normal;color:var(--red);font-size:22px;font-weight:900;animation:heart .9s ease-out forwards}
@@ -217,7 +222,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .mochi i{position:absolute;top:44px;width:7px;height:7px;border-radius:2px;background:var(--ink)}
 .mochi i:first-child{left:46px}.mochi i:last-child{right:46px}
 .wxb{position:relative;width:180px;height:180px;cursor:pointer;touch-action:none}
-.wxshell{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 6px 0 rgba(28,33,48,.18))}
+.wxshell{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 6px 0 rgba(26,25,23,.18))}
 .wxcore{position:absolute;inset:22px;border-radius:50%;border:var(--bw) solid var(--ink);opacity:0;transition:transform .08s}
 .wxcore.on{opacity:1}
 .wxsh{position:absolute;left:50%;top:50%;border:1.5px solid var(--ink);pointer-events:none;animation:wxfly .85s cubic-bezier(.2,.7,.4,1) forwards}
@@ -255,7 +260,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .dock .d1{background:var(--yellow)} .dock .d2{background:#ffb4a1} .dock .d3{background:#a9dcff} .dock .d4{background:#d9c3ff} .dock .d5{background:#b6f0bf} .dock .d6{background:#ffe08a}
 
 /* ---------- 시트 ---------- */
-#sheet{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(28,33,48,.55)}
+#sheet{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(26,25,23,.55)}
 #sheet .box{background:var(--paper);border-top:var(--bw) solid var(--ink);border-radius:16px 16px 0 0;max-height:92%;display:flex;flex-direction:column;animation:up .22s ease-out}
 @keyframes up{from{transform:translateY(40px);opacity:.4}}
 .sh-head{display:flex;align-items:center;gap:10px;padding-block:12px 10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));border-bottom:2px dashed var(--fog)}
@@ -267,6 +272,9 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .npc{display:flex;gap:12px;align-items:flex-end}
 .portrait{width:96px;height:96px;flex:none;border:var(--bw) solid var(--ink);border-radius:12px;background:#fbf4e3;overflow:hidden;display:grid;place-items:center}
 .portrait img{width:100%;height:100%;object-fit:cover}
+.portrait.pt-bear{background:var(--red)}.portrait.pt-bear img{object-fit:contain;animation:ptbob 3s ease-in-out infinite}
+.portrait.pt-chick{background:var(--paper)}.portrait.pt-chick img{object-fit:contain;padding:10px;animation:hop 1.2s ease-in-out infinite}
+@keyframes ptbob{50%{transform:translateY(2px) rotate(-1.5deg)}}
 .portrait svg{width:78%;height:auto}.portrait svg.cksvg{width:96%}
 .portrait.av svg{width:70px;margin-top:22px}
 .bubble{position:relative;flex:1;min-width:0;background:#fff;border:var(--bw) solid var(--ink);border-radius:12px;padding:10px 12px 12px;font-size:15px;line-height:1.55;min-height:72px}
@@ -281,7 +289,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .card p{margin:0;line-height:1.6;font-size:14px}
 .label{font-size:11px;font-weight:900;letter-spacing:.12em;color:var(--muted)}
 .note{font-size:12px;color:var(--muted);line-height:1.5;margin:0}
-.order{background:#1c2130;color:#fff;border-radius:12px;padding:14px;border:var(--bw) solid var(--ink);position:relative}
+.order{background:#1a1917;color:#fff;border-radius:12px;padding:14px;border:var(--bw) solid var(--ink);position:relative}
 .order .label{color:var(--yellow)}
 .order h3{font-size:24px;margin:4px 0 6px}
 .order p{margin:0;font-size:14px;line-height:1.6;opacity:.9}
@@ -397,7 +405,7 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
 .colors button[aria-pressed="true"]{outline:3px solid var(--yellow);outline-offset:1px}
 
 .ending img{width:100%;border:var(--bw) solid var(--ink);border-radius:12px}
-.mg{--edge:#1c2130;--panel:#ffffff;--stage:#d9dde2;--stage-ink:#1c2130;--fog-soft:#c9cdd2;--sun:#ffc93a;--coral:#ff7564;--grape:#9b82f5;--mint:#3cc6b4;--line:#cfd6de;--bg:#e9edf1;--muted:#5c6878;--display:var(--f-display);--body:var(--f-body);--mono:ui-monospace,Menlo,Consolas,monospace;font-family:var(--f-body)}
+.mg{--edge:#1a1917;--panel:#ffffff;--stage:#d9dde2;--stage-ink:#1a1917;--fog-soft:#c9cdd2;--sun:#ffc93a;--coral:#ff7564;--grape:#9b82f5;--mint:#3cc6b4;--line:#cfd6de;--bg:#e9edf1;--muted:#5c6878;--display:var(--f-display);--body:var(--f-body);--mono:ui-monospace,Menlo,Consolas,monospace;font-family:var(--f-body)}
 .mg *{box-sizing:border-box}
 .mg p{margin:0}
 .mg h3{font-family:var(--f-display);font-weight:400;margin:0;font-size:19px}
@@ -487,9 +495,9 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
     <span class="stamp">CLASSIFIED · 합천중학교</span>
     <div class="logo">
       <h1>평범한<br><span>스파이</span></h1>
-      <p>회색 안개 작전</p>
+      <p>WANTED: ORDINARY SPIES · 회색 안개 작전</p>
     </div>
-    <div class="avatar-stage" id="lobbyAv"></div>
+    <div class="hero"><img class="hbear" src="img/neulgom.png" alt="늘곰 소장"><img class="hchick" src="img/chick.png" alt="병아리 요원"><div class="avatar-stage" id="lobbyAv" title="나"></div></div>
     <dl class="idcard">
       <dt>요원 코드</dt><dd id="spyCode">파란돌고래</dd>
       <dt>소속</dt><dd>3층 Wee클래스 비밀 본부</dd>
@@ -517,18 +525,18 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
       </div>
       <button class="petbtn" id="hudPet" aria-label="몽글이 돌보기"></button>
       <div class="pieces" title="이번 주 감각 조각">
-        <svg viewBox="0 0 20 20"><rect x="2" y="2" width="16" height="16" rx="3" fill="#fff" stroke="#1c2130" stroke-width="2.5"/><rect x="6" y="6" width="8" height="8" fill="#e0522f"/></svg>
+        <svg viewBox="0 0 20 20"><rect x="2" y="2" width="16" height="16" rx="3" fill="#fff" stroke="#1a1917" stroke-width="2.5"/><rect x="6" y="6" width="8" height="8" fill="#e0522f"/></svg>
         <span id="hudPieces">0/3</span>
       </div>
     </header>
     <div id="map"></div>
     <nav class="dock">
-      <button class="d1" data-open="hq"><svg viewBox="0 0 26 26"><rect x="3" y="9" width="20" height="14" fill="#fff" stroke="#1c2130" stroke-width="2.5"/><path d="M1 10 13 2l12 8" fill="#e0522f" stroke="#1c2130" stroke-width="2.5" stroke-linejoin="round"/><rect x="10" y="15" width="6" height="8" fill="#1c2130"/></svg>본부</button>
-      <button class="d2" data-open="radio"><svg viewBox="0 0 26 26"><rect x="2" y="8" width="22" height="15" rx="3" fill="#fff" stroke="#1c2130" stroke-width="2.5"/><circle cx="9" cy="15.5" r="4" fill="#e0522f" stroke="#1c2130" stroke-width="2"/><path d="M16 13h5M16 17h5M7 8l12-6" stroke="#1c2130" stroke-width="2.5"/></svg>라디오</button>
-      <button class="d3" data-open="weather"><svg viewBox="0 0 26 26"><circle cx="9" cy="9" r="5" fill="#ffcc33" stroke="#1c2130" stroke-width="2.5"/><path d="M8 22h12a4 4 0 0 0 0-8 6 6 0 0 0-11-1 4.5 4.5 0 0 0-1 9z" fill="#fff" stroke="#1c2130" stroke-width="2.5"/></svg>날씨</button>
-      <button class="d4" data-open="board"><svg viewBox="0 0 26 26"><rect x="2" y="3" width="22" height="18" rx="2" fill="#c69a63" stroke="#1c2130" stroke-width="2.5"/><rect x="5" y="6" width="7" height="6" fill="#fff9d6" stroke="#1c2130" stroke-width="1.5"/><rect x="14" y="11" width="7" height="6" fill="#fff" stroke="#1c2130" stroke-width="1.5"/><path d="M9 9l9 5" stroke="#e0522f" stroke-width="2"/><path d="M8 21v4M18 21v4" stroke="#1c2130" stroke-width="2.5"/></svg>수사보드</button>
-      <button class="d6" data-open="agent"><svg viewBox="0 0 26 26"><rect x="3" y="5" width="20" height="16" rx="2" fill="#fff" stroke="#1c2130" stroke-width="2.5"/><rect x="6" y="9" width="6" height="7" fill="#f3c99e" stroke="#1c2130" stroke-width="1.5"/><rect x="5.5" y="9" width="7" height="2" fill="#1c2130"/><path d="M15 10h5M15 14h5M6 18h14" stroke="#1c2130" stroke-width="2"/></svg>요원</button>
-      <button class="d5" data-open="phone"><svg viewBox="0 0 26 26"><rect x="7" y="2" width="12" height="22" rx="3" fill="#fff" stroke="#1c2130" stroke-width="2.5"/><path d="M11 20h4" stroke="#1c2130" stroke-width="2.5"/><path d="M10 9c1.5 3 3 4.5 6 6" stroke="#3dbb5c" stroke-width="3" stroke-linecap="round"/></svg>전화</button>
+      <button class="d1" data-open="hq"><svg viewBox="0 0 26 26"><rect x="3" y="9" width="20" height="14" fill="#fff" stroke="#1a1917" stroke-width="2.5"/><path d="M1 10 13 2l12 8" fill="#e0522f" stroke="#1a1917" stroke-width="2.5" stroke-linejoin="round"/><rect x="10" y="15" width="6" height="8" fill="#1a1917"/></svg>본부</button>
+      <button class="d2" data-open="radio"><svg viewBox="0 0 26 26"><rect x="2" y="8" width="22" height="15" rx="3" fill="#fff" stroke="#1a1917" stroke-width="2.5"/><circle cx="9" cy="15.5" r="4" fill="#e0522f" stroke="#1a1917" stroke-width="2"/><path d="M16 13h5M16 17h5M7 8l12-6" stroke="#1a1917" stroke-width="2.5"/></svg>라디오</button>
+      <button class="d3" data-open="weather"><svg viewBox="0 0 26 26"><circle cx="9" cy="9" r="5" fill="#ffcc33" stroke="#1a1917" stroke-width="2.5"/><path d="M8 22h12a4 4 0 0 0 0-8 6 6 0 0 0-11-1 4.5 4.5 0 0 0-1 9z" fill="#fff" stroke="#1a1917" stroke-width="2.5"/></svg>날씨</button>
+      <button class="d4" data-open="board"><svg viewBox="0 0 26 26"><rect x="2" y="3" width="22" height="18" rx="2" fill="#c69a63" stroke="#1a1917" stroke-width="2.5"/><rect x="5" y="6" width="7" height="6" fill="#fff9d6" stroke="#1a1917" stroke-width="1.5"/><rect x="14" y="11" width="7" height="6" fill="#fff" stroke="#1a1917" stroke-width="1.5"/><path d="M9 9l9 5" stroke="#e0522f" stroke-width="2"/><path d="M8 21v4M18 21v4" stroke="#1a1917" stroke-width="2.5"/></svg>수사보드</button>
+      <button class="d6" data-open="agent"><svg viewBox="0 0 26 26"><rect x="3" y="5" width="20" height="16" rx="2" fill="#fff" stroke="#1a1917" stroke-width="2.5"/><rect x="6" y="9" width="6" height="7" fill="#f3c99e" stroke="#1a1917" stroke-width="1.5"/><rect x="5.5" y="9" width="7" height="2" fill="#1a1917"/><path d="M15 10h5M15 14h5M6 18h14" stroke="#1a1917" stroke-width="2"/></svg>요원</button>
+      <button class="d5" data-open="phone"><svg viewBox="0 0 26 26"><rect x="7" y="2" width="12" height="22" rx="3" fill="#fff" stroke="#1a1917" stroke-width="2.5"/><path d="M11 20h4" stroke="#1a1917" stroke-width="2.5"/><path d="M10 9c1.5 3 3 4.5 6 6" stroke="#3dbb5c" stroke-width="3" stroke-linecap="round"/></svg>전화</button>
     </nav>
   </section>
 
@@ -539,7 +547,7 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
 <script>
 /* ===== 미니게임 6종 (미니게임 시안에서 가져옴) ===== */
 const MG=(()=>{
-const IMG={base:"img/base.png",agent:"img/agent.png",yawn:"img/yawn.png"};
+const IMG={base:"img/base.png",agent:"img/neulgom-head.png",yawn:"img/yawn.png"};
 const C={sky:"#4aa8f0",grass:"#4cbf62",sun:"#ffc93a",coral:"#ff7564",grape:"#9b82f5",mint:"#3cc6b4"};
 const $=(s,r=document)=>r.querySelector(s);
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
@@ -873,7 +881,7 @@ const progress=()=>Object.keys(S.cleared).filter(k=>+k<=WEEKS.length).length/WEE
 /* =========================================================
    블록 아바타 (얼굴 · 머리 · 상의 · 하의)
    ========================================================= */
-const SKIN='#f3c99e', INK='#1c2130';
+const SKIN='#f3c99e', INK='#1a1917';
 const TOPC=['#c9a979','#e0522f','#ffffff','#3d74c9','#26304a','#7cc27a','#ffcc33'];
 const FACES=['멍','미소','하품','선글라스','반짝','졸림'];
 const HAIRS=['스포츠','단발','긴머리','페도라','비니','곰귀 후드'];
@@ -1055,8 +1063,8 @@ function stopTimers(){ timers.forEach(t=>{clearTimeout(t);clearInterval(t);}); t
 
 /* 대화 */
 function portraitHTML(k){
-  if(k==='neulgom') return `<div class="portrait"><img src="img/agent.png" alt="늘곰 소장"></div>`;
-  if(k==='chick') return `<div class="portrait" style="background:#fff5c2">${ICONS.chick}</div>`;
+  if(k==='neulgom') return `<div class="portrait pt-bear"><img src="img/neulgom-head.png" alt="늘곰 소장"></div>`;
+  if(k==='chick') return `<div class="portrait pt-chick"><img src="img/chick.png" alt="병아리 요원"></div>`;
   if(k==='native') return `<div class="portrait av" style="background:#dff0ff">${avatarSVG(NATIVE.av)}</div>`;
   const L=LOCS[k];
   if(L.icon) return `<div class="portrait">${ICONS[L.icon]}</div>`;
@@ -1415,11 +1423,11 @@ function openRadio(){
 
 /* ---------- 날씨 ---------- */
 const MOOD_SVG={
-  sun:`<svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="8" fill="#ffcc33" stroke="#1c2130" stroke-width="2.5"/><path d="M17 2v5M17 27v5M2 17h5M27 17h5M6 6l3 3M25 25l3 3M28 6l-3 3M9 25l-3 3" stroke="#1c2130" stroke-width="2.5"/></svg>`,
-  cloud:`<svg viewBox="0 0 34 34"><circle cx="12" cy="13" r="6" fill="#ffcc33" stroke="#1c2130" stroke-width="2.5"/><path d="M9 28h17a5 5 0 0 0 0-10 7 7 0 0 0-13-1 5.5 5.5 0 0 0-4 11z" fill="#fff" stroke="#1c2130" stroke-width="2.5"/></svg>`,
+  sun:`<svg viewBox="0 0 34 34"><circle cx="17" cy="17" r="8" fill="#ffcc33" stroke="#1a1917" stroke-width="2.5"/><path d="M17 2v5M17 27v5M2 17h5M27 17h5M6 6l3 3M25 25l3 3M28 6l-3 3M9 25l-3 3" stroke="#1a1917" stroke-width="2.5"/></svg>`,
+  cloud:`<svg viewBox="0 0 34 34"><circle cx="12" cy="13" r="6" fill="#ffcc33" stroke="#1a1917" stroke-width="2.5"/><path d="M9 28h17a5 5 0 0 0 0-10 7 7 0 0 0-13-1 5.5 5.5 0 0 0-4 11z" fill="#fff" stroke="#1a1917" stroke-width="2.5"/></svg>`,
   fog:`<svg viewBox="0 0 34 34"><path d="M4 11h22M8 17h22M4 23h22M10 29h16" stroke="#8f96a3" stroke-width="3.5" stroke-linecap="round"/></svg>`,
-  rain:`<svg viewBox="0 0 34 34"><path d="M7 20h19a5 5 0 0 0 0-10 7 7 0 0 0-13-1 5.5 5.5 0 0 0-6 11z" fill="#c9d0da" stroke="#1c2130" stroke-width="2.5"/><path d="M11 24l-2 6M18 24l-2 6M25 24l-2 6" stroke="#4aa6e8" stroke-width="2.5" stroke-linecap="round"/></svg>`,
-  storm:`<svg viewBox="0 0 34 34"><path d="M7 18h19a5 5 0 0 0 0-10 7 7 0 0 0-13-1 5.5 5.5 0 0 0-6 11z" fill="#8f96a3" stroke="#1c2130" stroke-width="2.5"/><path d="M18 18l-5 8h6l-3 7 8-10h-6l3-5z" fill="#ffcc33" stroke="#1c2130" stroke-width="2"/></svg>`
+  rain:`<svg viewBox="0 0 34 34"><path d="M7 20h19a5 5 0 0 0 0-10 7 7 0 0 0-13-1 5.5 5.5 0 0 0-6 11z" fill="#c9d0da" stroke="#1a1917" stroke-width="2.5"/><path d="M11 24l-2 6M18 24l-2 6M25 24l-2 6" stroke="#4aa6e8" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  storm:`<svg viewBox="0 0 34 34"><path d="M7 18h19a5 5 0 0 0 0-10 7 7 0 0 0-13-1 5.5 5.5 0 0 0-6 11z" fill="#8f96a3" stroke="#1a1917" stroke-width="2.5"/><path d="M18 18l-5 8h6l-3 7 8-10h-6l3-5z" fill="#ffcc33" stroke="#1a1917" stroke-width="2"/></svg>`
 };
 const MOOD_COL={sun:'#ffcc33',cloud:'#c9d0da',fog:'#a7adb5',rain:'#4aa6e8',storm:'#7a5cc4'};
 function openWeather(){
@@ -1491,7 +1499,7 @@ function openSky(){
 function openPhone(){
   const L=(cls,title,num,tel,desc)=>`<div class="line ${cls}"><h3>${title}</h3><div class="num">${num}</div><div class="acts">${tel?`<a class="bk green" href="tel:${tel}">전화</a><button class="bk" data-copy="${num}">번호 복사</button>`:''}</div><p>${desc}</p></div>`;
   sheet('본부 전화','혼자 버티지 않아도 돼요',`
-    <div class="npc"><div class="portrait" style="background:#fff5c2">${ICONS.chick}</div><div class="bubble"><span class="who">병아리 요원</span>요원도 가끔은 지원 요청을 해. 그게 진짜 프로야. 비밀은 지켜져.</div></div>
+    <div class="npc"><div class="portrait pt-chick"><img src="img/chick.png" alt="병아리 요원"></div><div class="bubble"><span class="who">병아리 요원</span>요원도 가끔은 지원 요청을 해. 그게 진짜 프로야. 비밀은 지켜져.</div></div>
     ${L('hq','Wee클래스 (비밀 본부)','3층','', '쉬는 시간, 점심시간에 그냥 들러도 돼요. 전문상담 선생님이 기다려요.')}
     ${L('','청소년상담 1388','1388','1388','24시간 · 전화. 문자는 #1388, 카카오톡은 「청소년상담1388」 채널. 고민 무엇이든.')}
     ${L('','자살예방 상담전화','109','109','24시간. 죽고 싶다는 생각이 들 때, 주변 사람이 걱정될 때.')}
@@ -1567,14 +1575,14 @@ function petNeeds(){ const P=pet(); return P.born && !P.sleep && (P.full<40||P.m
 
 function petSVG(P,st){
   const avg=(P.full+P.mood+P.energy+P.clean)/400;
-  const fur = mix2('#b9bec6', '#5fb4e8', Math.min(1,avg*1.15)), dark=mix2(fur,'#1c2130',.22), K='#1c2130';
+  const fur = mix2('#b9bec6', '#5fb4e8', Math.min(1,avg*1.15)), dark=mix2(fur,'#1a1917',.22), K='#1a1917';
   const sleepy=P.sleep||P.energy<30, sad=!P.sleep&&(P.mood<35||P.full<30);
   if(st===0){ const c=P.taps||0;
-    return `<svg viewBox="0 0 120 120" class="petsvg"><ellipse cx="60" cy="66" rx="34" ry="42" fill="#c3c8cf" stroke="#1c2130" stroke-width="4"/><path d="M38 60q10-8 18 0t18 0t12-4" stroke="#9aa0a8" stroke-width="4" fill="none"/><ellipse cx="48" cy="44" rx="7" ry="10" fill="#e3e6ea"/>${c>=3?'<path d="M60 26l-5 10 7 5-4 9" stroke="#1c2130" stroke-width="3" fill="none" stroke-linejoin="round"/>':''}${c>=6?'<path d="M80 80l-8 4 3 7-6 5" stroke="#1c2130" stroke-width="3" fill="none" stroke-linejoin="round"/>':''}</svg>`; }
+    return `<svg viewBox="0 0 120 120" class="petsvg"><ellipse cx="60" cy="66" rx="34" ry="42" fill="#c3c8cf" stroke="#1a1917" stroke-width="4"/><path d="M38 60q10-8 18 0t18 0t12-4" stroke="#9aa0a8" stroke-width="4" fill="none"/><ellipse cx="48" cy="44" rx="7" ry="10" fill="#e3e6ea"/>${c>=3?'<path d="M60 26l-5 10 7 5-4 9" stroke="#1a1917" stroke-width="3" fill="none" stroke-linejoin="round"/>':''}${c>=6?'<path d="M80 80l-8 4 3 7-6 5" stroke="#1a1917" stroke-width="3" fill="none" stroke-linejoin="round"/>':''}</svg>`; }
   const tuft = st===4 ? '#ffd25a' : dark;
   const eye=(x)=>`<g class="eye"><ellipse cx="${x}" cy="85" rx="6.5" ry="8" fill="${K}"/><circle cx="${x-2}" cy="82" r="2.2" fill="#fff"/></g>`;
   return `<svg viewBox="0 0 160 160" class="petsvg${P.sleep?' zz':''}">
-    <ellipse cx="80" cy="148" rx="42" ry="6" fill="#1c2130" opacity=".13"/>
+    <ellipse cx="80" cy="148" rx="42" ry="6" fill="#1a1917" opacity=".13"/>
     ${st>=2?`<g class="p-tail"><path d="M122 118q26 4 24-20q-2-14-14-10q8 8 0 14q-8 4-14 2z" fill="${fur}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M132 90l8-12l6 14z" fill="${dark}" stroke="${K}" stroke-width="3" stroke-linejoin="round"/></g>`:''}
     <g class="p-all">
       <ellipse cx="60" cy="141" rx="14" ry="8" fill="${dark}" stroke="${K}" stroke-width="4"/><ellipse cx="100" cy="141" rx="14" ry="8" fill="${dark}" stroke="${K}" stroke-width="4"/>
@@ -1734,7 +1742,7 @@ function waxToy(st,cnt,finish){
   const start=()=>{ const c=COL[(round+Math.floor(Math.random()*COL.length))%COL.length]; const NEED=5+Math.floor(Math.random()*3); let hits=0, broke=false, sq=0;
     st.innerHTML=`<div class="wxb" id="wxb"><div class="wxcore" style="background:radial-gradient(circle at 35% 30%,#fff,${c[1]} 35%,${c[0]})"></div>
       <svg class="wxshell" viewBox="0 0 200 200"><defs><radialGradient id="wxg" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="${c[1]}"/><stop offset="1" stop-color="${c[0]}"/></radialGradient></defs>
-        <circle cx="100" cy="100" r="92" fill="url(#wxg)" stroke="#1c2130" stroke-width="5"/><ellipse cx="68" cy="58" rx="26" ry="14" fill="#fff" opacity=".75" transform="rotate(-30 68 58)"/><circle cx="128" cy="150" r="7" fill="#fff" opacity=".35"/><g id="wxcr" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></g><g id="wxcr2" fill="none" stroke="#1c2130" stroke-width="1" opacity=".5" stroke-linecap="round"></g></svg></div>
+        <circle cx="100" cy="100" r="92" fill="url(#wxg)" stroke="#1a1917" stroke-width="5"/><ellipse cx="68" cy="58" rx="26" ry="14" fill="#fff" opacity=".75" transform="rotate(-30 68 58)"/><circle cx="128" cy="150" r="7" fill="#fff" opacity=".35"/><g id="wxcr" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></g><g id="wxcr2" fill="none" stroke="#1a1917" stroke-width="1" opacity=".5" stroke-linecap="round"></g></svg></div>
       <button class="bk yellow wxagain" id="wxa" hidden>하나 더 깨기</button>`;
     const box=st.querySelector('#wxb'), shell=st.querySelector('.wxshell'), core=st.querySelector('.wxcore'), cr=st.querySelector('#wxcr'), cr2=st.querySelector('#wxcr2');
     cnt.textContent='단단한 겉을 톡톡 두드려 깨요';

@@ -1134,7 +1134,7 @@ function openHQ(){
       acts.innerHTML='';
       const left=w.spots.filter((s,i)=>!S.got[gotKey(w.n,i)]).map(s=>LOCS[s.loc].name);
       const cv=visit('chick'); const JOKE=['너무 열심히 하면 수상해 보인다 삐약. 평범하게, 평범하게 삐약.','나 사실 선글라스 벗으면 눈이 엄청 작다 삐약. 비밀이다 삐약.','소장님 지금 또 멍때리는 중이지 삐약? 그게 소장님 특기다 삐약.','어제 급식실 앞에서 위장했는데 영양 선생님이 바로 알아보셨다 삐약… 노란색이라 그런가 삐약.','요원 수칙 3조, 졸리면 잔다 삐약.'];
-      const lines = left.length ? [cv===0?'삐약! 신입 요원이다 삐약!':['삐약! 또 왔구나 삐약!','삐약삐약, 보고할 게 있다 삐약!','쉿, 나 지금 잠복 중이다 삐약.'][cv%3],`이번 주 감각 조각은 ${left.join(', ')}에 숨어 있다 삐약.`, cv===0?'지도에서 느낌표(!) 붙은 곳을 눌러 봐라 삐약. 실제로 그 장소에 가면 스티커가 있을 거다 삐약.':JOKE[cv%JOKE.length]]
+      const lines = left.length ? [cv===0?'삐약! 신입 요원이다 삐약!':['삐약! 또 왔구나 삐약!','삐약삐약, 보고할 게 있다 삐약!','쉿, 나 지금 잠복 중이다 삐약.'][cv%3],`이번 주 감각 조각은 ${left.join(', ')}에 숨어 있다 삐약.`, cv===0?'지도에서 느낌표(!) 붙은 곳을 눌러 봐라 삐약. 학교에서는 폰 없이 그 장소를 눈으로 정찰만 해 둬라 삐약.':JOKE[cv%JOKE.length]]
         : ['삐약! 조각을 다 모았다 삐약!','소장님한테 가 봐라 삐약. 근데 소장님 지금 또 멍때리는 중일 수도 있다 삐약.'];
       talk(host,{k:'chick',name:'병아리 요원'},lines);
     };
@@ -1155,7 +1155,7 @@ function openLoc(k){
   const si=w.spots.findIndex(s=>s.loc===k), spot=w.spots[si];
   const got = si>=0 && S.got[gotKey(w.n,si)];
   sheet(L.name, L.sub+' · '+L.npc, `<div id="talkHost"></div><div id="task"></div>
-    <p class="note">실제 운영: 이 장소 벽에 붙은 스파이 스티커를 키링으로 찍어야 이 화면이 열려요. 지금은 시연이라 지도에서 바로 열립니다.</p>`, body=>{
+    <p class="note">학교에서는 휴대폰 없이 눈과 귀로 해 보고, 이 화면은 집이나 방과 후에 열어서 이어 가요.</p>`, body=>{
     const host=body.querySelector('#talkHost'), task=body.querySelector('#task');
     const who={k, name:L.npc}; const v=visit(k+'-'+w.n);
     if(!spot){ talk(host,who,idleLine(k,v)); return; }

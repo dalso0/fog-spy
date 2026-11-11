@@ -453,7 +453,7 @@ function mountCode(host){ injectCSS(); const root=el('div','sp sp-code'); host.i
     <button class="b g w" id="cb">확인</button>
     <p class="res" id="cr"></p></div>
     <div class="card"><h4 style="font-size:17px;margin-bottom:4px">코드가 숨어 있는 곳 (운영 예시)</h4>
-    <ul><li>마음돌봄 부스 6곳 입구 안내판</li><li>3층 Wee클래스 문 앞 늘곰 포스터</li><li>점심 방송 '오늘의 추천곡' 마지막 한마디</li><li>전교 정화 작전 100% 달성 시 공개</li></ul></div>`;
+    <ul><li>마음돌봄 부스 6곳 입구 안내판</li><li>3층 Wee클래스 문 앞 늘곰 포스터</li><li>웹앱 본부 라디오 '오늘의 추천곡' 아래 한마디</li><li>전교 정화 작전 100% 달성 시 공개</li></ul></div>`;
   const ci=root.querySelector('#ci'), cr=root.querySelector('#cr');
   async function go(){ const c=norm(ci.value); if(!c) return; let h=''; try{ h=await sha(c); }catch(e){ cr.textContent='이 기기에서는 코드 확인이 안 돼요'; return; }
     const hit=codeTable&&codeTable[h];
@@ -469,7 +469,7 @@ function mountCode(host){ injectCSS(); const root=el('div','sp sp-code'); host.i
 function bossSVG(p){ return `<svg viewBox="0 0 200 150" style="opacity:${1-p*0.75};transform:scale(${1-p*0.35})"><path d="M30 120 Q0 120 6 92 Q8 66 34 66 Q32 30 70 28 Q90 4 120 22 Q160 14 168 52 Q198 58 192 92 Q192 122 160 120 Z" fill="#6b717c" stroke="#1c2130" stroke-width="6" stroke-linejoin="round"/><ellipse cx="78" cy="78" rx="12" ry="${p>.5?3:12}" fill="#1c2130"/><ellipse cx="128" cy="78" rx="12" ry="${p>.5?3:12}" fill="#1c2130"/><path d="M84 104 Q104 ${p>.5?112:96} 124 104" stroke="#1c2130" stroke-width="6" fill="none" stroke-linecap="round"/></svg>`; }
 function mountRaid(host,opts){ injectCSS(); opts=Object.assign({total:0,goal:900,today:0,name:'회색 거인',week:'1주차'},opts||{}); const root=el('div','sp sp-raid'); host.innerHTML=''; host.appendChild(root);
   function draw(){ const total=opts.total; const p=Math.min(1,total/opts.goal); const left=Math.max(0,opts.goal-total);
-    const MS=[[.25,'늘곰 소장의 새 대사 공개'],[.5,'학교 지도에 무지개가 뜸'],[.75,'점심 방송에서 비밀 코드 하나 공개'],[1,'전교 보상: 모든 요원에게 무지개 우산 코드']];
+    const MS=[[.25,'늘곰 소장의 새 대사 공개'],[.5,'학교 지도에 무지개가 뜸'],[.75,'하늘 게시판에 비밀 코드 하나 공개'],[1,'전교 보상: 모든 요원에게 무지개 우산 코드']];
     root.innerHTML=`<div class="card" style="display:flex;flex-direction:column;gap:10px">
       <div class="sp-prog"><h3 style="font-size:20px">전교 정화 작전 · ${opts.week}</h3><span class="chip">익명 합계</span></div>
       <div class="sp-boss">${bossSVG(p)}${p>=1?'<div style="position:absolute;font-family:var(--fd);font-size:30px;color:#fff;-webkit-text-stroke:1.5px #1c2130">정화 완료!</div>':''}</div>

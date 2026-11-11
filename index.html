@@ -119,12 +119,64 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .petbtn{position:relative;width:44px;height:44px;flex:none;border:2px solid #fff;border-radius:8px;background:#3a4152;padding:2px;display:grid;place-items:center}
 .petbtn svg{width:38px;height:38px}
 .petbtn b{position:absolute;right:-6px;top:-6px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;display:grid;place-items:center;border:2px solid #fff}
-.petstage{position:relative;height:200px;border:var(--bw) solid var(--ink);border-radius:14px;display:grid;place-items:center;overflow:hidden}
+.petstage{position:relative;height:230px;border:var(--bw) solid var(--ink);border-radius:14px;display:grid;place-items:center;overflow:hidden}
 .petbox{width:150px;cursor:pointer;animation:bob 2.6s ease-in-out infinite;transform-origin:50% 90%}
-.petbox.s0{width:110px}.petbox.s1{width:110px}.petbox.s2{width:140px}.petbox.s3{width:165px}.petbox.s4{width:180px}
+.petbox.s0{width:110px}.petbox.s1{width:125px}.petbox.s2{width:150px}.petbox.s3{width:170px}.petbox.s4{width:185px}
 .petbox.boing{animation:boing .45s cubic-bezier(.2,1.6,.4,1)}
 @keyframes boing{30%{transform:scale(1.15,.85)}60%{transform:scale(.95,1.08)}}
 .petsvg{width:100%;height:auto;display:block;overflow:visible}
+.petsvg *{transform-box:fill-box}
+.petsvg .p-all{transform-origin:50% 100%;animation:pbreath 3.2s ease-in-out infinite}
+.petsvg.zz .p-all{animation-duration:5s}
+@keyframes pbreath{50%{transform:scale(1.025,.975)}}
+.petsvg .eye{transform-origin:50% 50%;animation:pblink 4.6s infinite}
+@keyframes pblink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+.petsvg .p-eyes{transform:translate(var(--ex,0px),var(--ey,0px));transition:transform .15s}
+.petsvg .p-ear{transform-origin:50% 100%}
+.petsvg .p-ear.l{animation:pearl 5.5s ease-in-out infinite}.petsvg .p-ear.r{animation:pearr 5.5s ease-in-out infinite}
+@keyframes pearl{0%,82%,100%{transform:rotate(0)}86%{transform:rotate(-10deg)}90%{transform:rotate(4deg)}94%{transform:rotate(-6deg)}}
+@keyframes pearr{0%,84%,100%{transform:rotate(0)}88%{transform:rotate(10deg)}92%{transform:rotate(-4deg)}96%{transform:rotate(6deg)}}
+.petsvg .p-tail{transform-origin:0% 100%;animation:ptail 1.4s ease-in-out infinite alternate}
+@keyframes ptail{from{transform:rotate(-8deg)}to{transform:rotate(10deg)}}
+.petsvg.zz .p-tail,.petsvg.zz .p-ear{animation:none}
+.petsvg .p-tuft{transform-origin:50% 100%;animation:ptuft 3.2s ease-in-out infinite}
+@keyframes ptuft{50%{transform:rotate(4deg) translateY(-1px)}}
+.petsvg .p-arm{transform-origin:50% 0%;transition:transform .2s}
+.petsvg .p-star{transform-origin:50% 50%;animation:pstar 2s ease-in-out infinite}
+@keyframes pstar{50%{transform:scale(1.25) rotate(20deg)}}
+.petsvg .p-zzz{animation:pzzz 2.4s ease-in-out infinite}
+@keyframes pzzz{0%{opacity:0;transform:translate(-4px,6px)}50%{opacity:1}100%{opacity:0;transform:translate(4px,-8px)}}
+.petsvg .e-hap,.petsvg .m-open,.petsvg .m-shut,.petsvg .m-chew,.petsvg .m-yum{display:none}
+.petsvg .p-face{transition:transform .15s}
+.petbox.eating,.petbox.chew,.petbox.yum{animation:none}
+.petbox.eating .p-eyes{--ey:3px;--ex:0px}
+.petbox.eating .m-def,.petbox.chew .m-def,.petbox.yum .m-def{display:none}
+.petbox.eating .m-open{display:block}
+.petbox.eating .p-arm.l{transform:rotate(-55deg) translate(6px,2px)}.petbox.eating .p-arm.r{transform:rotate(55deg) translate(-6px,2px)}
+.petbox.eating .petsvg{transition:transform .1s;transform-origin:50% 100%}
+.petbox.eating.chomp .petsvg{transform:scale(1.07,.9)}
+.petbox.eating.chomp .m-open{display:none}.petbox.eating.chomp .m-shut{display:block}
+.petbox.eating.chomp .p-face{transform:translateY(4px)}
+.petbox.chew .m-chew{display:block;animation:pchewm .28s linear infinite alternate;transform-origin:50% 50%}
+@keyframes pchewm{to{transform:scaleX(.7) translateY(1.5px)}}
+.petbox.chew .p-cheek{transform-origin:50% 50%;animation:pchew .28s ease-in-out infinite alternate;opacity:.85}
+@keyframes pchew{to{transform:scale(1.5,1.35)}}
+.petbox.chew .e-def,.petbox.yum .e-def{display:none}.petbox.chew .e-hap,.petbox.yum .e-hap{display:block}
+.petbox.chew .p-all{animation:pchewb .28s ease-in-out infinite alternate}
+@keyframes pchewb{to{transform:scale(1.02,.97)}}
+.petbox.yum .m-yum{display:block}
+.petbox.yum .p-all{animation:pyum .5s cubic-bezier(.2,1.6,.4,1) 2}
+@keyframes pyum{40%{transform:translateY(-12px) scale(.96,1.05)}}
+.petbox.yum .p-arm.l{transform:rotate(-70deg) translate(-4px,2px)}.petbox.yum .p-arm.r{transform:rotate(70deg) translate(4px,2px)}
+.petbox{position:relative}
+.pfood{position:absolute;left:50%;top:69%;font-size:34px;line-height:1;transform:translate(-50%,0);pointer-events:none;animation:pfooddrop .55s cubic-bezier(.3,1.4,.5,1);transition:transform .12s;z-index:2}
+.petbox.s1 .pfood{font-size:26px}
+@keyframes pfooddrop{from{transform:translate(-50%,-150px) rotate(-40deg);opacity:0}}
+.pfood.b1{-webkit-mask:radial-gradient(circle at 50% 0%,transparent 30%,#000 31%);mask:radial-gradient(circle at 50% 0%,transparent 30%,#000 31%)}
+.pfood.b2{-webkit-mask:radial-gradient(circle at 50% 8%,transparent 46%,#000 47%);mask:radial-gradient(circle at 50% 8%,transparent 46%,#000 47%);transform:translate(-50%,-4px)}
+.pfood.b3{-webkit-mask:radial-gradient(circle at 50% 15%,transparent 66%,#000 67%);mask:radial-gradient(circle at 50% 15%,transparent 66%,#000 67%);transform:translate(-50%,-10px)}
+.pcrumb{position:absolute;left:50%;top:66%;width:5px;height:5px;border-radius:2px;background:#e9b872;border:1px solid #1c2130;pointer-events:none;animation:pcrumb .5s ease-out forwards;z-index:3}
+@keyframes pcrumb{to{transform:translate(var(--dx),var(--dy));opacity:0}}
 .hearts{position:absolute;inset:0;pointer-events:none}
 .hearts i{position:absolute;top:40%;font-style:normal;color:var(--red);font-size:22px;font-weight:900;animation:heart .9s ease-out forwards}
 @keyframes heart{to{transform:translateY(-70px);opacity:0}}
@@ -1014,7 +1066,7 @@ function openHQ(){
       <h3>${o[0]}</h3><p>${o[1]}</p>
       <div style="margin-top:12px"><button class="bk yellow wide" id="orderDone">${S.orderDone[tk]?'완수 보고 완료 ✓':'완수했어요 (익명 보고)'}</button></div>
     </div>
-    <div class="card"><div class="label">입양실</div><h3 style="margin-top:4px">몽글이 돌보기</h3><p>본부에서 맡긴 작은 안개구름이에요. 간식 주고, 같이 숨 쉬고, 하늘을 보여 주면 조금씩 색이 돌아와요.</p><div style="margin-top:10px"><button class="bk yellow wide" id="toPet">몽글이 보러 가기</button></div></div>
+    <div class="card"><div class="label">입양실</div><h3 style="margin-top:4px">몽글이 돌보기</h3><p>본부에서 맡긴 작은 안개 솜뭉치예요. 밥 주고, 놀아 주고, 씻기고, 재우면 조금씩 자라요.</p><div style="margin-top:10px"><button class="bk yellow wide" id="toPet">몽글이 보러 가기</button></div></div>
     <div class="card"><div class="label">작전실</div><h3 style="margin-top:4px">안개 정화 호흡실</h3><p>언제든 들어와서 숨 고르기. 노란 빛이 커지면 들이쉬고, 작아지면 내쉬어요.</p><div style="margin-top:10px"><button class="bk sky wide" id="toBreath">호흡실 입장</button></div></div>
   `, body=>{
     const host=body.querySelector('#talkHost'), acts=body.querySelector('#hqActs');
@@ -1491,17 +1543,39 @@ function petNeeds(){ const P=pet(); return P.born && !P.sleep && (P.full<40||P.m
 
 function petSVG(P,st){
   const avg=(P.full+P.mood+P.energy+P.clean)/400;
-  const fill = st===4 ? 'url(#rb)' : mix2('#b7bcc4', '#9fd3f7', Math.min(1,avg*1.1));
-  const sleepy=P.sleep||P.energy<30, sad=P.mood<35||P.full<30;
-  const eyes = sleepy ? `<path d="M40 58q5 4 10 0M70 58q5 4 10 0" stroke="#1c2130" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
-    : `<rect x="42" y="52" width="6" height="7" rx="2" fill="#1c2130"/><rect x="72" y="52" width="6" height="7" rx="2" fill="#1c2130"/>`;
-  const mouth = P.sleep ? `<ellipse cx="60" cy="71" rx="3" ry="2.5" fill="#1c2130"/>` : sad ? `<path d="M55 72q5-4 10 0" stroke="#1c2130" stroke-width="3" fill="none" stroke-linecap="round"/>` : `<path d="M55 70q5 5 10 0" stroke="#1c2130" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  const fur = mix2('#b9bec6', '#8fcdf5', Math.min(1,avg*1.15)), dark=mix2(fur,'#1c2130',.22), K='#1c2130';
+  const sleepy=P.sleep||P.energy<30, sad=!P.sleep&&(P.mood<35||P.full<30);
   if(st===0){ const c=P.taps||0;
     return `<svg viewBox="0 0 120 120" class="petsvg"><ellipse cx="60" cy="66" rx="34" ry="42" fill="#c3c8cf" stroke="#1c2130" stroke-width="4"/><path d="M38 60q10-8 18 0t18 0t12-4" stroke="#9aa0a8" stroke-width="4" fill="none"/><ellipse cx="48" cy="44" rx="7" ry="10" fill="#e3e6ea"/>${c>=3?'<path d="M60 26l-5 10 7 5-4 9" stroke="#1c2130" stroke-width="3" fill="none" stroke-linejoin="round"/>':''}${c>=6?'<path d="M80 80l-8 4 3 7-6 5" stroke="#1c2130" stroke-width="3" fill="none" stroke-linejoin="round"/>':''}</svg>`; }
-  return `<svg viewBox="-5 0 130 120" class="petsvg"><defs><linearGradient id="rb" x1="0" x2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset=".33" stop-color="#ffd25a"/><stop offset=".66" stop-color="#8fe08a"/><stop offset="1" stop-color="#8ac8ff"/></linearGradient></defs>
-    <path d="M22 88q-16 0-14-18q2-16 18-16q0-22 22-24q14-16 32-6q22-2 24 20q18 4 16 22q-2 22-20 22z" fill="${fill}" stroke="#1c2130" stroke-width="4" stroke-linejoin="round"/>
-    ${eyes}${mouth}<ellipse cx="36" cy="68" rx="6" ry="4" fill="#ff9a8a" opacity=".55"/><ellipse cx="84" cy="68" rx="6" ry="4" fill="#ff9a8a" opacity=".55"/>
-    ${sleepy?'<text x="92" y="30" font-size="14" font-weight="900" fill="#1c2130">z</text>':''}</svg>`;
+  const tuft = st===4 ? ['#ff9a8a','#ffd25a','#8fe08a'] : ['#fff','#fff','#fff'];
+  const eye=(x)=>`<g class="eye"><ellipse cx="${x}" cy="84" rx="8.5" ry="10.5" fill="${K}"/><circle cx="${x-3}" cy="80" r="3.4" fill="#fff"/><circle cx="${x+3}" cy="88" r="1.6" fill="#fff"/></g>`;
+  return `<svg viewBox="0 0 160 160" class="petsvg${P.sleep?' zz':''}">
+    <ellipse cx="80" cy="148" rx="42" ry="6" fill="#1c2130" opacity=".13"/>
+    ${st>=2?`<g class="p-tail"><path d="M122 118q26 4 24-20q-2-14-14-10q8 8 0 14q-8 4-14 2z" fill="${fur}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><circle cx="141" cy="92" r="7" fill="#fff" stroke="${K}" stroke-width="3"/></g>`:''}
+    <g class="p-all">
+      <ellipse cx="60" cy="141" rx="14" ry="8" fill="${dark}" stroke="${K}" stroke-width="4"/><ellipse cx="100" cy="141" rx="14" ry="8" fill="${dark}" stroke="${K}" stroke-width="4"/>
+      <g class="p-ear l"><path d="M40 62q-10-30 6-36q14 2 22 22z" fill="${fur}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M45 54q-4-16 3-20q7 2 11 12z" fill="#ffb3c0"/></g>
+      <g class="p-ear r"><path d="M120 62q10-30-6-36q-14 2-22 22z" fill="${fur}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M115 54q4-16-3-20q-7 2-11 12z" fill="#ffb3c0"/></g>
+      <path d="M80 44c34 0 52 22 52 52s-20 48-52 48s-52-18-52-48s18-52 52-52z" fill="${fur}" stroke="${K}" stroke-width="4"/>
+      <ellipse cx="80" cy="114" rx="30" ry="24" fill="#fff8e8"/>
+      <g class="p-tuft"><circle cx="68" cy="46" r="9" fill="${tuft[0]}" stroke="${K}" stroke-width="3.5"/><circle cx="92" cy="46" r="9" fill="${tuft[2]}" stroke="${K}" stroke-width="3.5"/><circle cx="80" cy="39" r="11" fill="${tuft[1]}" stroke="${K}" stroke-width="3.5"/></g>
+      ${st>=3?`<g><path d="M33 112q47 20 94 0" fill="none" stroke="${K}" stroke-width="13" stroke-linecap="round"/><path d="M33 112q47 20 94 0" fill="none" stroke="#e2533a" stroke-width="7" stroke-linecap="round"/><path d="M108 120l8 18l8-6l-6-16z" fill="#e2533a" stroke="${K}" stroke-width="3" stroke-linejoin="round"/></g>`:''}
+      <g class="p-arm l"><ellipse cx="34" cy="104" rx="9" ry="13" fill="${fur}" stroke="${K}" stroke-width="4"/></g>
+      <g class="p-arm r"><ellipse cx="126" cy="104" rx="9" ry="13" fill="${fur}" stroke="${K}" stroke-width="4"/></g>
+      <g class="p-face">
+        <ellipse class="p-cheek" cx="44" cy="99" rx="8" ry="5.5" fill="#ff8fa3" opacity=".6"/><ellipse class="p-cheek" cx="116" cy="99" rx="8" ry="5.5" fill="#ff8fa3" opacity=".6"/>
+        <g class="e-def">${sleepy?`<path d="M54 86q8 6 16 0M90 86q8 6 16 0" stroke="${K}" stroke-width="4" fill="none" stroke-linecap="round"/>`:`<g class="p-eyes">${eye(62)}${eye(98)}</g>`}${sad?`<path d="M52 76l16-5M108 76l-16-5" stroke="${K}" stroke-width="3.5" stroke-linecap="round"/>`:''}</g>
+        <path class="e-hap" d="M54 88q8-10 16 0M90 88q8-10 16 0" stroke="${K}" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <g class="m-def">${P.sleep?`<ellipse cx="80" cy="101" rx="3.5" ry="3" fill="${K}"/>`:sad?`<path d="M73 103q7-6 14 0" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`:`<path d="M71 98q4.5 6 9 0q4.5 6 9 0" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`}</g>
+        <g class="m-open"><ellipse cx="80" cy="103" rx="10" ry="11" fill="#5a1f2a" stroke="${K}" stroke-width="3.5"/><ellipse cx="80" cy="109" rx="6" ry="4" fill="#ff8fa3"/></g>
+        <path class="m-shut" d="M70 101q10 5 20 0" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path class="m-chew" d="M72 101q4-3 8 0t8 0" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <g class="m-yum"><path d="M70 98q10 14 20 0z" fill="#5a1f2a" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/></g>
+      </g>
+      ${st===4?`<path d="M124 40l3 7l7 3l-7 3l-3 7l-3-7l-7-3l7-3z" fill="#ffd25a" stroke="${K}" stroke-width="2.5" stroke-linejoin="round" class="p-star"/>`:''}
+    </g>
+    ${P.sleep?`<g class="p-zzz" font-weight="900" fill="#fff" stroke="${K}" stroke-width=".8"><text x="122" y="40" font-size="18">z</text><text x="136" y="24" font-size="13">z</text></g>`:''}
+  </svg>`;
 }
 function mix2(a,b,t){ const h=x=>[1,3,5].map(i=>parseInt(x.substr(i,2),16)); const A=h(a),B=h(b); return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join(''); }
 function petLine(P,st){
@@ -1511,7 +1585,7 @@ function petLine(P,st){
   if(P.full<40) return '꼬르륵… 배고파!';
   if(P.energy<30) return '하암… 졸려. 불 꺼 줄래?';
   if(P.mood<40) return '심심해… 같이 놀자!';
-  const L=['몽글몽글~ 오늘 기분 최고!','오늘 급식 뭐였어?','배부르고 졸리고 행복해.','나 조금 컸지? 그치?','네가 오니까 몸이 조금 파래졌어!','구름 친구들한테 네 자랑했어.'];
+  const L=['몽글몽글~ 오늘 기분 최고!','오늘 급식 뭐였어?','배부르고 졸리고 행복해.','나 조금 컸지? 그치?','네가 오니까 몸이 조금 파래졌어!','꼬리 흔드는 연습 중이야. 봤어?'];
   return L[(new Date().getMinutes()+petDays())%L.length];
 }
 
@@ -1522,7 +1596,7 @@ const TOYS=[[1,'🟣','젤리볼'],[2,'🫧','뽁뽁이'],[3,'🍡','찹쌀떡']
 
 function openPet(){
   petDecay(); const P=pet();
-  sheet('몽글이','내 안개구름 키우기',`
+  sheet('몽글이','내 안개 솜뭉치 키우기',`
     <div class="petstage" id="pStage"><div class="poops" id="pPoop"></div><div class="petbox" id="pBox" role="button" tabindex="0" aria-label="몽글이 쓰다듬기"></div><div class="hearts" id="pHearts"></div></div>
     <div class="npc"><div class="bubble" style="min-height:0"><span class="who" id="pName"></span><span id="pSay"></span></div></div>
     <div class="pbars" id="pBars"></div>
@@ -1556,12 +1630,25 @@ function openPet(){
       acts.querySelector('#aClean').onclick=clean;
       acts.querySelector('#aSleep').onclick=()=>{ play.innerHTML=''; P.sleep=true; petCare(); save(); draw('잘 자, 몽글이… (쿨쿨)'); refreshPetBtn(); };
     };
-    function feed(f){ play.innerHTML='';
+    let busy=false;
+    function feed(f){ play.innerHTML=''; if(busy) return;
       if(P.full>=95){ draw('배불러서 더는 못 먹겠어!'); return; }
       if(f.k==='treat'){ const td=tkey(); if(P.treat.d!==td) P.treat={d:td,n:0}; if(P.treat.n>=3){ draw('간식은 오늘 그만~ 밥을 먹어야 해.'); return; } P.treat.n++; }
-      P.full=clamp(P.full+f.full); P.mood=clamp(P.mood+f.mood); petCare(); save();
-      const box=b.querySelector('#pBox'); box.classList.remove('boing'); void box.offsetWidth; box.classList.add('boing'); blip(520,.08); setTimeout(()=>blip(660,.08),120);
-      draw(f.ico+' '+f.line[Math.floor(Math.random()*f.line.length)]); refreshPetBtn(); }
+      busy=true; b.querySelector('#pActs').querySelectorAll('button').forEach(x=>x.disabled=true);
+      const box=b.querySelector('#pBox'); box.classList.remove('boing'); box.classList.add('eating'); b.querySelector('#pSay').textContent='아~';
+      const food=document.createElement('div'); food.className='pfood'; food.textContent=f.ico; box.appendChild(food); blip(700,.06);
+      const crumbs=()=>{ for(let i=0;i<5;i++){ const c=document.createElement('i'); c.className='pcrumb'; c.style.setProperty('--dx',(Math.random()*70-35)+'px'); c.style.setProperty('--dy',(10+Math.random()*30)+'px'); box.appendChild(c); setTimeout(()=>c.remove(),520); } };
+      let bite=0; const chomp=()=>{ if(!box.isConnected) return; bite++; box.classList.add('chomp'); food.className='pfood b'+bite; crunch(.5,.08); buzz(14); crumbs(); b.querySelector('#pSay').textContent=['앙!','냠!','꿀꺽!'][bite-1];
+        setTimeout(()=>box.classList.remove('chomp'),170);
+        if(bite<3){ setTimeout(chomp,430); return; }
+        setTimeout(()=>{ food.remove(); box.classList.remove('eating'); box.classList.add('chew'); b.querySelector('#pSay').textContent='오물오물…'; [0,280,560].forEach(t=>setTimeout(()=>blip(240,.05),t));
+          setTimeout(()=>{ box.classList.remove('chew'); box.classList.add('yum'); blip(520,.08); setTimeout(()=>blip(780,.12),120);
+            const hh=document.createElement('i'); hh.textContent='♥'; hh.style.left='50%'; b.querySelector('#pHearts').appendChild(hh); setTimeout(()=>hh.remove(),900);
+            P.full=clamp(P.full+f.full); P.mood=clamp(P.mood+f.mood); petCare(); save(); b.querySelector('#pSay').textContent=f.ico+' '+f.line[Math.floor(Math.random()*f.line.length)];
+            setTimeout(()=>{ busy=false; if(box.isConnected){ const say=b.querySelector('#pSay').textContent; draw(say); } refreshPetBtn(); },1100);
+          },950);
+        },230); };
+      setTimeout(chomp,650); }
     function clean(){ play.innerHTML=''; const had=P.poop; P.poop=0; P.poopH=0; P.clean=100; if(had) P.mood=clamp(P.mood+10); petCare(); save(); blip(800,.1); draw(had?'개운해! 고마워~':'뽀득뽀득~ 원래 깨끗했지만 좋아!'); refreshPetBtn(); }
     function hatch(){ P.taps=(P.taps||0)+1; const box=b.querySelector('#pBox'); box.classList.remove('boing'); void box.offsetWidth; box.classList.add('boing'); buzz(15); blip(300+P.taps*40,.08);
       if(P.taps>=8){ P.born=Date.now(); P.last=Date.now(); petCare(); save(); draw('…몽글! 안녕? 나 몽글이야! 잘 부탁해!'); refreshPetBtn(); } else { save(); draw(['톡…','톡톡… 꿈틀!','금이 갔다!','안에서 뭔가 움직인다…','거의 다 됐어!'][Math.min(4,Math.floor(P.taps/2))]); } }
@@ -1570,8 +1657,9 @@ function openPet(){
       box.classList.remove('boing'); void box.offsetWidth; box.classList.add('boing'); buzz(15);
       const hh=document.createElement('i'); hh.textContent='♥'; hh.style.left=(35+Math.random()*30)+'%'; b.querySelector('#pHearts').appendChild(hh); setTimeout(()=>hh.remove(),900);
       if(P.sleep){ b.querySelector('#pSay').textContent='(쿨… 음냐…)'; return; }
-      if(P.pat.n<15){ P.pat.n++; P.mood=clamp(P.mood+3); if(P.pat.n===1) petCare(); save(); } b.querySelector('#pSay').textContent=['몽글~','둥실둥실','뿅!','구름 충전 중…'][P.pat.n%4]; };
-    box.onclick=patIt; box.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); patIt(); } };
+      if(P.pat.n<15){ P.pat.n++; P.mood=clamp(P.mood+3); if(P.pat.n===1) petCare(); save(); } b.querySelector('#pSay').textContent=['몽글~','폭신폭신','뿅!','충전 중…'][P.pat.n%4]; };
+    b.querySelector('#pStage').addEventListener('pointermove',e=>{ const r=box.getBoundingClientRect(); const dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height*.52), d=Math.hypot(dx,dy)||1, k=Math.min(4,d/20); box.style.setProperty('--ex',(dx/d*k).toFixed(1)+'px'); box.style.setProperty('--ey',(dy/d*k).toFixed(1)+'px'); });
+    box.onclick=()=>{ if(!busy) patIt(); }; box.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); patIt(); } };
     draw();
   });
 }

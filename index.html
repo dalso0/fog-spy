@@ -1506,7 +1506,7 @@ function petLine(P,st){
   if(P.full<40) return '꼬르륵… 배고파!';
   if(P.energy<30) return '하암… 졸려. 불 꺼 줄래?';
   if(P.mood<40) return '심심해… 같이 놀자!';
-  const L=['몽글몽글~ 오늘 기분 최고!','쓰다듬어 줘! 여기, 여기!','배부르고 졸리고 행복해.','나 조금 컸지? 그치?','네가 오니까 몸이 조금 파래졌어!','구름 친구들한테 네 자랑했어.'];
+  const L=['몽글몽글~ 오늘 기분 최고!','오늘 급식 뭐였어?','배부르고 졸리고 행복해.','나 조금 컸지? 그치?','네가 오니까 몸이 조금 파래졌어!','구름 친구들한테 네 자랑했어.'];
   return L[(new Date().getMinutes()+petDays())%L.length];
 }
 
@@ -1546,7 +1546,7 @@ function openPet(){
         play.querySelectorAll('.foods .bk').forEach(x=>x.onclick=()=>feed(FOODS[x.dataset.i])); play.scrollIntoView({behavior:'smooth',block:'nearest'}); };
       acts.querySelector('#aPlay').onclick=()=>{ if(P.energy<20){ draw('너무 졸려서 못 놀겠어… 먼저 재워 줘.'); return; }
         play.innerHTML=`<div class="card"><h3>뭘 갖고 놀까?</h3></div><div class="foods">${TOYS.map(t=>`<button class="bk" data-n="${t[0]}"><span>${t[1]}</span>${t[2]}</button>`).join('')}</div>`;
-        play.querySelectorAll('.foods .bk').forEach(x=>x.onclick=()=>{ openSquish(play,()=>{ P.mood=clamp(P.mood+25); P.energy=clamp(P.energy-10); P.full=clamp(P.full-5); petCare(); save(); draw(['재밌었다! 또 놀자!','말랑말랑~ 기분 최고!','헤헤, 너랑 노는 게 제일 좋아.'][Math.floor(Math.random()*3)]); refreshPetBtn(); }, +x.dataset.n); });
+        play.querySelectorAll('.foods .bk').forEach(x=>x.onclick=()=>{ openSquish(play,()=>{ P.mood=clamp(P.mood+25); P.energy=clamp(P.energy-10); P.full=clamp(P.full-5); petCare(); save(); draw(['오, 꽤 하는데?','말랑말랑~ 기분 최고!','한 판 더 할래?'][Math.floor(Math.random()*3)]); refreshPetBtn(); }, +x.dataset.n); });
         play.scrollIntoView({behavior:'smooth',block:'nearest'}); };
       acts.querySelector('#aClean').onclick=clean;
       acts.querySelector('#aSleep').onclick=()=>{ play.innerHTML=''; P.sleep=true; petCare(); save(); draw('잘 자, 몽글이… (쿨쿨)'); refreshPetBtn(); };
@@ -1565,7 +1565,7 @@ function openPet(){
       box.classList.remove('boing'); void box.offsetWidth; box.classList.add('boing'); buzz(15);
       const hh=document.createElement('i'); hh.textContent='♥'; hh.style.left=(35+Math.random()*30)+'%'; b.querySelector('#pHearts').appendChild(hh); setTimeout(()=>hh.remove(),900);
       if(P.sleep){ b.querySelector('#pSay').textContent='(쿨… 음냐…)'; return; }
-      if(P.pat.n<15){ P.pat.n++; P.mood=clamp(P.mood+3); if(P.pat.n===1) petCare(); save(); } b.querySelector('#pSay').textContent=['헤헤','간지러워!','몽글~','더 해 줘!'][P.pat.n%4]; };
+      if(P.pat.n<15){ P.pat.n++; P.mood=clamp(P.mood+3); if(P.pat.n===1) petCare(); save(); } b.querySelector('#pSay').textContent=['몽글~','둥실둥실','뿅!','구름 충전 중…'][P.pat.n%4]; };
     box.onclick=patIt; box.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); patIt(); } };
     draw();
   });

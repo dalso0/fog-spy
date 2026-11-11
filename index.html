@@ -287,7 +287,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .portrait{width:96px;height:96px;flex:none;border:var(--bw) solid var(--ink);border-radius:12px;background:#fbf4e3;overflow:hidden;display:grid;place-items:center}
 .portrait img{width:100%;height:100%;object-fit:cover}
 .portrait.pt-bear{background:var(--red)}.portrait.pt-bear img{object-fit:contain;animation:ptbob 3s ease-in-out infinite}
-.portrait.pt-chick{background:var(--paper)}.portrait.pt-chick img{object-fit:contain;padding:10px;animation:hop 1.2s ease-in-out infinite}
+.portrait.pt-chick{background:var(--paper)}.portrait.pt-chick{place-items:end center}.portrait.pt-chick img{object-fit:contain;width:54%;height:auto;margin-bottom:12%;animation:hop 1.2s ease-in-out infinite}
 @keyframes ptbob{50%{transform:translateY(2px) rotate(-1.5deg)}}
 .portrait svg{width:78%;height:auto}.portrait svg.cksvg{width:96%}
 .portrait.av svg{width:70px;margin-top:22px}
@@ -1133,9 +1133,9 @@ function openHQ(){
       body.querySelector('#spC').setAttribute('aria-pressed','true'); body.querySelector('#spN').setAttribute('aria-pressed','false');
       acts.innerHTML='';
       const left=w.spots.filter((s,i)=>!S.got[gotKey(w.n,i)]).map(s=>LOCS[s.loc].name);
-      const cv=visit('chick'); const JOKE=['아, 그리고 너무 열심히 하면 수상해 보여. 평범하게, 평범하게.','나 사실 선글라스 벗으면 눈이 엄청 작아. 비밀이야.','소장님 지금 또 멍때리는 중이지? 그게 소장님 특기야.','어제 급식실 앞에서 위장했는데 영양 선생님이 바로 알아보셨어. 삐약.','요원 수칙 3조: 졸리면 잔다.'];
-      const lines = left.length ? [cv===0?'삐약! 신입 요원이다!':['삐약! 또 왔구나!','삐약삐약, 보고할 게 있어!','쉿, 나 지금 잠복 중이야.'][cv%3],`이번 주 감각 조각은 ${left.join(', ')}에 숨어 있대.`, cv===0?'지도에서 느낌표(!) 붙은 곳을 눌러 봐. 실제로 그 장소에 가면 스티커가 있을 거야.':JOKE[cv%JOKE.length]]
-        : ['삐약! 조각을 다 모았네?','소장님한테 가 봐. 근데 소장님 지금 또 멍때리는 중일 수도 있어.'];
+      const cv=visit('chick'); const JOKE=['너무 열심히 하면 수상해 보인다 삐약. 평범하게, 평범하게 삐약.','나 사실 선글라스 벗으면 눈이 엄청 작다 삐약. 비밀이다 삐약.','소장님 지금 또 멍때리는 중이지 삐약? 그게 소장님 특기다 삐약.','어제 급식실 앞에서 위장했는데 영양 선생님이 바로 알아보셨다 삐약… 노란색이라 그런가 삐약.','요원 수칙 3조, 졸리면 잔다 삐약.'];
+      const lines = left.length ? [cv===0?'삐약! 신입 요원이다 삐약!':['삐약! 또 왔구나 삐약!','삐약삐약, 보고할 게 있다 삐약!','쉿, 나 지금 잠복 중이다 삐약.'][cv%3],`이번 주 감각 조각은 ${left.join(', ')}에 숨어 있다 삐약.`, cv===0?'지도에서 느낌표(!) 붙은 곳을 눌러 봐라 삐약. 실제로 그 장소에 가면 스티커가 있을 거다 삐약.':JOKE[cv%JOKE.length]]
+        : ['삐약! 조각을 다 모았다 삐약!','소장님한테 가 봐라 삐약. 근데 소장님 지금 또 멍때리는 중일 수도 있다 삐약.'];
       talk(host,{k:'chick',name:'병아리 요원'},lines);
     };
     body.querySelector('#spN').onclick=neul; body.querySelector('#spC').onclick=chick;
@@ -1513,7 +1513,7 @@ function openSky(){
 function openPhone(){
   const L=(cls,title,num,tel,desc)=>`<div class="line ${cls}"><h3>${title}</h3><div class="num">${num}</div><div class="acts">${tel?`<a class="bk green" href="tel:${tel}">전화</a><button class="bk" data-copy="${num}">번호 복사</button>`:''}</div><p>${desc}</p></div>`;
   sheet('본부 전화','혼자 버티지 않아도 돼요',`
-    <div class="npc"><div class="portrait pt-chick"><img src="img/chick.png" alt="병아리 요원"></div><div class="bubble"><span class="who">병아리 요원</span>요원도 가끔은 지원 요청을 해. 그게 진짜 프로야. 비밀은 지켜져.</div></div>
+    <div class="npc"><div class="portrait pt-chick"><img src="img/chick.png" alt="병아리 요원"></div><div class="bubble"><span class="who">병아리 요원</span>요원도 가끔은 지원 요청을 한다 삐약. 그게 진짜 프로다 삐약. 비밀은 꼭 지켜진다 삐약.</div></div>
     ${L('hq','Wee클래스 (비밀 본부)','3층','', '쉬는 시간, 점심시간에 그냥 들러도 돼요. 전문상담 선생님이 기다려요.')}
     ${L('','청소년상담 1388','1388','1388','24시간 · 전화. 문자는 #1388, 카카오톡은 「청소년상담1388」 채널. 고민 무엇이든.')}
     ${L('','자살예방 상담전화','109','109','24시간. 죽고 싶다는 생각이 들 때, 주변 사람이 걱정될 때.')}

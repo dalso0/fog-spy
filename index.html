@@ -1522,7 +1522,7 @@ function openCloset(){
     const mir=b.querySelector('#mir'), opts=b.querySelector('#opts'), cols=b.querySelector('#cols');
     const draw=()=>{
       mir.innerHTML=avatarSVG(S.av);
-      opts.innerHTML=T[tab][1].map((n,i)=>{ const a=Object.assign({},S.av,{[tab]:i}); return `<button class="opt ${tab==='face'||tab==='hair'?'face':''}" data-i="${i}" aria-pressed="${S.av[tab]===i}">${tab==='bottom'?`<div style="height:44px;overflow:hidden;width:44px"><div style="margin-top:-56px">${avatarSVG(a)}</div></div>`:tab==='top'?`<div style="height:44px;overflow:hidden;width:44px"><div style="margin-top:-18px">${avatarSVG(a)}</div></div>`:`<div style="height:40px;overflow:hidden;width:60px">${avatarSVG(a)}</div>`}${n}</button>`; }).join('');
+      opts.innerHTML=T[tab][1].map((n,i)=>{ const a=Object.assign({},S.av,{[tab]:i}); return `<button class="opt ${tab==='face'||tab==='hair'?'face':''}" data-i="${i}" aria-pressed="${S.av[tab]===i}">${tab==='bottom'?avatarSVG(a).replace('viewBox="0 0 100 140"','viewBox="20 84 60 56" style="width:48px;height:45px"'):tab==='top'?avatarSVG(a).replace('viewBox="0 0 100 140"','viewBox="14 46 72 50" style="width:56px;height:39px"'):`<div style="height:40px;overflow:hidden;width:60px">${avatarSVG(a)}</div>`}${n}</button>`; }).join('');
       opts.querySelectorAll('.opt').forEach(o=>o.onclick=()=>{ S.av[tab]=+o.dataset.i; save(); draw(); });
       cols.innerHTML = tab==='top' && ![0,2,4].includes(S.av.top) ? TOPC.map((c,i)=>`<button style="background:${c}" data-c="${i}" aria-label="색 ${i+1}" aria-pressed="${S.av.tc===i}"></button>`).join('') : '';
       cols.querySelectorAll('button').forEach(c=>c.onclick=()=>{ S.av.tc=+c.dataset.c; save(); draw(); });

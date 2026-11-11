@@ -480,7 +480,7 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
     </div>
     <div class="avatar-stage" id="lobbyAv"></div>
     <dl class="idcard">
-      <dt>요원 코드</dt><dd id="spyCode">SPY-0000</dd>
+      <dt>요원 코드</dt><dd id="spyCode">파란돌고래</dd>
       <dt>소속</dt><dd>3층 Wee클래스 비밀 본부</dd>
       <dt>임무</dt><dd>학교의 잃어버린 색채를 되찾아라</dd>
     </dl>
@@ -845,7 +845,10 @@ const DEF={week:1, code:'', av:{face:3,hair:3,top:0,bottom:0,tc:0}, got:{}, clea
 let S;
 try{ S=Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||'{}')); }catch(e){ S=JSON.parse(JSON.stringify(DEF)); }
 if(S.week>WEEKS.length) S.week=WEEKS.length;
-if(!S.code){ S.code='SPY-'+String(Math.floor(1000+Math.random()*9000)); }
+const CODE_C=['파란','하늘','초록','연두','노란','주황','빨간','분홍','보라','남색','하얀','까만','회색','은빛','금빛','민트','살구','밤색','청록','무지개'];
+const CODE_A=['돌고래','수달','너구리','고슴도치','펭귄','올빼미','다람쥐','여우','판다','코알라','거북이','고래','해달','참새','두루미','호랑이','사슴','토끼','물개','카멜레온','나무늘보','미어캣','라쿤','부엉이','치타','늑대','까치','문어','도마뱀','햄스터'];
+function newCode(){ return CODE_C[Math.floor(Math.random()*CODE_C.length)]+CODE_A[Math.floor(Math.random()*CODE_A.length)]; }
+if(!S.code||/^SPY-/.test(S.code)){ S.code=newCode(); }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 save();
 
@@ -1507,7 +1510,7 @@ function openCloset(){
    ========================================================= */
 function lobby(){
   $('#lobbyAv').innerHTML=avatarSVG(S.av);
-  $('#spyCode').textContent=S.code;
+  $('#spyCode').innerHTML=`${S.code} <button id="codeRe" style="font:inherit;font-size:12px;border:2px solid var(--ink);border-radius:6px;background:#fff;padding:2px 6px;margin-left:4px">다시 뽑기</button>`; $('#codeRe').onclick=()=>{ S.code=newCode(); save(); lobby(); };
   $('#weekChips').innerHTML=WEEKS.map(w=>`<button class="chip" data-w="${w.n}" aria-pressed="${S.week===w.n}">${w.n}주 ${w.sense}</button>`).join('');
   document.querySelectorAll('#weekChips .chip').forEach(c=>c.onclick=()=>{ S.week=+c.dataset.w; save(); lobby(); });
 }

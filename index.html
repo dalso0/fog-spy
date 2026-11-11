@@ -600,7 +600,7 @@ function breath(stage,g){
       if(p>=1){breaths++;$('#cnt',stage).textContent=`호흡 ${breaths} / ${TOTAL}`;state='idle';
         if(breaths>=TOTAL){$('#sun',stage).style.transform='scale(1)';btn.disabled=true;
           setTimeout(()=>finish(stage,g,{title:'하늘색을 되찾았어',msg:'숨을 길게 내쉬는 동안 몸이 조금 느슨해졌을 거야. 지금 진짜 하늘도 한 번 올려다봐.'}),900);return}
-        gd.textContent='좋아. 한 번 더 꾹 눌러서 들이쉬어요'}}
+        gd.textContent='잘했어요. 버튼을 다시 누르고 숨을 들이쉬어요'}}
     raf=requestAnimationFrame(loop)}
   function down(e){e.preventDefault();if(state!=='idle')return;state='in';t0=performance.now();btn.classList.add('down')}
   function up(){btn.classList.remove('down');if(state!=='in')return;const d=performance.now()-t0;
@@ -629,16 +629,16 @@ function stone(stage,g){
   paint();
   function rub(e){if(doneFlag)return;const rect=grid.getBoundingClientRect();const x=e.clientX-rect.left,y=e.clientY-rect.top;const now=performance.now();
     if(last){const dist=Math.hypot(x-last.x,y-last.y),dt=Math.max(1,now-last.t),speed=dist/dt;
-      if(speed>1.5){if(now-warnT>600){gd.textContent='앗, 너무 세게! 살살 천천히';warnT=now}}
+      if(speed>1.5){if(now-warnT>600){gd.textContent='살살 문질러 닦아야지';warnT=now}}
       else{const cw=rect.width/N;const cc=Math.floor(x/cw),rr=Math.floor(y/cw);const gain=dist/cw*0.09;
         for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const r2=rr+a,c2=cc+b;if(r2<0||c2<0||r2>=N||c2>=N)continue;const k=r2*N+c2;if(vals[k]<0)continue;vals[k]=Math.min(1,vals[k]+gain*(a||b?.5:1))}
-        if(now-warnT>900)gd.textContent='좋아, 그 속도. 돌의 촉감을 느껴 봐';paint()}}
+        if(now-warnT>900)gd.textContent='딱 좋은 속도. 돌이 반짝이기 시작한다';paint()}}
     last={x,y,t:now};
     const pct=Math.round(vals.filter(v=>v>=.85).length/total*100);$('#pc',stage).textContent=pct+'%';$('#bar',stage).style.width=pct+'%';
     if(pct>=88&&!doneFlag){doneFlag=true;vals=vals.map(v=>v<0?v:1);paint();
       const box=el('div','word');box.innerHTML='<input id="worryword" maxlength="12" placeholder="걱정 한 단어 (저장 안 됨)" aria-label="이 돌에 맡길 걱정 한 단어"><button class="blk">맡기기</button>';
       box.querySelector('button').onclick=()=>{const v=box.querySelector('input').value.trim();box.outerHTML=`<p class="chip">${v?'"'+v.replace(/[<>&]/g,'')+'"':'말하지 않은 걱정'}은 마음돌이 맡아 둘게</p>`};
-      setTimeout(()=>finish(stage,g,{title:'마음돌 완성',msg:'걱정이 많을 때 손으로 무언가를 천천히 만지면 생각이 몸으로 내려와. 진짜 돌이나 키링으로도 해 봐.',extra:box}),400)}}
+      setTimeout(()=>finish(stage,g,{title:'마음돌 완성',msg:'걱정이 많을 때 돌 닦기처럼 손으로 한 가지 일에 집중하면 생각이 차분해져. 진짜 돌이나 키링으로도 해 봐.',extra:box}),400)}}
   st.addEventListener('pointerdown',e=>{st.setPointerCapture(e.pointerId);last=null;rub(e)});
   st.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='touch')rub(e)});
   st.addEventListener('pointerup',()=>last=null);
@@ -793,7 +793,7 @@ const WEEKS = [
    motto:'오늘 하늘, 한 번 올려다봤나요?', clue:'회색 안개가 가장 먼저 훔쳐 간 것', word:'하늘빛',
    spots:[
     {loc:'ground', piece:'하', task:'sky', lines:['요원인가? 나는 30년째 여기 서 있는 철봉이다.','요즘 아이들이 고개를 안 들어. 그래서 하늘이 색을 잊어버렸지.','지금 진짜 하늘을 10초만 올려다봐. 그리고 오늘 하늘이 무슨 색이었는지 알려줘.']},
-    {loc:'art', piece:'늘', task:'find', target:'brush', hint:'색이 남아 있는 건 붓 끝이야.', lines:['쉿, 미술실은 지금 회색 먼지투성이야.','그래도 딱 하나, 아직 색을 붙잡고 있는 물건이 있어.','눈으로 천천히 훑어보고 만져 봐. 붓 끝을 잘 보렴.']},
+    {loc:'art', piece:'늘', task:'find', target:'brush', hint:'색이 남아 있는 건 붓 끝이야.', lines:['쉿, 미술실은 지금 회색 먼지투성이야.','그래도 딱 하나, 아직 색을 붙잡고 있는 물건이 있어.','미술실을 천천히 둘러보렴. 붓 끝을 잘 보렴.']},
     {loc:'career', piece:'빛', task:'mg:breath', lines:['진로실 창문은 학교에서 제일 멀리까지 보이는 창이야.','먼 곳을 바라보면서 숨을 쉬면 눈이 쉬고, 안개도 옅어진대.','창밖 가장 먼 곳에 시선을 두고, 숨 세 번만 같이 쉬어 보자.']}
    ]},
   {n:2, dates:'11.23 – 11.27', sense:'청각', title:'소리 없는 복도',
@@ -810,14 +810,14 @@ const WEEKS = [
    spots:[
     {loc:'cafeteria', piece:'한', task:'slow', secs:30, slowTitle:'먹기 명상 30초', slowText:'점심의 첫 숟가락(또는 물 한 모금)을 입에 넣고, 30초 동안 천천히 씹으며 맛이 어떻게 변하는지 느껴 봐요.', lines:['요원님, 급식이 아무 맛도 안 난다는 신고가 들어왔어요.','맛은 혀가 아니라 시간에 숨어 있거든요.','오늘 점심 첫 입은 30초 동안 천천히. 같이 해 볼까요?']},
     {loc:'nurse', piece:'입', task:'mg:breath', lines:['어디 아파서 온 건 아니지? 다행이다.','배가 꼬르륵하는 것도 감각이야. 몸이 말을 거는 거지.','배에 손을 얹고, 배가 부풀었다 꺼지는 걸 느끼며 숨 세 번.']},
-    {loc:'library', piece:'씩', task:'find', target:'recipe', hint:'맛있는 냄새가 나는 책을 찾아라.', lines:['또 왔구먼, 요원.','이번엔 맛을 기록해 둔 책이 숨었다.','요리책이 어디 있는지, 하나씩 만져 보거라.']}
+    {loc:'library', piece:'씩', task:'find', target:'recipe', hint:'맛있는 냄새가 나는 책을 찾아라.', lines:['또 왔구먼, 요원.','이번엔 맛을 기록해 둔 책이 숨었다.','요리책이 어디 있는지, 하나씩 눌러 보거라.']}
    ]},
   {n:4, dates:'12.7 – 12.11', sense:'오감', title:'색채 회복 작전',
    brief:'마지막 주. D-Day 팝업 작전과 엔딩 퀘스트. 네 곳에 흩어진 마지막 조각을 모으면 학교의 색이 돌아온다.',
    motto:'평범한 하루가 제일 강하다', clue:'늘곰이 매일 부르는 노래', word:'룰루랄라',
    spots:[
     {loc:'ground', piece:'룰', task:'sky', lines:['요원! 다시 왔군. 하늘은 좀 보고 다녔나?','마지막 작전이다. 오늘 하늘색을 보고해 줘.']},
-    {loc:'art', piece:'루', task:'mg:stone', lines:['마음돌 부스 준비 끝! 마지막으로 하나 닦아 볼래?','손끝으로 살살, 천천히. 세게 문지르면 안 닦여.']},
+    {loc:'art', piece:'루', task:'mg:stone', lines:['마음돌 부스 준비 끝! 마지막으로 하나 닦아 볼래?','돌은 살살 문질러야 닦인다.']},
     {loc:'cafeteria', piece:'랄', task:'slow', secs:20, slowTitle:'물 한 모금 20초', slowText:'물 한 모금을 입에 머금고 20초 동안 온도와 느낌을 느낀 뒤 천천히 삼켜요.', lines:['요원님 덕분에 급식에 맛이 돌아오고 있어요!','마지막은 물 한 모금. 천천히요.']},
     {loc:'forest', piece:'라', task:'mg:breath', lines:['…고맙다, 요원. 숲에 초록이 돌아왔어.','마지막 숨 다섯 번. 학교 전체에 색을 보내 주렴.']}
    ]}
@@ -1205,7 +1205,7 @@ const IDLE={
     ['체육 선생님 호루라기 소리 들리나?','저 소리가 나면 다들 뛰지. 넌 평범하게 걸어라.']],
   forest:[['…스으… 나무는 오늘 쉬는 중이란다.','바람 소리나 듣고 가렴.'],
     ['겨울에는 나도 잎을 다 내려놓는단다.','내려놓는 것도 쉬는 방법이지.'],
-    ['{sense} 작전이구나. 숲은 다섯 감각이 다 있지.','하나만 골라서 느껴 보렴.'],
+    ['{sense} 작전이구나. 숲은 다섯 감각이 다 있지.','하나만 골라서 집중해 보렴.'],
     ['네 발소리를 기억한단다.','저번보다 천천히 걷는구나. 잘하고 있어.'],
     ['…','(큰 나무가 바람에 살짝 흔들린다. 그냥 같이 서 있어도 된다.)']]
 };
@@ -1217,7 +1217,7 @@ const RETRY_OPEN=['다시 왔구나. 이어서 해 볼까?','준비됐어? 천�
 function visit(k){ S.visits=S.visits||{}; const v=S.visits[k]||0; S.visits[k]=v+1; save(); return v; }
 function fill(lines,extra){ const w=W(); return lines.map(l=>l.replace('{sense}',w.sense).replace('{p}',(extra&&extra.p)||'')); }
 function idleLine(k,v){ const pool=IDLE[k]; return fill(pool[(v+W().n)%pool.length]); }
-function taskLabel(s){ if(s.task.startsWith('mg:')) return MG.GAMES[s.task.slice(3)].name+' 시작'; return {sky:'하늘색 보고하기',find:'물건 만져 보기',breath:`숨 ${s.cycles}번 함께 쉬기`,listen:'들리는 소리 찾기',smell:'냄새·감촉 찾기',slow:s.slowTitle}[s.task]; }
+function taskLabel(s){ if(s.task.startsWith('mg:')) return MG.GAMES[s.task.slice(3)].name+' 시작'; return {sky:'하늘색 보고하기',find:'물건 눌러 보기',breath:`숨 ${s.cycles}번 함께 쉬기`,listen:'들리는 소리 찾기',smell:'냄새·감촉 찾기',slow:s.slowTitle}[s.task]; }
 
 function runTask(host,s,done){
   if(s.task.startsWith('mg:')){ mgStop=MG.run(host,s.task.slice(3),{onDone:()=>{stopMG(); SpyPlus.addXP(SpyPlus.XP.minigame,'미니게임'); done();}}); return; }
@@ -1231,7 +1231,7 @@ function runTask(host,s,done){
   }
   else if(s.task==='find'){
     const set=FIND_SETS[s.target];
-    host.innerHTML=`<div class="card"><h3>회색 물건들을 만져 보세요</h3><p>${s.hint}</p></div>
+    host.innerHTML=`<div class="card"><h3>회색 물건들을 눌러 보세요</h3><p>${s.hint}</p></div>
       <div class="objs">${set.map((o,i)=>`<button class="obj" data-i="${i}">${OBJ_ICONS[o[0]]}${o[1]}</button>`).join('')}</div><p class="note" id="findMsg">하나씩 눌러 보세요.</p>`;
     host.querySelectorAll('.obj').forEach(b=>b.onclick=()=>{ const o=set[b.dataset.i];
       if(o[0]===s.target){ b.classList.add('hit'); host.querySelector('#findMsg').textContent='색이 번져 나온다…!'; setTimeout(done,700); }
@@ -1273,7 +1273,7 @@ function breathe(host,cycles,done,free){
       timers.push(setTimeout(()=>{ ph.textContent='잠깐 멈춤'; count(2);
         timers.push(setTimeout(()=>{ ph.textContent='내쉬기'; orb.style.transitionDuration='6s'; orb.style.transform='scale(1)'; count(6);
           timers.push(setTimeout(()=>{ dots[c].classList.add('on'); c++; fog.style.opacity=Math.max(0,1-c/cycles);
-            if(c<cycles) cyc(); else { ph.textContent='안개 정화 완료'; cnt.textContent='잘했어요. 지금 몸의 느낌을 잠깐 느껴 봐요.'; if(done) timers.push(setTimeout(done,900)); else { const b=document.createElement('button'); b.className='bk sky wide'; b.textContent='한 번 더'; b.onclick=()=>breathe(host,cycles,null,true); host.querySelector('.breath').appendChild(b);} }
+            if(c<cycles) cyc(); else { ph.textContent='안개 정화 완료'; cnt.textContent='잘했어요. 지금 숨이 어떤지 잠깐 살펴봐요.'; if(done) timers.push(setTimeout(done,900)); else { const b=document.createElement('button'); b.className='bk sky wide'; b.textContent='한 번 더'; b.onclick=()=>breathe(host,cycles,null,true); host.querySelector('.breath').appendChild(b);} }
           },6000)); },2000)); },4000));
     };
     const count=n=>{ let k=n; cnt.textContent=k+'초'; const iv=setInterval(()=>{k--; if(k>0) cnt.textContent=k+'초'; else clearInterval(iv);},1000); timers.push(iv); };
@@ -1736,7 +1736,7 @@ const SQUISH={
   1:{name:'색 젤리볼', sense:'시각', hint:'꾹 누르고 있으면 젤리가 눌리고, 손을 떼면 색이 퍼져요. 10번 꾹.'},
   2:{name:'뽁뽁이', sense:'청각', hint:'하나씩 눌러 터뜨려요. 뽁 소리에 귀를 기울여 봐요.'},
   3:{name:'말랑 찹쌀떡', sense:'미각', hint:'떡을 잡아당겼다가 놓아요. 천천히 늘이면 더 쫀득해요. 8번.'},
-  4:{name:'왁뿌볼', sense:'오감', hint:'탕후루처럼 단단한 겉을 톡톡 두드려 와장창 깨고, 말랑한 속을 꾹꾹 눌러요.'}
+  4:{name:'왁뿌볼', sense:'오감', hint:'탕후루처럼 단단한 겉을 톡톡 두드려 와장창 깨고, 속에 든 젤리를 눌러요.'}
 };
 let actx=null;
 function blip(f,d){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); const o=actx.createOscillator(), g=actx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.15,actx.currentTime); g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+(d||.12)); o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+(d||.12)); }catch(e){} }
@@ -1787,14 +1787,14 @@ function waxToy(st,cnt,finish){
       for(let i=0;i<16;i++){ const s=document.createElement('i'); s.className='wxsh'; const a=Math.PI*2*i/16+Math.random()*.4, r=90+Math.random()*90; s.style.setProperty('--dx',Math.cos(a)*r+'px'); s.style.setProperty('--dy',(Math.sin(a)*r+40)+'px'); s.style.setProperty('--rot',(Math.random()*720-360)+'deg');
         s.style.background=i%3?c[0]:c[1]; s.style.width=(12+Math.random()*18)+'px'; s.style.height=(10+Math.random()*16)+'px'; s.style.clipPath=`polygon(${Math.random()*30}% 0,100% ${Math.random()*40}%,${60+Math.random()*40}% 100%,0 ${50+Math.random()*50}%)`; box.appendChild(s); setTimeout(()=>s.remove(),900); }
       core.classList.add('on'); core.animate([{transform:'scale(.7)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:420,easing:'cubic-bezier(.2,1.6,.4,1)'});
-      cnt.textContent='와장창! 이제 말랑한 속을 꾹꾹 눌러요 0 / 5'; };
+      cnt.textContent='와장창! 이제 속에 든 젤리를 눌러요 0 / 5'; };
     box.addEventListener('pointerdown',e=>{ e.preventDefault();
       if(!broke){ const r=shell.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*200, y=(e.clientY-r.top)/r.height*200; if(Math.hypot(x-100,y-100)>94) return;
         hits++; crack(x,y); crunch(.35+hits*.06,.07); buzz(12+hits*3); box.animate([{transform:`translate(${(Math.random()-.5)*8}px,${(Math.random()-.5)*8}px)`},{transform:'none'}],{duration:120});
         if(hits>=NEED) shatter(); else cnt.textContent=['톡!','금이 갔다!','쩍…','거의 깨졌다!','조금만 더!','한 번만 더!','…'][Math.min(hits-1,6)];
       } else if(sq<5){ core.style.transform='scale(1.18,.78)'; buzz(15); blip(260+sq*40,.1); } });
     const rel=()=>{ if(!broke||!core.style.transform||sq>=5) return; core.style.transform=''; core.animate([{transform:'scale(.9,1.12)'},{transform:'scale(1)'}],{duration:380,easing:'cubic-bezier(.2,1.6,.4,1)'}); sq++;
-      if(sq>=5){ round++; finish(); cnt.textContent=`왁뿌볼 ${round}개 깼다!`; st.querySelector('#wxa').hidden=false; } else cnt.textContent=`말랑한 속을 꾹꾹 눌러요 ${sq} / 5`; };
+      if(sq>=5){ round++; finish(); cnt.textContent=`왁뿌볼 ${round}개 깼다!`; st.querySelector('#wxa').hidden=false; } else cnt.textContent=`속에 든 젤리를 눌러요 ${sq} / 5`; };
     ['pointerup','pointercancel','pointerleave'].forEach(t=>box.addEventListener(t,rel));
     st.querySelector('#wxa').onclick=start; };
   start();

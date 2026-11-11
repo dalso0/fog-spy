@@ -153,8 +153,13 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .mochi{position:relative;width:140px;height:110px;border-radius:50% 50% 46% 46%;background:#fffdf7;border:var(--bw) solid var(--ink);box-shadow:inset 0 -10px 0 #f1ead8;cursor:grab}
 .mochi i{position:absolute;top:44px;width:7px;height:7px;border-radius:2px;background:var(--ink)}
 .mochi i:first-child{left:46px}.mochi i:last-child{right:46px}
-.wax{position:relative;width:170px;height:170px;border-radius:50%;border:var(--bw) solid var(--ink);background:radial-gradient(circle at 35% 30%,#fff8,#c3c8cf 70%);overflow:hidden;cursor:pointer}
-.wax i{position:absolute;width:26px;height:26px;margin:-13px;border-radius:50%;box-shadow:inset 2px 3px 4px rgba(0,0,0,.25);opacity:.85}
+.wxb{position:relative;width:180px;height:180px;cursor:pointer;touch-action:none}
+.wxshell{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 6px 0 rgba(28,33,48,.18))}
+.wxcore{position:absolute;inset:22px;border-radius:50%;border:var(--bw) solid var(--ink);opacity:0;transition:transform .08s}
+.wxcore.on{opacity:1}
+.wxsh{position:absolute;left:50%;top:50%;border:1.5px solid var(--ink);pointer-events:none;animation:wxfly .85s cubic-bezier(.2,.7,.4,1) forwards}
+@keyframes wxfly{to{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0}}
+.wxagain{position:absolute;bottom:8px;right:8px;font-size:13px;padding:6px 10px}
 .wordc{background:#fff;border:var(--bw) solid var(--ink);border-radius:12px;padding:14px;text-align:center;box-shadow:0 4px 0 var(--ink)}
 .wordc b{display:block;font-family:var(--f-display);font-weight:400;font-size:40px;color:var(--sky-d);margin:4px 0}
 .wordc span{font-size:14px;font-weight:700}
@@ -1513,7 +1518,7 @@ function petLine(P,st){
 const FOODS=[{k:'meal',ico:'🍚',name:'밥',full:35,mood:5,line:['냠냠, 든든해!','밥이 최고야.','오물오물… 맛있다!']},
   {k:'treat',ico:'🍪',name:'간식',full:12,mood:18,line:['쿠키다! 신난다!','달콤해~','간식 최고!']},
   {k:'fruit',ico:'🍓',name:'딸기',full:18,mood:10,line:['새콤달콤!','딸기 좋아!','몸이 분홍빛이 될 것 같아.']}];
-const TOYS=[[1,'🟣','젤리볼'],[2,'🫧','뽁뽁이'],[3,'🍡','찹쌀떡'],[4,'🌈','왁스볼']];
+const TOYS=[[1,'🟣','젤리볼'],[2,'🫧','뽁뽁이'],[3,'🍡','찹쌀떡'],[4,'🍬','왁뿌볼']];
 
 function openPet(){
   petDecay(); const P=pet();
@@ -1538,7 +1543,7 @@ function openPet(){
         acts.querySelector('#aHatch').onclick=hatch; return; }
       acts.innerHTML= P.sleep ? `<button class="bk yellow" id="aWake" style="grid-column:1/-1">불 켜기 (깨우기)<small>기운 ${Math.round(P.energy)}</small></button>` : `
         <button class="bk yellow" id="aFeed">🍚 밥 주기<small>밥 · 간식 · 딸기</small></button>
-        <button class="bk green" id="aPlay">🧸 놀아 주기<small>말랑이 4종</small></button>
+        <button class="bk green" id="aPlay">🧸 놀아 주기<small>말랑이 · 왁뿌볼</small></button>
         <button class="bk sky" id="aClean">🛁 씻기기<small>${P.poop?'똥 '+P.poop+'개':'깨끗해요'}</small></button>
         <button class="bk" id="aSleep">💡 불 끄기<small>재우기</small></button>`;
       if(P.sleep){ acts.querySelector('#aWake').onclick=()=>{ P.sleep=false; save(); draw(P.energy>70?'잘 잤다! 좋은 아침~':'으음… 아직 졸린데…'); refreshPetBtn(); }; return; }
@@ -1577,7 +1582,7 @@ const SQUISH={
   1:{name:'색 젤리볼', sense:'시각', hint:'꾹 누르고 있으면 젤리가 눌리고, 손을 떼면 색이 퍼져요. 10번 꾹.'},
   2:{name:'뽁뽁이', sense:'청각', hint:'하나씩 눌러 터뜨려요. 뽁 소리에 귀를 기울여 봐요.'},
   3:{name:'말랑 찹쌀떡', sense:'미각', hint:'떡을 잡아당겼다가 놓아요. 천천히 늘이면 더 쫀득해요. 8번.'},
-  4:{name:'무지개 왁스볼', sense:'오감', hint:'여러 번 꾹꾹 눌러 왁스볼을 따뜻하게 만들어요. 누를 때마다 색이 한 겹씩 올라와요.'}
+  4:{name:'왁뿌볼', sense:'오감', hint:'탕후루처럼 단단한 겉을 톡톡 두드려 와장창 깨고, 말랑한 속을 꾹꾹 눌러요.'}
 };
 let actx=null;
 function blip(f,d){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); const o=actx.createOscillator(), g=actx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.15,actx.currentTime); g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+(d||.12)); o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+(d||.12)); }catch(e){} }
@@ -1606,14 +1611,39 @@ function openSquish(host,onDone,toy){
     const up=()=>{ if(!drag) return; drag=false; mc.style.transform=''; mc.animate([{transform:'scale(.85,1.15)'},{transform:'scale(1.06,.94)'},{transform:'scale(1)'}],{duration:600,easing:'ease-out'});
       if(maxd>40){ k++; blip(200+maxd,.2); buzz([15,30,15]); cnt.textContent=`쫀득 ${Math.min(k,8)} / 8`; if(k>=8) finish(); } else cnt.textContent='조금 더 길게 늘여 봐요'; };
     mc.addEventListener('pointerup',up); mc.addEventListener('pointercancel',up); cnt.textContent='쫀득 0 / 8';
-  } else { // 왁스볼: 누른 자리에 자국 + 색 층
-    const L=['#c3c8cf','#ff9a8a','#ffd25a','#8fe08a','#8ac8ff','#c9a7ff']; let k=0;
-    st.innerHTML='<div class="wax" id="wx"></div>'; const wx=st.querySelector('#wx');
-    wx.addEventListener('pointerdown',e=>{ e.preventDefault(); const r=wx.getBoundingClientRect(); const d=document.createElement('i'); d.style.left=(e.clientX-r.left)+'px'; d.style.top=(e.clientY-r.top)+'px'; d.style.background=L[1+Math.floor(k/5)%5]; wx.appendChild(d);
-      k++; const layer=Math.min(5,1+Math.floor(k/5)); wx.style.background=`radial-gradient(circle at 35% 30%,#fff8,${L[layer]} 70%)`; wx.animate([{transform:'scale(.94)'},{transform:'scale(1)'}],{duration:220}); blip(180+k*12,.1); buzz(18);
-      cnt.textContent=`꾹꾹 ${Math.min(k,25)} / 25`; if(k>=25) finish(); });
-    cnt.textContent='꾹꾹 0 / 25';
-  }
+  } else waxToy(st,cnt,()=>{ buzz([20,40,20]); if(!done){ done=true; onDone&&onDone(); } });
+}
+function crunch(v,d){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); const n=Math.floor(actx.sampleRate*(d||.09)), buf=actx.createBuffer(1,n,actx.sampleRate), a=buf.getChannelData(0);
+  for(let i=0;i<n;i++) a[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.5)*(Math.random()<.35?1:.25);
+  const s=actx.createBufferSource(); s.buffer=buf; const f=actx.createBiquadFilter(); f.type='highpass'; f.frequency.value=1800; const g=actx.createGain(); g.gain.value=v||.5; s.connect(f); f.connect(g); g.connect(actx.destination); s.start(); }catch(e){} }
+function waxToy(st,cnt,finish){
+  const COL=[['#ff7f96','#ffd0d9'],['#ffc23d','#ffe9a8'],['#5fcf7a','#c9f2d2'],['#58b4ff','#cfe8ff'],['#b08cff','#e3d6ff'],['#ff9d5c','#ffdcc2']];
+  let round=0;
+  const start=()=>{ const c=COL[(round+Math.floor(Math.random()*COL.length))%COL.length]; const NEED=5+Math.floor(Math.random()*3); let hits=0, broke=false, sq=0;
+    st.innerHTML=`<div class="wxb" id="wxb"><div class="wxcore" style="background:radial-gradient(circle at 35% 30%,#fff,${c[1]} 35%,${c[0]})"></div>
+      <svg class="wxshell" viewBox="0 0 200 200"><defs><radialGradient id="wxg" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="${c[1]}"/><stop offset="1" stop-color="${c[0]}"/></radialGradient></defs>
+        <circle cx="100" cy="100" r="92" fill="url(#wxg)" stroke="#1c2130" stroke-width="5"/><ellipse cx="68" cy="58" rx="26" ry="14" fill="#fff" opacity=".75" transform="rotate(-30 68 58)"/><circle cx="128" cy="150" r="7" fill="#fff" opacity=".35"/><g id="wxcr" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></g><g id="wxcr2" fill="none" stroke="#1c2130" stroke-width="1" opacity=".5" stroke-linecap="round"></g></svg></div>
+      <button class="bk yellow wxagain" id="wxa" hidden>하나 더 깨기</button>`;
+    const box=st.querySelector('#wxb'), shell=st.querySelector('.wxshell'), core=st.querySelector('.wxcore'), cr=st.querySelector('#wxcr'), cr2=st.querySelector('#wxcr2');
+    cnt.textContent='단단한 겉을 톡톡 두드려 깨요';
+    const crack=(x,y)=>{ const k=3+Math.floor(Math.random()*3); for(let i=0;i<k;i++){ let a=Math.random()*Math.PI*2, px=x, py=y, d=`M${x.toFixed(1)} ${y.toFixed(1)}`; const seg=2+Math.floor(Math.random()*3)+hits;
+        for(let j=0;j<seg;j++){ a+=(Math.random()-.5)*1.1; const L=10+Math.random()*16; px+=Math.cos(a)*L; py+=Math.sin(a)*L; if(Math.hypot(px-100,py-100)>88) break; d+=`L${px.toFixed(1)} ${py.toFixed(1)}`; }
+        const p=document.createElementNS('http://www.w3.org/2000/svg','path'); p.setAttribute('d',d); cr.appendChild(p); const q=p.cloneNode(); q.setAttribute('transform','translate(1 1.5)'); cr2.appendChild(q); } };
+    const shatter=()=>{ broke=true; shell.style.display='none'; crunch(.9,.28); blip(140,.18); buzz([40,30,60]);
+      for(let i=0;i<16;i++){ const s=document.createElement('i'); s.className='wxsh'; const a=Math.PI*2*i/16+Math.random()*.4, r=90+Math.random()*90; s.style.setProperty('--dx',Math.cos(a)*r+'px'); s.style.setProperty('--dy',(Math.sin(a)*r+40)+'px'); s.style.setProperty('--rot',(Math.random()*720-360)+'deg');
+        s.style.background=i%3?c[0]:c[1]; s.style.width=(12+Math.random()*18)+'px'; s.style.height=(10+Math.random()*16)+'px'; s.style.clipPath=`polygon(${Math.random()*30}% 0,100% ${Math.random()*40}%,${60+Math.random()*40}% 100%,0 ${50+Math.random()*50}%)`; box.appendChild(s); setTimeout(()=>s.remove(),900); }
+      core.classList.add('on'); core.animate([{transform:'scale(.7)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:420,easing:'cubic-bezier(.2,1.6,.4,1)'});
+      cnt.textContent='와장창! 이제 말랑한 속을 꾹꾹 눌러요 0 / 5'; };
+    box.addEventListener('pointerdown',e=>{ e.preventDefault();
+      if(!broke){ const r=shell.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*200, y=(e.clientY-r.top)/r.height*200; if(Math.hypot(x-100,y-100)>94) return;
+        hits++; crack(x,y); crunch(.35+hits*.06,.07); buzz(12+hits*3); box.animate([{transform:`translate(${(Math.random()-.5)*8}px,${(Math.random()-.5)*8}px)`},{transform:'none'}],{duration:120});
+        if(hits>=NEED) shatter(); else cnt.textContent=['톡!','금이 갔다!','쩍…','거의 깨졌다!','조금만 더!','한 번만 더!','…'][Math.min(hits-1,6)];
+      } else if(sq<5){ core.style.transform='scale(1.18,.78)'; buzz(15); blip(260+sq*40,.1); } });
+    const rel=()=>{ if(!broke||!core.style.transform||sq>=5) return; core.style.transform=''; core.animate([{transform:'scale(.9,1.12)'},{transform:'scale(1)'}],{duration:380,easing:'cubic-bezier(.2,1.6,.4,1)'}); sq++;
+      if(sq>=5){ round++; finish(); cnt.textContent=`왁뿌볼 ${round}개 깼다!`; st.querySelector('#wxa').hidden=false; } else cnt.textContent=`말랑한 속을 꾹꾹 눌러요 ${sq} / 5`; };
+    ['pointerup','pointercancel','pointerleave'].forEach(t=>box.addEventListener(t,rel));
+    st.querySelector('#wxa').onclick=start; };
+  start();
 }
 
 $('#hudPet').onclick=openPet;

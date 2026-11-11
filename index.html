@@ -1468,7 +1468,7 @@ function openSky(){
 
 /* ---------- 전화 ---------- */
 function openPhone(){
-  const L=(cls,title,num,tel,desc)=>`<div class="line ${cls}"><h3>${title}</h3><div class="num">${num}</div><div class="acts">${tel?`<a class="bk green" href="tel:${tel}">전화</a>`:''}<button class="bk" data-copy="${num}">복사</button></div><p>${desc}</p></div>`;
+  const L=(cls,title,num,tel,desc)=>`<div class="line ${cls}"><h3>${title}</h3><div class="num">${num}</div><div class="acts">${tel?`<a class="bk green" href="tel:${tel}">전화</a><button class="bk" data-copy="${num}">번호 복사</button>`:''}</div><p>${desc}</p></div>`;
   sheet('본부 전화','혼자 버티지 않아도 돼요',`
     <div class="npc"><div class="portrait" style="background:#fff5c2">${ICONS.chick}</div><div class="bubble"><span class="who">병아리 요원</span>요원도 가끔은 지원 요청을 해. 그게 진짜 프로야. 비밀은 지켜져.</div></div>
     ${L('hq','Wee클래스 (비밀 본부)','3층','', '쉬는 시간, 점심시간에 그냥 들러도 돼요. 전문상담 선생님이 기다려요.')}
@@ -1477,7 +1477,7 @@ function openPhone(){
     ${L('','학교폭력 신고·상담','117','117','24시간. 문자 #0117도 가능.')}
     <p class="note">지금 위험한 상황이면 112(경찰) 또는 119로 바로 연락하세요.</p>`, b=>{
     b.querySelectorAll('[data-copy]').forEach(x=>x.onclick=()=>{ const v=x.dataset.copy;
-      (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>{x.textContent='복사됨';}).catch(()=>{ const r=document.createRange(); r.selectNodeContents(x.closest('.line').querySelector('.num')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); x.textContent='선택됨'; }); });
+      (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>{x.textContent='번호 복사됨';}).catch(()=>{ const r=document.createRange(); r.selectNodeContents(x.closest('.line').querySelector('.num')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); x.textContent='선택됨'; }); });
   });
 }
 

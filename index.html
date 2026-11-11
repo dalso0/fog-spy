@@ -1583,18 +1583,18 @@ function petSVG(P,st){
 function mix2(a,b,t){ const h=x=>[1,3,5].map(i=>parseInt(x.substr(i,2),16)); const A=h(a),B=h(b); return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join(''); }
 function petLine(P,st){
   if(st===0) return '…회색 알이 꼼지락거린다. 톡톡 두드리면 깨어날 것 같다.';
-  if(P.sleep) return '(쿨쿨… 몽글이가 자고 있어요.)';
-  if(P.poop>0) return '으앗… 똥 쌌어. 치워 줄래?';
-  if(P.full<40) return '꼬르륵… 배고파!';
-  if(P.energy<30) return '하암… 졸려. 불 꺼 줄래?';
-  if(P.mood<40) return '심심해… 같이 놀자!';
-  const L=['몽글몽글~ 오늘 기분 최고!','오늘 급식 뭐였어?','배부르고 졸리고 행복해.','나 조금 컸지? 그치?','네가 오니까 몸이 조금 파래졌어!','나 송곳니 좀 멋있지 않냐.'];
+  if(P.sleep) return '쿨쿨… 몽글이가 자고 있다.';
+  if(P.poop>0) return '앗, 똥을 쌌다. 치워 주자.';
+  if(P.full<40) return '꼬르륵… 배에서 소리가 난다.';
+  if(P.energy<30) return '하암… 하품을 한다. 재울 시간이다.';
+  if(P.mood<40) return '심심한지 말랑이를 굴리고 있다.';
+  const L=['몽글이가 제자리에서 빙글 돈다.','킁킁, 급식 냄새를 맡는 중이다.','배가 불러서 느긋하게 앉아 있다.','어제보다 조금 큰 것 같다.','털 색이 조금 더 파래졌다.','송곳니를 드러내고 씩 웃는다.'];
   return L[(new Date().getMinutes()+petDays())%L.length];
 }
 
-const FOODS=[{k:'meal',ico:'🍚',name:'밥',full:35,mood:5,line:['냠냠, 든든해!','밥이 최고야.','오물오물… 맛있다!']},
-  {k:'treat',ico:'🍪',name:'간식',full:12,mood:18,line:['쿠키다! 신난다!','달콤해~','간식 최고!']},
-  {k:'fruit',ico:'🍓',name:'딸기',full:18,mood:10,line:['새콤달콤!','딸기 좋아!','몸이 분홍빛이 될 것 같아.']}];
+const FOODS=[{k:'meal',ico:'🍚',name:'밥',full:35,mood:5,line:['한 그릇 뚝딱 비웠다.','밥풀 하나 안 남겼다.','오물오물 맛있게 먹었다.']},
+  {k:'treat',ico:'🍪',name:'간식',full:12,mood:18,line:['쿠키를 보고 귀가 번쩍 섰다.','눈이 번쩍 뜨였다.','꼬리를 붕붕 흔든다.']},
+  {k:'fruit',ico:'🍓',name:'딸기',full:18,mood:10,line:['새콤해서 귀가 쫑긋 섰다.','딸기를 한입에 넣었다.','입가에 딸기 물이 들었다.']}];
 const TOYS=[[1,'🟣','젤리볼'],[2,'🫧','뽁뽁이'],[3,'🍡','찹쌀떡'],[4,'🍬','왁뿌볼']];
 
 function openPet(){
@@ -1623,22 +1623,22 @@ function openPet(){
         <button class="bk green" id="aPlay">🧸 놀아 주기<small>말랑이 · 왁뿌볼</small></button>
         <button class="bk sky" id="aClean">🛁 씻기기<small>${P.poop?'똥 '+P.poop+'개':'깨끗해요'}</small></button>
         <button class="bk" id="aSleep">💡 불 끄기<small>재우기</small></button>`;
-      if(P.sleep){ acts.querySelector('#aWake').onclick=()=>{ P.sleep=false; save(); draw(P.energy>70?'잘 잤다! 좋은 아침~':'으음… 아직 졸린데…'); refreshPetBtn(); }; return; }
+      if(P.sleep){ acts.querySelector('#aWake').onclick=()=>{ P.sleep=false; save(); draw(P.energy>70?'기지개를 쭉 켠다. 잘 잤다!':'아직 졸린지 눈을 비빈다.'); refreshPetBtn(); }; return; }
       acts.querySelector('#aFeed').onclick=()=>{ play.innerHTML=`<div class="card"><h3>뭘 줄까?</h3></div><div class="foods">${FOODS.map((f,i)=>`<button class="bk" data-i="${i}"><span>${f.ico}</span>${f.name}</button>`).join('')}</div>`;
         play.querySelectorAll('.foods .bk').forEach(x=>x.onclick=()=>feed(FOODS[x.dataset.i])); play.scrollIntoView({behavior:'smooth',block:'nearest'}); };
-      acts.querySelector('#aPlay').onclick=()=>{ if(P.energy<20){ draw('너무 졸려서 못 놀겠어… 먼저 재워 줘.'); return; }
+      acts.querySelector('#aPlay').onclick=()=>{ if(P.energy<20){ draw('너무 졸려서 못 논다. 먼저 재워야겠다.'); return; }
         play.innerHTML=`<div class="card"><h3>뭘 갖고 놀까?</h3></div><div class="foods">${TOYS.map(t=>`<button class="bk" data-n="${t[0]}"><span>${t[1]}</span>${t[2]}</button>`).join('')}</div>`;
-        play.querySelectorAll('.foods .bk').forEach(x=>x.onclick=()=>{ openSquish(play,()=>{ P.mood=clamp(P.mood+25); P.energy=clamp(P.energy-10); P.full=clamp(P.full-5); petCare(); save(); draw(['오, 꽤 하는데?','말랑말랑~ 기분 최고!','한 판 더 할래?'][Math.floor(Math.random()*3)]); refreshPetBtn(); }, +x.dataset.n); });
+        play.querySelectorAll('.foods .bk').forEach(x=>x.onclick=()=>{ openSquish(play,()=>{ P.mood=clamp(P.mood+25); P.energy=clamp(P.energy-10); P.full=clamp(P.full-5); petCare(); save(); draw(['몽글이가 말랑이를 물고 돌아다닌다.','몽글이가 신나서 폴짝 뛴다.','말랑이를 다시 물고 왔다.'][Math.floor(Math.random()*3)]); refreshPetBtn(); }, +x.dataset.n); });
         play.scrollIntoView({behavior:'smooth',block:'nearest'}); };
       acts.querySelector('#aClean').onclick=clean;
-      acts.querySelector('#aSleep').onclick=()=>{ play.innerHTML=''; P.sleep=true; petCare(); save(); draw('잘 자, 몽글이… (쿨쿨)'); refreshPetBtn(); };
+      acts.querySelector('#aSleep').onclick=()=>{ play.innerHTML=''; P.sleep=true; petCare(); save(); draw('불을 껐다. 몽글이가 잠들었다.'); refreshPetBtn(); };
     };
     let busy=false;
     function feed(f){ play.innerHTML=''; if(busy) return;
-      if(P.full>=95){ draw('배불러서 더는 못 먹겠어!'); return; }
-      if(f.k==='treat'){ const td=tkey(); if(P.treat.d!==td) P.treat={d:td,n:0}; if(P.treat.n>=3){ draw('간식은 오늘 그만~ 밥을 먹어야 해.'); return; } P.treat.n++; }
+      if(P.full>=95){ draw('배가 빵빵하다. 더는 못 먹는다.'); return; }
+      if(f.k==='treat'){ const td=tkey(); if(P.treat.d!==td) P.treat={d:td,n:0}; if(P.treat.n>=3){ draw('간식은 하루 3개까지. 몽글이가 밥그릇을 쳐다본다.'); return; } P.treat.n++; }
       busy=true; b.querySelector('#pActs').querySelectorAll('button').forEach(x=>x.disabled=true);
-      const box=b.querySelector('#pBox'); box.classList.remove('boing'); box.classList.add('eating'); b.querySelector('#pSay').textContent='아~';
+      const box=b.querySelector('#pBox'); box.classList.remove('boing'); box.classList.add('eating'); b.querySelector('#pSay').textContent='입을 쩍 벌렸다.';
       const food=document.createElement('div'); food.className='pfood'; food.textContent=f.ico; box.appendChild(food); blip(700,.06);
       const crumbs=()=>{ for(let i=0;i<5;i++){ const c=document.createElement('i'); c.className='pcrumb'; c.style.setProperty('--dx',(Math.random()*70-35)+'px'); c.style.setProperty('--dy',(10+Math.random()*30)+'px'); box.appendChild(c); setTimeout(()=>c.remove(),520); } };
       let bite=0; const chomp=()=>{ if(!box.isConnected) return; bite++; box.classList.add('chomp'); food.className='pfood b'+bite; crunch(.5,.08); buzz(14); crumbs(); b.querySelector('#pSay').textContent=['앙!','냠!','꿀꺽!'][bite-1];
@@ -1652,15 +1652,15 @@ function openPet(){
           },950);
         },230); };
       setTimeout(chomp,650); }
-    function clean(){ play.innerHTML=''; const had=P.poop; P.poop=0; P.poopH=0; P.clean=100; if(had) P.mood=clamp(P.mood+10); petCare(); save(); blip(800,.1); draw(had?'개운해! 고마워~':'뽀득뽀득~ 원래 깨끗했지만 좋아!'); refreshPetBtn(); }
+    function clean(){ play.innerHTML=''; const had=P.poop; P.poop=0; P.poopH=0; P.clean=100; if(had) P.mood=clamp(P.mood+10); petCare(); save(); blip(800,.1); draw(had?'뽀득뽀득! 깨끗해졌다.':'뽀득뽀득! 원래도 깨끗했다.'); refreshPetBtn(); }
     function hatch(){ P.taps=(P.taps||0)+1; const box=b.querySelector('#pBox'); box.classList.remove('boing'); void box.offsetWidth; box.classList.add('boing'); buzz(15); blip(300+P.taps*40,.08);
-      if(P.taps>=8){ P.born=Date.now(); P.last=Date.now(); petCare(); save(); draw('…몽글! 안녕? 나 몽글이야! 잘 부탁해!'); refreshPetBtn(); } else { save(); draw(['톡…','톡톡… 꿈틀!','금이 갔다!','안에서 뭔가 움직인다…','거의 다 됐어!'][Math.min(4,Math.floor(P.taps/2))]); } }
+      if(P.taps>=8){ P.born=Date.now(); P.last=Date.now(); petCare(); save(); draw('몽! 알에서 몽글이가 태어났다!'); refreshPetBtn(); } else { save(); draw(['톡…','톡톡… 꿈틀!','금이 갔다!','안에서 뭔가 움직인다…','거의 다 됐어!'][Math.min(4,Math.floor(P.taps/2))]); } }
     const box=b.querySelector('#pBox');
     const patIt=()=>{ if(petStage()===0){ hatch(); return; } const td=tkey(); if(P.pat.d!==td) P.pat={d:td,n:0};
       box.classList.remove('boing'); void box.offsetWidth; box.classList.add('boing'); buzz(15);
       const hh=document.createElement('i'); hh.textContent='♥'; hh.style.left=(35+Math.random()*30)+'%'; b.querySelector('#pHearts').appendChild(hh); setTimeout(()=>hh.remove(),900);
-      if(P.sleep){ b.querySelector('#pSay').textContent='(쿨… 음냐…)'; return; }
-      if(P.pat.n<15){ P.pat.n++; P.mood=clamp(P.mood+3); if(P.pat.n===1) petCare(); save(); } b.querySelector('#pSay').textContent=['몽글~','폭신폭신','뿅!','충전 중…'][P.pat.n%4]; };
+      if(P.sleep){ b.querySelector('#pSay').textContent='쿨쿨… 깊이 자고 있다.'; return; }
+      if(P.pat.n<15){ P.pat.n++; P.mood=clamp(P.mood+3); if(P.pat.n===1) petCare(); save(); } b.querySelector('#pSay').textContent=['몽!','귀를 쫑긋한다.','몽몽!','꼬리를 흔든다.'][P.pat.n%4]; };
     b.querySelector('#pStage').addEventListener('pointermove',e=>{ const r=box.getBoundingClientRect(); const dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height*.52), d=Math.hypot(dx,dy)||1, k=Math.min(4,d/20); box.style.setProperty('--ex',(dx/d*k).toFixed(1)+'px'); box.style.setProperty('--ey',(dy/d*k).toFixed(1)+'px'); });
     box.onclick=()=>{ if(!busy) patIt(); }; box.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); patIt(); } };
     draw();

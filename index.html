@@ -126,7 +126,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .petbtn b{position:absolute;right:-6px;top:-6px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;display:grid;place-items:center;border:2px solid #fff}
 .petstage{position:relative;height:230px;border:var(--bw) solid var(--ink);border-radius:14px;display:grid;place-items:center;overflow:hidden}
 .petbox{width:150px;cursor:pointer;animation:bob 2.6s ease-in-out infinite;transform-origin:50% 90%}
-.petbox.s0{width:110px}.petbox.s1{width:125px}.petbox.s2{width:150px}.petbox.s3{width:170px}.petbox.s4{width:185px}
+.petbox.s0{width:150px}.petbox.s1{width:125px}.petbox.s2{width:150px}.petbox.s3{width:170px}.petbox.s4{width:185px}
 .petbox.boing{animation:boing .45s cubic-bezier(.2,1.6,.4,1)}
 @keyframes boing{30%{transform:scale(1.15,.85)}60%{transform:scale(.95,1.08)}}
 .petsvg{width:100%;height:auto;display:block;overflow:visible}
@@ -141,6 +141,20 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 @keyframes ckflap2{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-22deg)}90%{transform:rotate(6deg)}95%{transform:rotate(-18deg)}}
 .cksvg .ck-glint{animation:ckglint 4s ease-in-out infinite}
 @keyframes ckglint{0%,85%,100%{opacity:.8}92%{opacity:.1}}
+.petbox.eggshake{animation:eggshake .36s ease-in-out}
+@keyframes eggshake{20%{transform:rotate(-9deg)}45%{transform:rotate(8deg)}70%{transform:rotate(-5deg)}90%{transform:rotate(3deg)}}
+.petbox.egghard{animation:egghard .1s linear infinite}
+@keyframes egghard{0%{transform:translate(-3px,0) rotate(-5deg)}50%{transform:translate(3px,-2px) rotate(5deg)}100%{transform:translate(-3px,0) rotate(-5deg)}}
+.petbox.eggopen{animation:none}
+.eggsvg .egg-top,.eggsvg .egg-bot{transition:transform .7s cubic-bezier(.2,.8,.3,1),opacity .5s .9s}
+.petbox.eggopen .egg-top{transform:translate(-26px,-78px) rotate(-70deg);opacity:0}
+.petbox.eggopen .egg-bot{transform:translateY(10px) scale(1.04,.96);opacity:0}
+.petbox.eggopen .egg-cr{display:none}
+.petnew{position:absolute;inset:-8% -8% 4%;animation:petnew .8s cubic-bezier(.2,1.5,.4,1) both;transform-origin:50% 100%}
+@keyframes petnew{0%{transform:translateY(22%) scale(.2);opacity:0}30%{opacity:1}60%{transform:translateY(-14%) scale(1.08,.94)}100%{transform:none}}
+.eggchip{position:absolute;left:50%;top:52%;background:#d5d9df;border:1.5px solid #1a1917;pointer-events:none;animation:wxfly .85s cubic-bezier(.2,.7,.4,1) forwards;z-index:3}
+.eggflash{position:absolute;inset:0;background:radial-gradient(circle,#fff 0,#fff8 35%,transparent 70%);pointer-events:none;animation:eggflash .45s ease-out forwards;z-index:4}
+@keyframes eggflash{from{opacity:1;transform:scale(.4)}to{opacity:0;transform:scale(1.6)}}
 .petsvg *{transform-box:fill-box}
 .petsvg .p-all{transform-origin:50% 100%;animation:pbreath 3.2s ease-in-out infinite}
 .petsvg.zz .p-all{animation-duration:5s}
@@ -1553,7 +1567,7 @@ document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>({hq:()=>walkT
    - 죽거나 아프지 않음. 오래 안 오면 안개가 짙어지고 졸릴 뿐.
    - 저장: 이 휴대폰에만 (S.pet)
    ========================================================= */
-const PET_DEF={born:0,taps:0,full:70,mood:70,energy:70,clean:100,poop:0,poopH:0,sleep:false,last:0,care:{},pat:{d:'',n:0},treat:{d:'',n:0}};
+const PET_DEF={born:0,taps:0,cracks:[],full:70,mood:70,energy:70,clean:100,poop:0,poopH:0,sleep:false,last:0,care:{},pat:{d:'',n:0},treat:{d:'',n:0}};
 function pet(){ if(!S.pet||S.pet.clean===undefined) S.pet={...JSON.parse(JSON.stringify(PET_DEF)),born:S.pet&&S.pet.born||0}; return S.pet; }
 const tkey=()=>String(today());
 const clamp=v=>Math.max(10,Math.min(100,v));
@@ -1577,8 +1591,13 @@ function petSVG(P,st){
   const avg=(P.full+P.mood+P.energy+P.clean)/400;
   const fur = mix2('#b9bec6', '#5fb4e8', Math.min(1,avg*1.15)), dark=mix2(fur,'#1a1917',.22), K='#1a1917';
   const sleepy=P.sleep||P.energy<30, sad=!P.sleep&&(P.mood<35||P.full<30);
-  if(st===0){ const c=P.taps||0;
-    return `<svg viewBox="0 0 120 120" class="petsvg"><ellipse cx="60" cy="66" rx="34" ry="42" fill="#c3c8cf" stroke="#1a1917" stroke-width="4"/><path d="M38 60q10-8 18 0t18 0t12-4" stroke="#9aa0a8" stroke-width="4" fill="none"/><ellipse cx="48" cy="44" rx="7" ry="10" fill="#e3e6ea"/>${c>=3?'<path d="M60 26l-5 10 7 5-4 9" stroke="#1a1917" stroke-width="3" fill="none" stroke-linejoin="round"/>':''}${c>=6?'<path d="M80 80l-8 4 3 7-6 5" stroke="#1a1917" stroke-width="3" fill="none" stroke-linejoin="round"/>':''}</svg>`; }
+  if(st===0){ const c=P.taps||0, ZZ='26,66 34,58 42,68 50,57 60,67 70,56 78,67 86,58 94,66';
+    const egg='<path d="M60 20c20 0 34 27 34 49s-14 39-34 39s-34-17-34-39s14-49 34-49z" fill="url(#eggg)" stroke="#1a1917" stroke-width="4"/><ellipse cx="47" cy="44" rx="7" ry="11" fill="#fff" opacity=".55" transform="rotate(-18 47 44)"/><circle cx="74" cy="48" r="3" fill="#9aa0a8" opacity=".5"/><circle cx="66" cy="90" r="4" fill="#9aa0a8" opacity=".45"/><circle cx="42" cy="82" r="2.5" fill="#9aa0a8" opacity=".5"/><circle cx="80" cy="76" r="2" fill="#9aa0a8" opacity=".5"/>';
+    return `<svg viewBox="0 0 120 120" class="petsvg eggsvg"><defs><radialGradient id="eggg" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="#f1f3f6"/><stop offset=".6" stop-color="#c9ced6"/><stop offset="1" stop-color="#a4abb6"/></radialGradient>
+      <clipPath id="eggT"><polygon points="0,0 120,0 120,66 ${ZZ.split(' ').reverse().join(' ')} 0,66"/></clipPath><clipPath id="eggB"><polygon points="0,120 120,120 120,66 ${ZZ.split(' ').reverse().join(' ')} 0,66"/></clipPath></defs>
+      <ellipse cx="60" cy="110" rx="30" ry="5" fill="#1a1917" opacity=".14"/>
+      <g class="egg-all"><g class="egg-bot" clip-path="url(#eggB)">${egg}</g><g class="egg-top" clip-path="url(#eggT)">${egg}</g>
+      <g class="egg-cr" fill="none" stroke="#1a1917" stroke-linecap="round" stroke-linejoin="round">${c?`<polyline points="${ZZ}" pathLength="100" stroke-dasharray="${Math.min(100,c*13)} 100" stroke-width="2.6"/>`:''}${(P.cracks||[]).map(d=>`<path d="${d}" stroke-width="1.8"/>`).join('')}</g></g></svg>`; }
   const tuft = st===4 ? '#ffd25a' : dark;
   const eye=(x)=>`<g class="eye"><ellipse cx="${x}" cy="85" rx="6.5" ry="8" fill="${K}"/><circle cx="${x-2}" cy="82" r="2.2" fill="#fff"/></g>`;
   return `<svg viewBox="0 0 160 160" class="petsvg${P.sleep?' zz':''}">
@@ -1682,8 +1701,23 @@ function openPet(){
         },230); };
       setTimeout(chomp,650); }
     function clean(){ play.innerHTML=''; const had=P.poop; P.poop=0; P.poopH=0; P.clean=100; if(had) P.mood=clamp(P.mood+10); petCare(); save(); blip(800,.1); draw(had?'뽀득뽀득! 깨끗해졌다.':'뽀득뽀득! 원래도 깨끗했다.'); refreshPetBtn(); }
-    function hatch(){ P.taps=(P.taps||0)+1; const box=b.querySelector('#pBox'); box.classList.remove('boing'); void box.offsetWidth; box.classList.add('boing'); buzz(15); blip(300+P.taps*40,.08);
-      if(P.taps>=8){ P.born=Date.now(); P.last=Date.now(); petCare(); save(); draw('몽! 알에서 몽글이가 태어났다!'); refreshPetBtn(); } else { save(); draw(['톡…','톡톡… 꿈틀!','금이 갔다!','안에서 뭔가 움직인다…','거의 다 됐어!'][Math.min(4,Math.floor(P.taps/2))]); } }
+    let hatching=false;
+    function hatch(){ if(hatching) return; P.taps=(P.taps||0)+1; const box=b.querySelector('#pBox');
+      const vx=[34,42,50,60,70,78,86], vy=[58,68,57,67,56,67,58], i=Math.floor(Math.random()*vx.length); let x=vx[i], y=vy[i], dir=Math.random()<.5?-1:1, d=`M${x} ${y}`;
+      for(let j=0;j<2+Math.floor(Math.random()*2);j++){ x+=(Math.random()-.5)*14; y+=dir*(5+Math.random()*8); d+=`L${x.toFixed(1)} ${y.toFixed(1)}`; }
+      P.cracks=(P.cracks||[]).concat(d).slice(-10);
+      [0,55,120].forEach((t,k)=>setTimeout(()=>crunch(.3+P.taps*.05,.05+k*.02),t)); buzz([10,20,10+P.taps*3]);
+      const chips=(n,far)=>{ for(let k=0;k<n;k++){ const c=document.createElement('i'); c.className='eggchip'; const a=Math.random()*Math.PI*2, r=(far?70:28)+Math.random()*(far?70:30); c.style.setProperty('--dx',Math.cos(a)*r+'px'); c.style.setProperty('--dy',(Math.sin(a)*r+(far?10:26))+'px'); c.style.setProperty('--rot',(Math.random()*720-360)+'deg'); c.style.width=(far?8+Math.random()*12:4+Math.random()*5)+'px'; c.style.height=(far?7+Math.random()*10:4+Math.random()*4)+'px'; c.style.clipPath=`polygon(${Math.random()*30}% 0,100% ${Math.random()*40}%,${60+Math.random()*40}% 100%,0 ${50+Math.random()*50}%)`; box.appendChild(c); setTimeout(()=>c.remove(),900); } };
+      if(P.taps<8){ save(); draw(['톡…','빠직! 금이 갔다.','빠지직… 금이 길어진다.','알이 꿈틀거린다!','빠지직! 껍질 조각이 떨어진다.','안에서 뭔가 민다…','거의 다 깨졌다!'][Math.min(6,P.taps-1)]); const bx=b.querySelector('#pBox'); bx.classList.add('eggshake'); chips(2+Math.floor(P.taps/2)); setTimeout(()=>bx.classList.remove('eggshake'),380); return; }
+      hatching=true; save(); draw('빠지지직…!'); const bx=b.querySelector('#pBox'); bx.classList.add('egghard'); b.querySelector('#pActs').innerHTML='';
+      [0,90,180,270,360,450].forEach(t=>setTimeout(()=>{ crunch(.5,.06); buzz(12); },t));
+      setTimeout(()=>{ if(!bx.isConnected) return; bx.classList.remove('egghard'); bx.classList.add('eggopen'); crunch(1,.4); blip(160,.2); buzz([60,40,90]); chips(18,true);
+        const fl=document.createElement('i'); fl.className='eggflash'; b.querySelector('#pStage').appendChild(fl); setTimeout(()=>fl.remove(),500);
+        P.born=Date.now(); P.last=Date.now(); petCare(); save();
+        const nb=document.createElement('div'); nb.className='petnew'; nb.innerHTML=petSVG(P,1); bx.appendChild(nb);
+        setTimeout(()=>{ blip(520,.1); setTimeout(()=>blip(780,.15),130); b.querySelector('#pSay').textContent='몽! 알에서 몽글이가 태어났다!'; },350);
+        setTimeout(()=>{ hatching=false; if(bx.isConnected) draw('몽! 알에서 몽글이가 태어났다!'); refreshPetBtn(); },1700);
+      },620); }
     const box=b.querySelector('#pBox');
     const patIt=()=>{ if(petStage()===0){ hatch(); return; } const td=tkey(); if(P.pat.d!==td) P.pat={d:td,n:0};
       box.classList.remove('boing'); void box.offsetWidth; box.classList.add('boing'); buzz(15);
@@ -1691,7 +1725,7 @@ function openPet(){
       if(P.sleep){ b.querySelector('#pSay').textContent='쿨쿨… 깊이 자고 있다.'; return; }
       if(P.pat.n<15){ P.pat.n++; P.mood=clamp(P.mood+3); if(P.pat.n===1) petCare(); save(); } b.querySelector('#pSay').textContent=['몽!','귀를 쫑긋한다.','몽몽!','꼬리를 흔든다.'][P.pat.n%4]; };
     b.querySelector('#pStage').addEventListener('pointermove',e=>{ const r=box.getBoundingClientRect(); const dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height*.52), d=Math.hypot(dx,dy)||1, k=Math.min(4,d/20); box.style.setProperty('--ex',(dx/d*k).toFixed(1)+'px'); box.style.setProperty('--ey',(dy/d*k).toFixed(1)+'px'); });
-    box.onclick=()=>{ if(!busy) patIt(); }; box.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); patIt(); } };
+    box.onclick=()=>{ if(!busy&&!hatching) patIt(); }; box.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); patIt(); } };
     draw();
   });
 }

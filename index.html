@@ -1541,35 +1541,35 @@ function petCare(){ const P=pet(); P.care[tkey()]=(P.care[tkey()]||0)+1; save();
 function petDays(){ return Object.keys(pet().care).length; }
 function petStage(){ const P=pet(); if(!P.born) return 0; const d=petDays();
   if(d>=10) return 4; if(d>=6) return 3; if(d>=3) return 2; return 1; }
-const STAGES=['안개 알','아기 몽글이','몽글이','큰 몽글이','무지개 몽글이'];
+const STAGES=['안개 알','아기 몽글이','몽글이','스카프 몽글이','대장 몽글이'];
 function petNeeds(){ const P=pet(); return P.born && !P.sleep && (P.full<40||P.mood<40||P.energy<30||P.poop>0); }
 
 function petSVG(P,st){
   const avg=(P.full+P.mood+P.energy+P.clean)/400;
-  const fur = mix2('#b9bec6', '#8fcdf5', Math.min(1,avg*1.15)), dark=mix2(fur,'#1c2130',.22), K='#1c2130';
+  const fur = mix2('#b9bec6', '#5fb4e8', Math.min(1,avg*1.15)), dark=mix2(fur,'#1c2130',.22), K='#1c2130';
   const sleepy=P.sleep||P.energy<30, sad=!P.sleep&&(P.mood<35||P.full<30);
   if(st===0){ const c=P.taps||0;
     return `<svg viewBox="0 0 120 120" class="petsvg"><ellipse cx="60" cy="66" rx="34" ry="42" fill="#c3c8cf" stroke="#1c2130" stroke-width="4"/><path d="M38 60q10-8 18 0t18 0t12-4" stroke="#9aa0a8" stroke-width="4" fill="none"/><ellipse cx="48" cy="44" rx="7" ry="10" fill="#e3e6ea"/>${c>=3?'<path d="M60 26l-5 10 7 5-4 9" stroke="#1c2130" stroke-width="3" fill="none" stroke-linejoin="round"/>':''}${c>=6?'<path d="M80 80l-8 4 3 7-6 5" stroke="#1c2130" stroke-width="3" fill="none" stroke-linejoin="round"/>':''}</svg>`; }
-  const tuft = st===4 ? ['#ff9a8a','#ffd25a','#8fe08a'] : ['#fff','#fff','#fff'];
-  const eye=(x)=>`<g class="eye"><ellipse cx="${x}" cy="84" rx="8.5" ry="10.5" fill="${K}"/><circle cx="${x-3}" cy="80" r="3.4" fill="#fff"/><circle cx="${x+3}" cy="88" r="1.6" fill="#fff"/></g>`;
+  const tuft = st===4 ? '#ffd25a' : dark;
+  const eye=(x)=>`<g class="eye"><ellipse cx="${x}" cy="85" rx="6.5" ry="8" fill="${K}"/><circle cx="${x-2}" cy="82" r="2.2" fill="#fff"/></g>`;
   return `<svg viewBox="0 0 160 160" class="petsvg${P.sleep?' zz':''}">
     <ellipse cx="80" cy="148" rx="42" ry="6" fill="#1c2130" opacity=".13"/>
-    ${st>=2?`<g class="p-tail"><path d="M122 118q26 4 24-20q-2-14-14-10q8 8 0 14q-8 4-14 2z" fill="${fur}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><circle cx="141" cy="92" r="7" fill="#fff" stroke="${K}" stroke-width="3"/></g>`:''}
+    ${st>=2?`<g class="p-tail"><path d="M122 118q26 4 24-20q-2-14-14-10q8 8 0 14q-8 4-14 2z" fill="${fur}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M132 90l8-12l6 14z" fill="${dark}" stroke="${K}" stroke-width="3" stroke-linejoin="round"/></g>`:''}
     <g class="p-all">
       <ellipse cx="60" cy="141" rx="14" ry="8" fill="${dark}" stroke="${K}" stroke-width="4"/><ellipse cx="100" cy="141" rx="14" ry="8" fill="${dark}" stroke="${K}" stroke-width="4"/>
-      <g class="p-ear l"><path d="M40 62q-10-30 6-36q14 2 22 22z" fill="${fur}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M45 54q-4-16 3-20q7 2 11 12z" fill="#ffb3c0"/></g>
-      <g class="p-ear r"><path d="M120 62q10-30-6-36q-14 2-22 22z" fill="${fur}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M115 54q4-16-3-20q-7 2-11 12z" fill="#ffb3c0"/></g>
+      <g class="p-ear l"><path d="M40 62q-10-30 6-36q14 2 22 22z" fill="${fur}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M45 54q-4-16 3-20q7 2 11 12z" fill="${dark}"/></g>
+      <g class="p-ear r"><path d="M120 62q10-30-6-36q-14 2-22 22z" fill="${fur}" stroke="${K}" stroke-width="4" stroke-linejoin="round"/><path d="M115 54q4-16-3-20q-7 2-11 12z" fill="${dark}"/></g>
       <path d="M80 44c34 0 52 22 52 52s-20 48-52 48s-52-18-52-48s18-52 52-52z" fill="${fur}" stroke="${K}" stroke-width="4"/>
       <ellipse cx="80" cy="114" rx="30" ry="24" fill="#fff8e8"/>
-      <g class="p-tuft"><circle cx="68" cy="46" r="9" fill="${tuft[0]}" stroke="${K}" stroke-width="3.5"/><circle cx="92" cy="46" r="9" fill="${tuft[2]}" stroke="${K}" stroke-width="3.5"/><circle cx="80" cy="39" r="11" fill="${tuft[1]}" stroke="${K}" stroke-width="3.5"/></g>
+      <g class="p-tuft"><path d="M62 50l4-18l9 10l5-18l6 18l9-9l3 17z" fill="${tuft}" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/></g>
       ${st>=3?`<g><path d="M33 112q47 20 94 0" fill="none" stroke="${K}" stroke-width="13" stroke-linecap="round"/><path d="M33 112q47 20 94 0" fill="none" stroke="#e2533a" stroke-width="7" stroke-linecap="round"/><path d="M108 120l8 18l8-6l-6-16z" fill="#e2533a" stroke="${K}" stroke-width="3" stroke-linejoin="round"/></g>`:''}
       <g class="p-arm l"><ellipse cx="34" cy="104" rx="9" ry="13" fill="${fur}" stroke="${K}" stroke-width="4"/></g>
       <g class="p-arm r"><ellipse cx="126" cy="104" rx="9" ry="13" fill="${fur}" stroke="${K}" stroke-width="4"/></g>
       <g class="p-face">
-        <ellipse class="p-cheek" cx="44" cy="99" rx="8" ry="5.5" fill="#ff8fa3" opacity=".6"/><ellipse class="p-cheek" cx="116" cy="99" rx="8" ry="5.5" fill="#ff8fa3" opacity=".6"/>
+        <ellipse class="p-cheek" cx="44" cy="99" rx="7" ry="5" fill="${dark}" opacity=".45"/><ellipse class="p-cheek" cx="116" cy="99" rx="7" ry="5" fill="${dark}" opacity=".45"/>
         <g class="e-def">${sleepy?`<path d="M54 86q8 6 16 0M90 86q8 6 16 0" stroke="${K}" stroke-width="4" fill="none" stroke-linecap="round"/>`:`<g class="p-eyes">${eye(62)}${eye(98)}</g>`}${sad?`<path d="M52 76l16-5M108 76l-16-5" stroke="${K}" stroke-width="3.5" stroke-linecap="round"/>`:''}</g>
         <path class="e-hap" d="M54 88q8-10 16 0M90 88q8-10 16 0" stroke="${K}" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <g class="m-def">${P.sleep?`<ellipse cx="80" cy="101" rx="3.5" ry="3" fill="${K}"/>`:sad?`<path d="M73 103q7-6 14 0" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`:`<path d="M71 98q4.5 6 9 0q4.5 6 9 0" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`}</g>
+        <g class="m-def">${P.sleep?`<ellipse cx="80" cy="101" rx="3.5" ry="3" fill="${K}"/>`:sad?`<path d="M73 103q7-6 14 0" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`:`<path d="M70 99q10 8 20 0" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M84 102l2.5 5l2.5-6z" fill="#fff" stroke="${K}" stroke-width="2" stroke-linejoin="round"/>`}</g>
         <g class="m-open"><ellipse cx="80" cy="103" rx="10" ry="11" fill="#5a1f2a" stroke="${K}" stroke-width="3.5"/><ellipse cx="80" cy="109" rx="6" ry="4" fill="#ff8fa3"/></g>
         <path class="m-shut" d="M70 101q10 5 20 0" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
         <path class="m-chew" d="M72 101q4-3 8 0t8 0" stroke="${K}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
@@ -1588,7 +1588,7 @@ function petLine(P,st){
   if(P.full<40) return '꼬르륵… 배고파!';
   if(P.energy<30) return '하암… 졸려. 불 꺼 줄래?';
   if(P.mood<40) return '심심해… 같이 놀자!';
-  const L=['몽글몽글~ 오늘 기분 최고!','오늘 급식 뭐였어?','배부르고 졸리고 행복해.','나 조금 컸지? 그치?','네가 오니까 몸이 조금 파래졌어!','꼬리 흔드는 연습 중이야. 봤어?'];
+  const L=['몽글몽글~ 오늘 기분 최고!','오늘 급식 뭐였어?','배부르고 졸리고 행복해.','나 조금 컸지? 그치?','네가 오니까 몸이 조금 파래졌어!','나 송곳니 좀 멋있지 않냐.'];
   return L[(new Date().getMinutes()+petDays())%L.length];
 }
 

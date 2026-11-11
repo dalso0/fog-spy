@@ -116,6 +116,42 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .skym.new{animation:pop .6s,floaty 5s ease-in-out .6s infinite alternate;background:var(--yellow)}
 @keyframes floaty{to{transform:translate(-50%,-6px)}}
 .skyin{display:flex;gap:8px;margin-top:8px}
+.petbtn{position:relative;width:44px;height:44px;flex:none;border:2px solid #fff;border-radius:8px;background:#3a4152;padding:2px;display:grid;place-items:center}
+.petbtn svg{width:38px;height:38px}
+.petbtn b{position:absolute;right:-6px;top:-6px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;display:grid;place-items:center;border:2px solid #fff}
+.petstage{position:relative;height:200px;border:var(--bw) solid var(--ink);border-radius:14px;display:grid;place-items:center;overflow:hidden}
+.petbox{width:150px;cursor:pointer;animation:bob 2.6s ease-in-out infinite;transform-origin:50% 90%}
+.petbox.s0{width:110px}.petbox.s1{width:110px}.petbox.s2{width:140px}.petbox.s3{width:165px}.petbox.s4{width:180px}
+.petbox.boing{animation:boing .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes boing{30%{transform:scale(1.15,.85)}60%{transform:scale(.95,1.08)}}
+.petsvg{width:100%;height:auto;display:block}
+.hearts{position:absolute;inset:0;pointer-events:none}
+.hearts i{position:absolute;top:40%;font-style:normal;color:var(--red);font-size:22px;font-weight:900;animation:heart .9s ease-out forwards}
+@keyframes heart{to{transform:translateY(-70px);opacity:0}}
+.pbars{display:grid;gap:6px}
+.pbars div{display:grid;grid-template-columns:48px 1fr;gap:8px;align-items:center;font-size:12px;font-weight:700}
+.pbars .b{height:14px;border:2px solid var(--ink);border-radius:5px;background:#fff;overflow:hidden}
+.pbars .b i{display:block;height:100%;transition:width .5s}
+.pacts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pacts .bk{font-size:16px;display:flex;flex-direction:column;gap:3px;align-items:center}
+.pacts .bk small{font-family:var(--f-body);font-size:11px;font-weight:700;opacity:.8}
+.squish{background:#fff;border:var(--bw) solid var(--ink);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.sqhead{display:flex;justify-content:space-between;align-items:baseline}
+.sqhead b{font-family:var(--f-display);font-weight:400;font-size:20px}
+.sqhead span{font-size:12px;color:var(--muted);font-weight:700}
+.sqstage{position:relative;height:230px;border-radius:12px;background:#f1f4f8;display:grid;place-items:center;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.sqcount{text-align:center;font-family:var(--f-display);font-size:18px}
+.jelly{width:130px;height:130px;border-radius:50%;border:var(--bw) solid var(--ink);background:radial-gradient(circle at 35% 30%,#fff9,#c3c8cf);transition:transform .05s;cursor:pointer}
+.ripple{position:absolute;left:50%;top:50%;width:130px;height:130px;margin:-65px;border-radius:50%;border:6px solid;animation:rip .8s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(2.2);opacity:0}}
+.wrap{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:10px}
+.bub{width:44px;height:44px;border-radius:50%;border:2px solid #9aa6b5;background:radial-gradient(circle at 35% 30%,#fff,#dfe8f1);padding:0;box-shadow:inset -3px -4px 0 #c9d4df}
+.bub.pop{background:#e6ebf0;box-shadow:none;transform:scale(.8);border-style:dashed}
+.mochi{position:relative;width:140px;height:110px;border-radius:50% 50% 46% 46%;background:#fffdf7;border:var(--bw) solid var(--ink);box-shadow:inset 0 -10px 0 #f1ead8;cursor:grab}
+.mochi i{position:absolute;top:44px;width:7px;height:7px;border-radius:2px;background:var(--ink)}
+.mochi i:first-child{left:46px}.mochi i:last-child{right:46px}
+.wax{position:relative;width:170px;height:170px;border-radius:50%;border:var(--bw) solid var(--ink);background:radial-gradient(circle at 35% 30%,#fff8,#c3c8cf 70%);overflow:hidden;cursor:pointer}
+.wax i{position:absolute;width:26px;height:26px;margin:-13px;border-radius:50%;box-shadow:inset 2px 3px 4px rgba(0,0,0,.25);opacity:.85}
 .wordc{background:#fff;border:var(--bw) solid var(--ink);border-radius:12px;padding:14px;text-align:center;box-shadow:0 4px 0 var(--ink)}
 .wordc b{display:block;font-family:var(--f-display);font-weight:400;font-size:40px;color:var(--sky-d);margin:4px 0}
 .wordc span{font-size:14px;font-weight:700}
@@ -234,7 +270,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .ptile.lock{background:#8d7354;color:transparent;box-shadow:none;border-style:dashed}
 .ptile.used{opacity:.25}
 .board .cap{font-size:12px;font-weight:700;text-align:center;color:#3c2a14}
-.wkline{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.wkline{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .wkline div{border:2px solid var(--ink);border-radius:8px;padding:6px 2px;text-align:center;font-size:11px;font-weight:700;background:var(--fog-l);color:var(--muted)}
 .wkline div.c{background:var(--green);color:#fff}
 .wkline div.n{background:#fff;color:var(--ink);outline:3px solid var(--yellow)}
@@ -408,6 +444,7 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
         <div class="bar"><i id="hudBar"></i></div>
         <div id="hudRank" class="hudrank"></div>
       </div>
+      <button class="petbtn" id="hudPet" aria-label="몽글이 돌보기"></button>
       <div class="pieces" title="이번 주 감각 조각">
         <svg viewBox="0 0 20 20"><rect x="2" y="2" width="16" height="16" rx="3" fill="#fff" stroke="#1c2130" stroke-width="2.5"/><rect x="6" y="6" width="8" height="8" fill="#e0522f"/></svg>
         <span id="hudPieces">0/3</span>
@@ -682,20 +719,12 @@ const WEEKS = [
     {loc:'nurse', piece:'입', task:'mg:breath', lines:['어디 아파서 온 건 아니지? 다행이다.','배가 꼬르륵하는 것도 감각이야. 몸이 말을 거는 거지.','배에 손을 얹고, 배가 부풀었다 꺼지는 걸 느끼며 숨 세 번.']},
     {loc:'library', piece:'씩', task:'find', target:'recipe', hint:'맛있는 냄새가 나는 책을 찾아라.', lines:['또 왔구먼, 요원.','이번엔 맛을 기록해 둔 책이 숨었다.','요리책이 어디 있는지, 하나씩 만져 보거라.']}
    ]},
-  {n:4, dates:'12.7 – 12.11', sense:'촉각·후각', title:'굳어 버린 손끝',
-   brief:'D-Day가 일주일 남았다. 안개에 닿은 손이 아무것도 느끼지 못한다. 오프라인 작전 전 마지막 감각 훈련.',
-   motto:'만지면 지금 여기', clue:'세상과 닿는 내 몸의 가장 끝', word:'손끝에',
-   spots:[
-    {loc:'art', piece:'손', task:'mg:stone', lines:['다음 주 마음돌 부스 준비 중이야. 점토 만져 본 적 있니?','여기 회색이 된 마음돌이 하나 있어.','손끝으로 살살, 천천히 닦아 봐. 세게 문지르면 안 닦여.']},
-    {loc:'forest', piece:'끝', task:'mg:senses', lines:['또 왔구나. 오늘은 냄새를 찾아보자.','겨울 숲에는 차가운 흙 냄새, 마른 잎 냄새가 있단다.','코로 천천히, 지금 맡아지는 냄새를 하나씩 찾아봐.']},
-    {loc:'nurse', piece:'에', task:'mg:breath', lines:['손이 차갑지? 겨울이라 그래.','손바닥을 비비고 숨을 쉬면 손끝까지 따뜻해져.','손을 비빈 뒤 숨 네 번. 손끝이 따뜻해지는 걸 느껴 봐.']}
-   ]},
-  {n:5, dates:'12.14 – 12.18', sense:'오감', title:'색채 회복 작전',
-   brief:'D-Day 팝업 작전과 엔딩 퀘스트. 네 곳에 흩어진 마지막 조각을 모으면 학교의 색이 돌아온다.',
+  {n:4, dates:'12.7 – 12.11', sense:'오감', title:'색채 회복 작전',
+   brief:'마지막 주. D-Day 팝업 작전과 엔딩 퀘스트. 네 곳에 흩어진 마지막 조각을 모으면 학교의 색이 돌아온다.',
    motto:'평범한 하루가 제일 강하다', clue:'늘곰이 매일 부르는 노래', word:'룰루랄라',
    spots:[
     {loc:'ground', piece:'룰', task:'sky', lines:['요원! 다시 왔군. 하늘은 좀 보고 다녔나?','마지막 작전이다. 오늘 하늘색을 보고해 줘.']},
-    {loc:'music', piece:'루', task:'mg:senses', lines:['피아노가 다시 조금씩 소리를 내기 시작했어요.','마지막으로, 지금 이 순간의 소리를 모아 줘요.']},
+    {loc:'art', piece:'루', task:'mg:stone', lines:['마음돌 부스 준비 끝! 마지막으로 하나 닦아 볼래?','손끝으로 살살, 천천히. 세게 문지르면 안 닦여.']},
     {loc:'cafeteria', piece:'랄', task:'slow', secs:20, slowTitle:'물 한 모금 20초', slowText:'물 한 모금을 입에 머금고 20초 동안 온도와 느낌을 느낀 뒤 천천히 삼켜요.', lines:['요원님 덕분에 급식에 맛이 돌아오고 있어요!','마지막은 물 한 모금. 천천히요.']},
     {loc:'forest', piece:'라', task:'mg:breath', lines:['…고맙다, 요원. 숲에 초록이 돌아왔어.','마지막 숨 다섯 번. 학교 전체에 색을 보내 주렴.']}
    ]}
@@ -752,9 +781,10 @@ const SAMPLE_DIST = {sun:21, cloud:34, fog:18, rain:9, storm:6}; // 예시 숫�
    저장 (휴대폰 안에만 · 개인정보 없음)
    ========================================================= */
 const KEY='spy-fog-v1';
-const DEF={week:1, code:'', av:{face:3,hair:3,top:0,bottom:0,tc:0}, got:{}, cleared:{}, mood:null, heart:false, orderDone:{}, badges:{}, skyPend:[], skyOk:[], visits:{}, eng:{}};
+const DEF={week:1, code:'', av:{face:3,hair:3,top:0,bottom:0,tc:0}, got:{}, cleared:{}, mood:null, heart:false, orderDone:{}, badges:{}, skyPend:[], skyOk:[], visits:{}, eng:{}, pet:null};
 let S;
 try{ S=Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||'{}')); }catch(e){ S=JSON.parse(JSON.stringify(DEF)); }
+if(S.week>WEEKS.length) S.week=WEEKS.length;
 if(!S.code){ S.code='SPY-'+String(Math.floor(1000+Math.random()*9000)); }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 save();
@@ -764,7 +794,7 @@ const W=()=>WEEKS[S.week-1];
 const today=()=>{const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();};
 const gotKey=(w,i)=>w+'-'+i;
 const piecesOf=w=>WEEKS[w-1].spots.filter((s,i)=>S.got[gotKey(w,i)]).length;
-const progress=()=>Object.keys(S.cleared).length/5;
+const progress=()=>Object.keys(S.cleared).filter(k=>+k<=WEEKS.length).length/WEEKS.length;
 
 /* =========================================================
    블록 아바타 (얼굴 · 머리 · 상의 · 하의)
@@ -911,7 +941,7 @@ function refresh(){
   $('#hudWeek').textContent=`${w.n}주차 · ${w.title} · 색 ${Math.round(p*100)}%`;
   $('#hudRank').innerHTML=SpyPlus.rankHTML();
   $('#hudPieces').textContent=`${piecesOf(w.n)}/${w.spots.length}`;
-  $('#hudMe').innerHTML=avatarSVG(S.av);
+  $('#hudMe').innerHTML=avatarSVG(S.av); refreshPetBtn();
   $('#walker').innerHTML=avatarSVG(S.av);
   // 단서 마커
   let mk='';
@@ -976,6 +1006,7 @@ function openHQ(){
       <h3>${o[0]}</h3><p>${o[1]}</p>
       <div style="margin-top:12px"><button class="bk yellow wide" id="orderDone">${S.orderDone[tk]?'완수 보고 완료 ✓':'완수했어요 (익명 보고)'}</button></div>
     </div>
+    <div class="card"><div class="label">입양실</div><h3 style="margin-top:4px">몽글이 돌보기</h3><p>본부에서 맡긴 작은 안개구름이에요. 간식 주고, 같이 숨 쉬고, 하늘을 보여 주면 조금씩 색이 돌아와요.</p><div style="margin-top:10px"><button class="bk yellow wide" id="toPet">몽글이 보러 가기</button></div></div>
     <div class="card"><div class="label">작전실</div><h3 style="margin-top:4px">안개 정화 호흡실</h3><p>언제든 들어와서 숨 고르기. 노란 빛이 커지면 들이쉬고, 작아지면 내쉬어요.</p><div style="margin-top:10px"><button class="bk sky wide" id="toBreath">호흡실 입장</button></div></div>
   `, body=>{
     const host=body.querySelector('#talkHost'), acts=body.querySelector('#hqActs');
@@ -1002,8 +1033,9 @@ function openHQ(){
       talk(host,{k:'chick',name:'병아리 요원'},lines);
     };
     body.querySelector('#spN').onclick=neul; body.querySelector('#spC').onclick=chick;
-    body.querySelector('#orderDone').onclick=e=>{ if(!S.orderDone[tk]) SpyPlus.addXP(SpyPlus.XP.order,'평범지령'); S.orderDone[tk]=true; save(); e.target.textContent='완수 보고 완료 ✓'; toast('보고 완료. 이름 없이 숫자만 본부에 전달돼요.'); };
+    body.querySelector('#orderDone').onclick=e=>{ if(!S.orderDone[tk]){ SpyPlus.addXP(SpyPlus.XP.order,'평범지령'); petSnack(); } S.orderDone[tk]=true; save(); e.target.textContent='완수 보고 완료 ✓'; toast('보고 완료. 이름 없이 숫자만 본부에 전달돼요.'); };
     body.querySelector('#toBreath').onclick=()=>openBreathRoom();
+    body.querySelector('#toPet').onclick=openPet;
     neul();
   });
 }
@@ -1082,7 +1114,7 @@ function idleLine(k,v){ const pool=IDLE[k]; return fill(pool[(v+W().n)%pool.leng
 function taskLabel(s){ if(s.task.startsWith('mg:')) return MG.GAMES[s.task.slice(3)].name+' 시작'; return {sky:'하늘색 보고하기',find:'물건 만져 보기',breath:`숨 ${s.cycles}번 함께 쉬기`,listen:'들리는 소리 찾기',smell:'냄새·감촉 찾기',slow:s.slowTitle}[s.task]; }
 
 function runTask(host,s,done){
-  if(s.task.startsWith('mg:')){ mgStop=MG.run(host,s.task.slice(3),{onDone:()=>{stopMG(); SpyPlus.addXP(SpyPlus.XP.minigame,'미니게임'); done();}}); return; }
+  if(s.task.startsWith('mg:')){ mgStop=MG.run(host,s.task.slice(3),{onDone:()=>{stopMG(); SpyPlus.addXP(SpyPlus.XP.minigame,'미니게임'); petSnack(); done();}}); return; }
   if(s.task==='sky'){
     const cols=[['#9fd3f7','맑은 파랑'],['#5c9fd6','진한 파랑'],['#cfe3ee','옅은 하늘'],['#d9dde2','흐린 회색'],['#f5c48a','노을 주황'],['#8f9aa8','짙은 구름'],['#e9edf2','하얀 구름'],['#2b3d63','어두운 밤']];
     host.innerHTML=`<div class="card"><h3>지금 하늘은 무슨 색?</h3><p>창밖이나 운동장에서 진짜 하늘을 10초 동안 보고 골라요. 정답은 없어요.</p></div>
@@ -1146,7 +1178,7 @@ function openBreathRoom(){
 }
 
 function award(host,si,spot){
-  const w=W(); S.got[gotKey(w.n,si)]=true; save(); SpyPlus.addXP(SpyPlus.XP.shard,'글자 조각');
+  const w=W(); S.got[gotKey(w.n,si)]=true; save(); SpyPlus.addXP(SpyPlus.XP.shard,'글자 조각'); petSnack();
   const n=piecesOf(w.n), all=n===w.spots.length;
   host.innerHTML=`<div class="got"><div class="label">감각 조각 획득</div><div class="tile">${spot.piece}</div>
     <p>${all?'이번 주 조각을 모두 모았어요! 본부 수사보드에서 암호를 맞춰요.':`이번 주 조각 ${n}/${w.spots.length}. 지도에서 남은 느낌표를 찾아요.`}</p></div>
@@ -1190,9 +1222,9 @@ function openBoard(){
   });
 }
 function clearWeek(host,w){
-  const last=Object.keys(S.cleared).length===5;
+  const last=Object.keys(S.cleared).filter(k=>+k<=WEEKS.length).length===WEEKS.length;
   host.innerHTML = last
-   ? `<div class="got ending"><div class="label">엔딩 퀘스트 완료</div><h2 style="font-size:28px;margin:6px 0">학교의 색이 돌아왔다</h2><img src="img/card.jpg" alt="늘곰 룰루랄라 카드"><p style="margin-top:10px">요원 ${S.code}, 5주 동안 평범하게 잘 해냈어요. 이 화면을 본부에 보여 주면 마음돌봄키트를 받을 수 있어요.</p></div>`
+   ? `<div class="got ending"><div class="label">엔딩 퀘스트 완료</div><h2 style="font-size:28px;margin:6px 0">학교의 색이 돌아왔다</h2><img src="img/card.jpg" alt="늘곰 룰루랄라 카드"><p style="margin-top:10px">요원 ${S.code}, 4주 동안 평범하게 잘 해냈어요. 이 화면을 본부에 보여 주면 마음돌봄키트를 받을 수 있어요.</p></div>`
    : `<div class="got"><div class="label">${w.n}주차 작전 성공</div><div class="tile" style="width:auto;padding:0 12px;font-size:36px">${w.word}</div><p>학교에 색이 ${Math.round(progress()*100)}%만큼 돌아왔어요. 지도를 확인해 봐요!</p></div>`;
   host.scrollIntoView({behavior:'smooth',block:'nearest'});
   refresh();
@@ -1246,14 +1278,11 @@ const NATIVE={name:'원어민 선생님 Ms. Lily', av:{face:1,hair:2,top:1,botto
 const OFFICE_T={
   3:[['출제 끝! 드디어 교무실 문을 열었다~','그동안 문 앞에서 평범하게 지나가 준 요원들 고마워.','책상 위 사탕 하나 가져가. 천천히 녹여 먹기, 그게 이번 주 미각 훈련이야.'],
      ['또 왔니? 교무실이 이렇게 인기 있을 줄이야.','채점은… 아직 비밀이다. 평범하게 기다리기!']],
-  4:[['시험이 끝나니 교무실에도 색이 좀 돌아왔지?','선생님들도 요즘 손이 차가워. 같이 손 비비고 가자.'],
-     ['요원, 교무실 프린터가 또 고장 났어.','고쳐 달라는 건 아니고… 그냥 하소연이야. 하하.']],
-  5:[['D-Day 주간이네! 선생님들도 부스 도우미로 나가.','싱잉볼, 차 테라피, 마음돌… 넌 어디 신청했어?'],
-     ['5주 동안 수고 많았다, 요원.','룰루랄라, 우리 다 같이 평범하게 끝내 보자.']]};
+  4:[['D-Day 주간이네! 선생님들도 부스 도우미로 나가.','싱잉볼, 차 테라피, 마음돌… 넌 어디 신청했어?'],
+     ['4주 동안 수고 많았다, 요원.','룰루랄라, 우리 다 같이 평범하게 끝내 보자.']]};
 const NATIVE_T={
   3:{word:'taste',ko:'맛보다',tip:'slowly 천천히',lines:[['Hi, agent! 안녕하세요~','This week\'s word is… taste! 맛, 맞죠?','Eat slowly. 천천히, 천천히. Your tongue will say thank you!'],['Oh, you again! 반가워요!','Today\'s lunch… delicious? 맛있어요? Tell me one taste!']]},
-  4:{word:'touch',ko:'만지다',tip:'gently 살살',lines:[['Hello again! 손 차가워요? Me too!','This week: touch. 만지다! Gently, 살살.','Rub your hands… feel warm? Good job, agent!'],['Hi hi! 오늘 뭐 만졌어요?','Soft? Rough? 말랑? 거칠? Every answer is good.']]},
-  5:{word:'together',ko:'함께',tip:'colorful 알록달록',lines:[['Wow, colors are coming back! 색깔 돌아와요!','Final word: together. 함께!','You are a very… 평범한? ordinary spy. Best compliment!'],['Last week! 마지막 주!','Thank you, agent. 고마워요. See you at the booth!']]}};
+  4:{word:'together',ko:'함께',tip:'colorful 알록달록',lines:[['Wow, colors are coming back! 색깔 돌아와요!','Final word: together. 함께!','You are a very… 평범한? ordinary spy. Best compliment!'],['Last week! 마지막 주!','Thank you, agent. 고마워요. See you at the booth!']]}};
 function openOfficeOpen(){
   const w=W(), L=LOCS.office; const v=visit('office-'+w.n);
   sheet('교무실','2층 · 출제 끝! 문 열림',`
@@ -1427,6 +1456,139 @@ $('#closetBtn').onclick=()=>{ onClose=lobby; openCloset(); };
 $('#hudMe').onclick=()=>openAgent('card');
 $('#resetBtn').onclick=()=>{ const c=S.code; S=JSON.parse(JSON.stringify(DEF)); S.code=c; save(); lobby(); };
 document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>({hq:()=>walkTo('hq'),radio:openRadio,weather:openWeather,board:openBoard,phone:openPhone,agent:()=>openAgent('card')})[b.dataset.open]());
+/* =========================================================
+   몽글이 키우기 (본부 입양 안개구름) + 주차별 말랑이
+   - 죽거나 아프지 않음. 오래 안 오면 안개가 짙어지고 졸릴 뿐.
+   - 저장: 이 휴대폰에만 (S.pet)
+   ========================================================= */
+const PET_DEF={born:0,full:70,mood:70,energy:70,last:0,snacks:1,care:{},pat:{d:'',n:0},skyD:'',skyC:null,breathAt:0,freeD:'',squishD:''};
+function pet(){ if(!S.pet) S.pet=JSON.parse(JSON.stringify(PET_DEF)); return S.pet; }
+const tkey=()=>String(today());
+const clamp=v=>Math.max(10,Math.min(100,v));
+function petDecay(){ const P=pet(); const now=Date.now(); if(!P.last){P.last=now;return;}
+  const h=(now-P.last)/3.6e6; if(h<0.02) return;
+  const night=SpyPlus.isCurfew();
+  P.full=clamp(P.full-4*h); P.mood=clamp(P.mood-3*h); P.energy=clamp(P.energy+(night?8:-2)*h); P.last=now; save(); }
+function petCare(){ const P=pet(); P.care[tkey()]=(P.care[tkey()]||0)+1; save(); }
+function petDays(){ return Object.keys(pet().care).length; }
+function petStage(){ const P=pet(); if(!P.born) return 0; const d=petDays(), all=Object.keys(S.cleared).length>=WEEKS.length;
+  if(all||d>=10) return 4; if(d>=6) return 3; if(d>=3) return 2; return 1; }
+const STAGES=['안개 알','아기 몽글이','몽글이','큰 몽글이','무지개 몽글이'];
+function petSnack(n){ pet().snacks+= (n||1); save(); }
+function petNeeds(){ const P=pet(); return P.born && (P.full<40||P.mood<40||P.energy<30); }
+
+function petSVG(P,st){
+  const avg=(P.full+P.mood+P.energy)/300;
+  const base=P.skyC||'#9fd3f7';
+  const fill = st===4 ? 'url(#rb)' : mix2('#b7bcc4', base, Math.min(1,avg*1.1));
+  const sleepy=P.energy<35||SpyPlus.isCurfew(), sad=P.mood<35;
+  const eyes = sleepy ? `<path d="M40 58q5 4 10 0M70 58q5 4 10 0" stroke="#1c2130" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+    : `<rect x="42" y="52" width="6" height="7" rx="2" fill="#1c2130"/><rect x="72" y="52" width="6" height="7" rx="2" fill="#1c2130"/>`;
+  const mouth = sad ? `<path d="M55 72q5-4 10 0" stroke="#1c2130" stroke-width="3" fill="none" stroke-linecap="round"/>` : `<path d="M55 70q5 5 10 0" stroke="#1c2130" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  if(st===0) return `<svg viewBox="0 0 120 120" class="petsvg"><ellipse cx="60" cy="66" rx="34" ry="42" fill="#c3c8cf" stroke="#1c2130" stroke-width="4"/><path d="M38 60q10-8 18 0t18 0t12-4" stroke="#9aa0a8" stroke-width="4" fill="none"/><ellipse cx="48" cy="44" rx="7" ry="10" fill="#e3e6ea"/></svg>`;
+  return `<svg viewBox="0 0 120 120" class="petsvg"><defs><linearGradient id="rb" x1="0" x2="1"><stop offset="0" stop-color="#ff9a8a"/><stop offset=".33" stop-color="#ffd25a"/><stop offset=".66" stop-color="#8fe08a"/><stop offset="1" stop-color="#8ac8ff"/></linearGradient></defs>
+    <path d="M22 88q-16 0-14-18q2-16 18-16q0-22 22-24q14-16 32-6q22-2 24 20q18 4 16 22q-2 22-20 22z" fill="${fill}" stroke="#1c2130" stroke-width="4" stroke-linejoin="round"/>
+    ${eyes}${mouth}<ellipse cx="36" cy="68" rx="6" ry="4" fill="#ff9a8a" opacity=".55"/><ellipse cx="84" cy="68" rx="6" ry="4" fill="#ff9a8a" opacity=".55"/>
+    ${sleepy?'<text x="92" y="30" font-size="14" font-weight="900" fill="#1c2130">z</text>':''}</svg>`;
+}
+function mix2(a,b,t){ const h=x=>[1,3,5].map(i=>parseInt(x.substr(i,2),16)); const A=h(a),B=h(b); return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join(''); }
+function petLine(P,st){
+  if(st===0) return '…회색 알이 조용히 숨 쉬고 있다. 같이 숨을 쉬면 깨어날 것 같다.';
+  if(SpyPlus.isCurfew()) return '(쿨쿨… 몽글이는 밤에는 자요. 너도 자야 해.)';
+  if(P.full<40) return '꼬르륵… 감각 간식 하나만…';
+  if(P.energy<35) return '하암… 같이 숨 좀 쉬어 줄래?';
+  if(P.mood<40) return '보고 싶었어. 안개가 좀 짙어졌었어.';
+  const L=['오늘 하늘은 무슨 색이었어?','네가 오니까 몸이 조금 파래졌어!','나 오늘 멍때리기 3시간 했어. 소장님한테 배웠어.','쓰다듬어 줘서 몽글몽글해.','오늘 평범지령 했어? 나도 같이 할래.'];
+  return L[(new Date().getHours()+petDays())%L.length];
+}
+
+function openPet(){
+  petDecay(); const P=pet();
+  const td=tkey(); if(P.born && P.freeD!==td){ P.freeD=td; P.snacks++; save(); }
+  sheet('몽글이','본부 입양 안개구름',`
+    <div class="petstage" id="pStage"><div class="petbox" id="pBox" role="button" tabindex="0" aria-label="몽글이 쓰다듬기"></div><div class="hearts" id="pHearts"></div></div>
+    <div class="npc"><div class="bubble" style="min-height:0"><span class="who" id="pName"></span><span id="pSay"></span></div></div>
+    <div class="pbars" id="pBars"></div>
+    <div class="pacts" id="pActs"></div>
+    <div id="pPlay"></div>
+    <p class="note">몽글이는 아프거나 사라지지 않아요. 오래 못 오면 안개가 조금 짙어지고 졸려할 뿐이에요. 간식은 지령·조각·미니게임으로 모으고, 매일 하나씩 선물로 와요.</p>`, b=>{
+    const draw=(say)=>{ petDecay(); const st=petStage();
+      b.querySelector('#pBox').innerHTML=petSVG(P,st); b.querySelector('#pBox').className='petbox s'+st;
+      b.querySelector('#pStage').style.background = P.skyC ? `linear-gradient(${P.skyC},#fffaf0)` : 'linear-gradient(#c7ccd3,#fffaf0)';
+      b.querySelector('#pName').textContent=`${STAGES[st]} · 함께한 날 ${petDays()}일`;
+      b.querySelector('#pSay').textContent=say||petLine(P,st);
+      b.querySelector('#pBars').innerHTML = st===0?'':[['배부름',P.full,'#ffb36b'],['기분',P.mood,'#ff8fa3'],['기운',P.energy,'#7cc8ff']].map(([n,v,c])=>`<div><span>${n}</span><span class="b"><i style="width:${v}%;background:${c}"></i></span></div>`).join('');
+      const acts=b.querySelector('#pActs');
+      if(st===0){ acts.innerHTML=`<button class="bk green" id="aHatch" style="grid-column:1/-1">알 옆에서 숨 3번 쉬기</button>`; acts.querySelector('#aHatch').onclick=()=>{ const h=b.querySelector('#pPlay'); acts.innerHTML=''; breathe(h,3,()=>{ P.born=Date.now(); P.last=Date.now(); petCare(); save(); h.innerHTML=''; SpyPlus.addXP(10,'몽글이 부화'); draw('…몽글! 안녕, 요원? 나 몽글이야!'); refreshPetBtn(); }); }; return; }
+      const breathCD = Date.now()-P.breathAt < 30*60*1000;
+      acts.innerHTML=`
+        <button class="bk yellow" id="aSnack" ${P.snacks<1||SpyPlus.isCurfew()?'disabled':''}>감각 간식 주기<small>${P.snacks}개 있음</small></button>
+        <button class="bk sky" id="aBreath" ${breathCD?'disabled':''}>같이 숨쉬기<small>${breathCD?'30분 뒤 다시':'기운 +'}</small></button>
+        <button class="bk" id="aSky" ${P.skyD===tkey()?'disabled':''}>하늘 보여주기<small>${P.skyD===tkey()?'오늘 완료':'하루 한 번'}</small></button>
+        <button class="bk green" id="aPlay">이번 주 말랑이<small>${SQUISH[W().n].name}</small></button>`;
+      acts.querySelector('#aSnack').onclick=()=>{ P.snacks--; P.full=clamp(P.full+30); P.mood=clamp(P.mood+5); petCare(); save(); draw(['냠냠. 천천히 먹으니까 더 맛있어!','고마워! 몸이 조금 파래졌어.','오물오물… 이게 바로 미각 훈련이야.'][P.snacks%3]); refreshPetBtn(); };
+      acts.querySelector('#aBreath').onclick=()=>{ const h=b.querySelector('#pPlay'); acts.innerHTML=''; breathe(h,3,()=>{ P.breathAt=Date.now(); P.energy=clamp(P.energy+30); P.mood=clamp(P.mood+15); petCare(); save(); h.innerHTML=''; draw('후우… 안개가 걷히는 느낌이야. 너도 그래?'); refreshPetBtn(); }); };
+      acts.querySelector('#aSky').onclick=()=>{ const h=b.querySelector('#pPlay'); const cols=[['#9fd3f7','맑은 파랑'],['#5c9fd6','진한 파랑'],['#cfe3ee','옅은 하늘'],['#d9dde2','흐린 회색'],['#f5c48a','노을 주황'],['#e9edf2','하얀 구름'],['#8f9aa8','짙은 구름'],['#2b3d63','어두운 밤']];
+        h.innerHTML=`<div class="card"><h3>창밖 하늘을 10초 보고 골라요</h3><p>몽글이 몸이 그 하늘색으로 물들어요.</p></div><div class="swatches">${cols.map((c,i)=>`<button class="sw" data-i="${i}" style="background:${c[0]}" aria-label="${c[1]}"></button>`).join('')}</div>`;
+        h.querySelectorAll('.sw').forEach(x=>x.onclick=()=>{ const c=cols[x.dataset.i]; P.skyC=c[0]; P.skyD=tkey(); P.mood=clamp(P.mood+20); petCare(); save(); h.innerHTML=''; draw(`${c[1]}! 오늘 하늘 색을 입었어.`); refreshPetBtn(); }); };
+      acts.querySelector('#aPlay').onclick=()=>{ const h=b.querySelector('#pPlay'); openSquish(h,()=>{ if(P.squishD!==tkey()){ P.squishD=tkey(); P.mood=clamp(P.mood+15); petCare(); save(); } draw('말랑말랑… 손끝이 깨어났어!'); refreshPetBtn(); }); h.scrollIntoView({behavior:'smooth',block:'nearest'}); };
+    };
+    const box=b.querySelector('#pBox');
+    const patIt=()=>{ if(petStage()===0) return; const td=tkey(); if(P.pat.d!==td) P.pat={d:td,n:0};
+      box.classList.remove('boing'); void box.offsetWidth; box.classList.add('boing'); try{navigator.vibrate&&navigator.vibrate(15);}catch(e){}
+      const hh=document.createElement('i'); hh.textContent='♥'; hh.style.left=(35+Math.random()*30)+'%'; b.querySelector('#pHearts').appendChild(hh); setTimeout(()=>hh.remove(),900);
+      if(P.pat.n<10){ P.pat.n++; P.mood=clamp(P.mood+3); if(P.pat.n===1) petCare(); save(); } };
+    box.onclick=patIt; box.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); patIt(); } };
+    draw();
+  });
+}
+function refreshPetBtn(){ const el=document.getElementById('hudPet'); if(!el) return; petDecay(); el.innerHTML=petSVG(pet(),petStage())+(petNeeds()||petStage()===0?'<b>!</b>':''); }
+
+/* ---------- 주차별 말랑이 (짧은 촉감 놀이) ---------- */
+const SQUISH={
+  1:{name:'색 젤리볼', sense:'시각', hint:'꾹 누르고 있으면 젤리가 눌리고, 손을 떼면 색이 퍼져요. 10번 꾹.'},
+  2:{name:'뽁뽁이', sense:'청각', hint:'하나씩 눌러 터뜨려요. 뽁 소리에 귀를 기울여 봐요.'},
+  3:{name:'말랑 찹쌀떡', sense:'미각', hint:'떡을 잡아당겼다가 놓아요. 천천히 늘이면 더 쫀득해요. 8번.'},
+  4:{name:'무지개 왁스볼', sense:'오감', hint:'여러 번 꾹꾹 눌러 왁스볼을 따뜻하게 만들어요. 누를 때마다 색이 한 겹씩 올라와요.'}
+};
+let actx=null;
+function blip(f,d){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); const o=actx.createOscillator(), g=actx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.15,actx.currentTime); g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+(d||.12)); o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+(d||.12)); }catch(e){} }
+function buzz(p){ try{ navigator.vibrate&&navigator.vibrate(p); }catch(e){} }
+function openSquish(host,onDone){
+  const n=W().n, T=SQUISH[n];
+  host.innerHTML=`<div class="squish"><div class="sqhead"><b>${T.name}</b><span>${n}주차 · ${T.sense}</span></div><p class="note">${T.hint}</p><div class="sqstage" id="sq"></div><div class="sqcount" id="sqc"></div></div>`;
+  const st=host.querySelector('#sq'), cnt=host.querySelector('#sqc'); let done=false;
+  const finish=()=>{ if(done) return; done=true; cnt.textContent='손끝이 말랑해졌다! 몽글이 기분 +'; buzz([20,40,20]); onDone&&onDone(); };
+  if(n===1){ // 젤리볼: 누르는 시간만큼 눌리고, 떼면 색 파문
+    let k=0; const cols=['#ff8fa3','#ffd25a','#8fe08a','#7cc8ff','#c9a7ff'];
+    st.innerHTML='<div class="jelly" id="jb"></div>'; const jb=st.querySelector('#jb'); let t0=0, raf=0;
+    const press=e=>{ e.preventDefault(); t0=performance.now(); const loop=()=>{ const p=Math.min(1,(performance.now()-t0)/900); jb.style.transform=`scale(${1+p*.25},${1-p*.3})`; raf=requestAnimationFrame(loop); }; loop(); buzz(10); };
+    const rel=()=>{ if(!t0) return; cancelAnimationFrame(raf); const p=Math.min(1,(performance.now()-t0)/900); t0=0; jb.style.transform=''; jb.animate([{transform:`scale(${1-p*.15},${1+p*.2})`},{transform:'scale(1)'}],{duration:450,easing:'cubic-bezier(.2,1.6,.4,1)'});
+      const c=cols[k%cols.length]; jb.style.background=`radial-gradient(circle at 35% 30%,#fff9,${c})`; const r=document.createElement('i'); r.className='ripple'; r.style.borderColor=c; st.appendChild(r); setTimeout(()=>r.remove(),800); blip(300+p*300,.15); buzz(25);
+      k++; cnt.textContent=`꾹 ${Math.min(k,10)} / 10`; if(k>=10) finish(); };
+    jb.addEventListener('pointerdown',press); ['pointerup','pointercancel','pointerleave'].forEach(t=>jb.addEventListener(t,rel)); cnt.textContent='꾹 0 / 10';
+  } else if(n===2){ // 뽁뽁이
+    const N=20; st.innerHTML=`<div class="wrap">${Array.from({length:N},(_,i)=>`<button class="bub" data-i="${i}" aria-label="뽁뽁이 ${i+1}"></button>`).join('')}</div>`; let k=0;
+    st.querySelectorAll('.bub').forEach(x=>x.onclick=()=>{ if(x.classList.contains('pop')) return; x.classList.add('pop'); k++; blip(600+Math.random()*500,.06); buzz(12); cnt.textContent=`뽁 ${k} / ${N}`; if(k>=N) finish(); });
+    cnt.textContent=`뽁 0 / ${N}`;
+  } else if(n===3){ // 찹쌀떡 늘이기
+    st.innerHTML='<div class="mochi" id="mc"><i></i><i></i></div>'; const mc=st.querySelector('#mc'); let sx=0,sy=0,drag=false,k=0,maxd=0;
+    mc.addEventListener('pointerdown',e=>{ drag=true; sx=e.clientX; sy=e.clientY; maxd=0; mc.setPointerCapture(e.pointerId); buzz(8); });
+    mc.addEventListener('pointermove',e=>{ if(!drag) return; const dx=e.clientX-sx, dy=e.clientY-sy, d=Math.min(140,Math.hypot(dx,dy)); maxd=Math.max(maxd,d); const a=Math.atan2(dy,dx)*180/Math.PI; mc.style.transform=`rotate(${a}deg) scale(${1+d/110},${1-d/360}) rotate(${-a}deg)`; });
+    const up=()=>{ if(!drag) return; drag=false; mc.style.transform=''; mc.animate([{transform:'scale(.85,1.15)'},{transform:'scale(1.06,.94)'},{transform:'scale(1)'}],{duration:600,easing:'ease-out'});
+      if(maxd>40){ k++; blip(200+maxd,.2); buzz([15,30,15]); cnt.textContent=`쫀득 ${Math.min(k,8)} / 8`; if(k>=8) finish(); } else cnt.textContent='조금 더 길게 늘여 봐요'; };
+    mc.addEventListener('pointerup',up); mc.addEventListener('pointercancel',up); cnt.textContent='쫀득 0 / 8';
+  } else { // 왁스볼: 누른 자리에 자국 + 색 층
+    const L=['#c3c8cf','#ff9a8a','#ffd25a','#8fe08a','#8ac8ff','#c9a7ff']; let k=0;
+    st.innerHTML='<div class="wax" id="wx"></div>'; const wx=st.querySelector('#wx');
+    wx.addEventListener('pointerdown',e=>{ e.preventDefault(); const r=wx.getBoundingClientRect(); const d=document.createElement('i'); d.style.left=(e.clientX-r.left)+'px'; d.style.top=(e.clientY-r.top)+'px'; d.style.background=L[1+Math.floor(k/5)%5]; wx.appendChild(d);
+      k++; const layer=Math.min(5,1+Math.floor(k/5)); wx.style.background=`radial-gradient(circle at 35% 30%,#fff8,${L[layer]} 70%)`; wx.animate([{transform:'scale(.94)'},{transform:'scale(1)'}],{duration:220}); blip(180+k*12,.1); buzz(18);
+      cnt.textContent=`꾹꾹 ${Math.min(k,25)} / 25`; if(k>=25) finish(); });
+    cnt.textContent='꾹꾹 0 / 25';
+  }
+}
+
+$('#hudPet').onclick=openPet;
 SpyPlus.on('xp',()=>{ const h=$('#hudRank'); if(h) h.innerHTML=SpyPlus.rankHTML(); });
 SpyPlus.on('report',()=>{ if(raidSet && !$('#sheet').hidden) raidSet({total:RAID.total+SpyPlus._state().contrib}); });
 lobby();

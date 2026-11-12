@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>평범한 스파이 작전본부</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -521,7 +525,7 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
       <button class="bk green" id="playBtn" style="font-size:24px;padding:14px">작전 개시</button>
       <button class="bk yellow" id="closetBtn">꾸미기</button>
     </div>
-    <div class="demo">
+    <div class="demo" id="demoBox" hidden>
       <b>시연용 주차 선택</b> · 실제 운영에서는 날짜로 자동 결정돼요.
       <div class="chips" id="weekChips"></div>
       <div class="chips"><button class="chip" id="resetBtn">진행 초기화</button></div>
@@ -887,6 +891,11 @@ save();
 
 const $=s=>document.querySelector(s);
 const W=()=>WEEKS[S.week-1];
+/* 시연 모드: 시연 주소(claude.ai 미리보기, 파일 열기)나 주소 끝 ?demo 에서만 켜짐. 학생용 배포(github.io)에서는 꺼짐 */
+const DEMO = /[?&]demo\b/.test(location.search) || !/github\.io$/.test(location.hostname);
+const WEEK_START=[[11,16],[11,23],[11,30],[12,7]]; // 2026년 주차 시작일(월요일)
+function autoWeek(){ const d=new Date(), k=(d.getMonth()+1)*100+d.getDate(); if(d.getFullYear()>2026) return WEEKS.length; let w=1; WEEK_START.forEach(([m,dd],i)=>{ if(k>=m*100+dd) w=i+1; }); return Math.min(w,WEEKS.length); }
+if(!DEMO){ S.week=autoWeek(); }
 const today=()=>{const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();};
 const gotKey=(w,i)=>w+'-'+i;
 const piecesOf=w=>WEEKS[w-1].spots.filter((s,i)=>S.got[gotKey(w,i)]).length;
@@ -1311,10 +1320,10 @@ function openBoard(){
       <div class="wkline">${WEEKS.map(x=>`<div class="${S.cleared[x.n]?'c':x.n===w.n?'n':''}"><b>${x.n}주</b>${x.sense}</div>`).join('')}</div>
       <div class="badges" style="margin-top:8px">${[['office','교무실 위장 통과'],['principal','교장실 소파 멍'],['emotion','감정 도감']].map(([k,n])=>`<span class="${(S.badges||{})[k]?'on':''}">${(S.badges||{})[k]?'★ ':''}${n}</span>`).join('')}</div></div>
     <div id="clearMsg"></div>
-    <div><div class="label" style="margin-bottom:6px">전교 정화 작전 (예시 숫자)</div><div id="raidHost"></div></div>
+    ${DEMO?`<div><div class="label" style="margin-bottom:6px">전교 정화 작전 (시연용 예시 숫자)</div><div id="raidHost"></div></div>`:""}
   `, body=>{
-    const rd=SpyPlus.mountRaid(body.querySelector('#raidHost'),{total:RAID.total+SpyPlus._state().contrib, goal:RAID.goal, today:RAID.today, week:w.n+'주차', name:'회색 거인'});
-    mgStop=rd.stop; raidSet=rd.set;
+    if(DEMO){ const rd=SpyPlus.mountRaid(body.querySelector('#raidHost'),{total:RAID.total+SpyPlus._state().contrib, goal:RAID.goal, today:RAID.today, week:w.n+'주차', name:'회색 거인'});
+    mgStop=rd.stop; raidSet=rd.set; }
     const slots=[...body.querySelectorAll('.slot')], tiles=[...body.querySelectorAll('.ptile')];
     let seq=[];
     const draw=()=>{ slots.forEach((s,i)=>{ s.textContent=seq[i]?seq[i].ch:''; s.classList.toggle('f',!!seq[i]); }); tiles.forEach(t=>t.classList.toggle('used',seq.some(q=>q.el===t))); };
@@ -1430,7 +1439,7 @@ function openRadio(){
     <div class="npc"><div class="portrait" style="width:64px;height:64px"><img src="img/ng-yawn.jpg" alt="늘곰"></div><div class="bubble"><span class="who">DJ 늘곰</span>${s.note}</div></div>
     <div class="row"><a class="bk sky" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.a+' '+s.t)}" target="_blank" rel="noopener">유튜브에서 듣기</a>
       <button class="bk ${S.heart?'red':''}" id="heart">${S.heart?'♥ 좋아요 보냄':'♡ 좋아요'}</button></div>
-    <p class="note">곡은 매일 본부(구글 시트)에서 바뀌어요. 위 곡은 예시예요.</p>`, b=>{
+    ${DEMO?`<p class="note">곡은 매일 본부(구글 시트)에서 바뀌어요. 위 곡은 예시예요.</p>`:""}`, b=>{
       b.querySelector('#heart').onclick=e=>{ S.heart=!S.heart; save(); e.target.className='bk '+(S.heart?'red':''); e.target.textContent=S.heart?'♥ 좋아요 보냄':'♡ 좋아요'; };
   });
 }
@@ -1449,8 +1458,8 @@ function openWeather(){
     <div class="moods">${MOODS.map(m=>`<button class="mood" data-k="${m.k}" aria-pressed="${S.mood===m.k}">${MOOD_SVG[m.k]}${m.name}</button>`).join('')}</div>
     <div id="mReply"></div>
     <div class="card"><div class="label">마음 훈련실</div><h3 style="margin-top:4px">안개 몬스터 이름 붙이기</h3><p>학교에서 있을 법한 장면 속 마음에 이름을 붙여요. 정답은 없어요. 입력한 건 저장되지 않아요.</p><div style="margin-top:10px"><button class="bk yellow wide" id="toEmo">시작하기</button></div></div>
-    <div class="card"><div class="label">오늘 요원들의 마음 날씨 (예시)</div><div class="dist" style="margin-top:8px">${MOODS.map(m=>`<div><span>${m.name}</span><span class="b"><i style="width:${SAMPLE_DIST[m.k]/34*100}%;background:${MOOD_COL[m.k]}"></i></span><span>${SAMPLE_DIST[m.k]}명</span></div>`).join('')}</div>
-      <p class="note" style="margin-top:8px">이름 없이 숫자만 모여요. 누가 뭘 골랐는지는 아무도 몰라요.</p></div>`, b=>{
+    ${DEMO?`<div class="card"><div class="label">오늘 요원들의 마음 날씨 (시연용 예시)</div><div class="dist" style="margin-top:8px">${MOODS.map(m=>`<div><span>${m.name}</span><span class="b"><i style="width:${SAMPLE_DIST[m.k]/34*100}%;background:${MOOD_COL[m.k]}"></i></span><span>${SAMPLE_DIST[m.k]}명</span></div>`).join('')}</div>
+      <p class="note" style="margin-top:8px">이름 없이 숫자만 모여요. 누가 뭘 골랐는지는 아무도 몰라요.</p></div>`:''}`, b=>{
     const rep=b.querySelector('#mReply');
     const show=k=>{ const m=MOODS.find(x=>x.k===k); const heavy=['fog','rain','storm'].includes(k);
       rep.innerHTML=`<div class="npc"><div class="portrait" style="width:72px;height:72px"><img src="img/ng-base.jpg" alt="늘곰"></div><div class="bubble"><span class="who">늘곰 소장</span>${m.reply}</div></div>
@@ -1473,7 +1482,8 @@ function openEmotion(){
 
 /* ---------- 하늘 게시판 ---------- */
 const SKY_SAMPLE=['오늘 하늘 진짜 파랬다','급식 김치볶음밥 최고였음','운동장 노을 본 사람?','천천히 가도 괜찮아','음악실 피아노 소리 좋았어','다들 시험 화이팅'];
-function skyLines(){ return SKY_SAMPLE.map(t=>({t,ex:true})).concat((S.skyOk||[]).map(t=>({t}))); }
+function skyLines(){ return (DEMO?SKY_SAMPLE.map(t=>({t,ex:true})):[]).concat((S.skyOk||[]).map(t=>({t}))); }
+const SKY_RISK=/죽고|죽을|죽어|죽는|자살|자해|극단|사라지고|없어지고|살기\s*싫|살고\s*싶지|끝내고\s*싶|힘들어서\s*못|때리|때려|맞았|맞고|괴롭|따돌|왕따|협박|무서워/;
 function skyPos(i){ const cols=[26,68,36,74,28,54,72,32,58,42,76,30]; const rows=[10,16,30,36,50,56,70,76,22,44,62,84]; return {x:cols[i%cols.length], y:rows[i%rows.length]}; }
 function drawSky(box,newIdx){
   const L=skyLines(), clear=Math.min(1, L.length/14*0.7 + progress()*0.3);
@@ -1485,23 +1495,25 @@ function openSky(){
   if(!S.skyPend) S.skyPend=[]; if(!S.skyOk) S.skyOk=[];
   sheet('하늘 게시판','안개 낀 하늘에 한 줄 띄우기',`
     <div class="skybox" id="skyBox"><div class="skyfog"></div><div class="skymsgs"></div></div>
-    <p class="note">요원들이 남긴 한 줄이 하늘에 뜰 때마다 그 주변 안개가 걷혀요. 본부가 읽고 승인한 글만 떠요.</p>
+    <p class="note">${DEMO?"요원들이 남긴 한 줄이 하늘에 뜰 때마다 그 주변 안개가 걷혀요. (시연: 아직 본부와 연결되지 않아 이 휴대폰 안에서만 보여요.)":"내가 띄운 한 줄마다 하늘의 안개가 걷혀요. 이 글은 이 휴대폰에만 저장되고, 다른 사람에게는 보이지 않아요."}</p>
     <div class="card"><div class="label">한 줄 남기기 · 이름 없이</div>
-      <div class="skyin"><input id="skyText" maxlength="30" placeholder="오늘 본 하늘, 고마운 일, 응원 한마디" autocomplete="off"><button class="bk green" id="skySend">보내기</button></div>
+      <div class="skyin"><input id="skyText" maxlength="30" placeholder="오늘 본 하늘, 고마운 일, 응원 한마디" autocomplete="off"><button class="bk green" id="skySend">띄우기</button></div>
       <p class="note" id="skyMsg" style="margin-top:6px">30자까지 쓸 수 있어요. 이름이나 연락처, 친구 이름은 쓰지 않기.</p>
       <p class="note" style="margin-top:6px">힘든 마음은 하늘보다 사람에게 먼저 털어놓아요. <button class="linkbtn" id="skyHelp">Wee클래스 · 1388 안내</button></p></div>
-    <details class="card review"><summary>선생님 검토 (시연)</summary>
+    ${DEMO?`<details class="card review"><summary>선생님 검토 (시연)</summary>
       <p class="note" style="margin:8px 0">실제 운영에서는 구글 시트 '하늘' 탭의 승인 칸을 체크하면 공개돼요. 시연에서는 이 휴대폰 안에서만 승인돼요.</p>
       <div class="skyin"><input id="skyPin" inputmode="numeric" maxlength="4" placeholder="교사 PIN (시연 1234)" autocomplete="off"><button class="bk" id="skyPinGo">열기</button></div>
-      <div id="skyQueue" style="margin-top:10px"></div></details>`, b=>{
+      <div id="skyQueue" style="margin-top:10px"></div></details>`:''}`, b=>{
     const box=b.querySelector('#skyBox'), msg=b.querySelector('#skyMsg');
     drawSky(box);
-    const pendNote=()=>{ msg.textContent = S.skyPend.length ? `본부 검토 중인 내 글 ${S.skyPend.length}개. 승인되면 하늘에 떠요.` : '30자까지 쓸 수 있어요. 이름이나 연락처, 친구 이름은 쓰지 않기.'; };
+    const pendNote=()=>{ msg.textContent = (DEMO&&S.skyPend.length) ? `검토 대기 중인 내 글 ${S.skyPend.length}개 (시연: 이 휴대폰 안에만 있어요).` : '30자까지 쓸 수 있어요. 이름이나 연락처, 친구 이름은 쓰지 않기.'; };
     pendNote();
     b.querySelector('#skySend').onclick=()=>{ const inp=b.querySelector('#skyText'); const t=inp.value.trim().slice(0,30); if(!t){ msg.textContent='한 줄을 먼저 써 주세요.'; return; }
-      S.skyPend.push(t); save(); inp.value=''; pendNote(); toast('본부로 보냈어요. 검토 후 하늘에 떠요.'); };
-    b.querySelector('#skyHelp').onclick=openPhone;
-    const q=b.querySelector('#skyQueue');
+      if(SKY_RISK.test(t)){ inp.value=''; openPhone('방금 쓴 말이 마음에 걸린다. 그 글은 어디에도 보내지 않았다. 혼자 버티지 말고, 아래 번호로 지금 이야기해 보자.'); return; }
+      if(DEMO){ S.skyPend.push(t); save(); inp.value=''; pendNote(); toast('이 휴대폰에 저장했어요. (시연: 아직 본부로 전송되지는 않아요)'); }
+      else { S.skyOk.push(t); if(S.skyOk.length>12) S.skyOk.shift(); save(); inp.value=''; drawSky(box, skyLines().length-1); toast('하늘에 띄웠어요. 이 휴대폰에만 저장돼요.'); } };
+    b.querySelector('#skyHelp').onclick=()=>openPhone();
+    const q=b.querySelector('#skyQueue'); if(!q) return;
     const drawQ=()=>{ q.innerHTML = S.skyPend.length ? S.skyPend.map((t,i)=>`<div class="qrow"><span>${t.replace(/[<>&]/g,'')}</span><button class="bk green" data-ok="${i}">승인</button><button class="bk" data-no="${i}">반려</button></div>`).join('') : '<p class="note">검토할 글이 없어요.</p>';
       q.querySelectorAll('[data-ok]').forEach(x=>x.onclick=()=>{ const t=S.skyPend.splice(+x.dataset.ok,1)[0]; S.skyOk.push(t); save(); drawQ(); pendNote(); drawSky(box, skyLines().length-1); box.scrollIntoView({behavior:'smooth',block:'nearest'}); });
       q.querySelectorAll('[data-no]').forEach(x=>x.onclick=()=>{ S.skyPend.splice(+x.dataset.no,1); save(); drawQ(); pendNote(); }); };
@@ -1510,10 +1522,10 @@ function openSky(){
 }
 
 /* ---------- 전화 ---------- */
-function openPhone(){
+function openPhone(lead){ if(typeof lead!=='string') lead='';
   const L=(cls,title,num,tel,desc)=>`<div class="line ${cls}"><h3>${title}</h3><div class="num">${num}</div><div class="acts">${tel?`<a class="bk green" href="tel:${tel}">전화</a><button class="bk" data-copy="${num}">번호 복사</button>`:''}</div><p>${desc}</p></div>`;
   sheet('본부 전화','혼자 버티지 않아도 돼요',`
-    <div class="npc"><div class="portrait pt-chick"><img src="img/chick.png" alt="병아리 요원"></div><div class="bubble"><span class="who">병아리 요원</span>요원도 가끔은 지원 요청을 한다 삐약. 그게 진짜 프로다 삐약. 비밀은 꼭 지켜진다 삐약.</div></div>
+    <div class="npc"><div class="portrait pt-bear"><img src="img/neulgom-head.png" alt="늘곰 소장"></div><div class="bubble"><span class="who">늘곰 소장</span>${lead||"힘들 때 도움을 청하는 건 요원의 기본 수칙이다. 아래 번호는 언제든 열려 있다."} 상담한 내용은 함부로 알려지지 않는다. 다만 네 안전이 걱정될 때는, 너를 지키려고 도와줄 어른에게 알릴 수 있다.</div></div>
     ${L('hq','Wee클래스 (비밀 본부)','3층','', '쉬는 시간, 점심시간에 그냥 들러도 돼요. 전문상담 선생님이 기다려요.')}
     ${L('','청소년상담 1388','1388','1388','24시간 · 전화. 문자는 #1388, 카카오톡은 「청소년상담1388」 채널. 고민 무엇이든.')}
     ${L('','자살예방 상담전화','109','109','24시간. 죽고 싶다는 생각이 들 때, 주변 사람이 걱정될 때.')}
@@ -1554,6 +1566,7 @@ function openCloset(){
 function lobby(){
   $('#lobbyAv').innerHTML=avatarSVG(S.av);
   $('#spyCode').innerHTML=`${S.code} <button id="codeRe" style="font:inherit;font-size:12px;border:2px solid var(--ink);border-radius:6px;background:#fff;padding:2px 6px;margin-left:4px">다시 뽑기</button>`; $('#codeRe').onclick=()=>{ S.code=newCode(); save(); lobby(); };
+  $('#demoBox').hidden=!DEMO;
   $('#weekChips').innerHTML=WEEKS.map(w=>`<button class="chip" data-w="${w.n}" aria-pressed="${S.week===w.n}">${w.n}주 ${w.sense}</button>`).join('');
   document.querySelectorAll('#weekChips .chip').forEach(c=>c.onclick=()=>{ S.week=+c.dataset.w; save(); lobby(); });
 }
@@ -1804,5 +1817,5 @@ $('#hudPet').onclick=openPet;
 SpyPlus.on('xp',()=>{ const h=$('#hudRank'); if(h) h.innerHTML=SpyPlus.rankHTML(); });
 SpyPlus.on('report',()=>{ if(raidSet && !$('#sheet').hidden) raidSet({total:RAID.total+SpyPlus._state().contrib}); });
 lobby();
-if(SpyPlus.isCurfew()) SpyPlus.nightGuard({img:'img/ng-yawn.jpg', demo:true});
+if(SpyPlus.isCurfew()) SpyPlus.nightGuard({img:'img/ng-yawn.jpg', demo:DEMO});
 </script>

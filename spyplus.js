@@ -452,7 +452,7 @@ function mountCode(host){ injectCSS(); const root=el('div','sp sp-code'); host.i
     <input id="ci" maxlength="16" placeholder="코드" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="비밀 코드">
     <button class="b g w" id="cb">확인</button>
     <p class="res" id="cr"></p></div>
-    <div class="card"><h4 style="font-size:17px;margin-bottom:4px">코드가 숨어 있는 곳 (운영 예시)</h4>
+    <div class="card"><h4 style="font-size:17px;margin-bottom:4px">코드가 숨어 있는 곳</h4>
     <ul><li>마음돌봄 부스 6곳 입구 안내판</li><li>3층 Wee클래스 문 앞 늘곰 포스터</li><li>웹앱 본부 라디오 '오늘의 추천곡' 아래 한마디</li><li>전교 정화 작전 100% 달성 시 공개</li></ul></div>`;
   const ci=root.querySelector('#ci'), cr=root.querySelector('#cr');
   async function go(){ const c=norm(ci.value); if(!c) return; let h=''; try{ h=await sha(c); }catch(e){ cr.textContent='이 기기에서는 코드 확인이 안 돼요'; return; }
@@ -484,7 +484,7 @@ function mountRaid(host,opts){ injectCSS(); opts=Object.assign({total:0,goal:900
 
 /* ---------------- 본부 소등 ---------------- */
 function nightGuard(opts){ injectCSS(); opts=opts||{}; const old=document.querySelector('.sp-night'); if(old) old.remove(); if(!isCurfew()) return false;
-  const d=el('div','sp sp-night',`<div class="stars"></div><img src="${(opts.img||'img/yawn.png')}" alt="하품하는 늘곰"><h3>본부 소등</h3><p>밤 10시부터 아침 6시까지는 늘곰 소장도 자요. 요원의 가장 중요한 임무는 잠. 오늘 모은 장비와 기록은 그대로 저장돼 있어요.</p><p class="help">마음이 너무 힘든 밤이라면 지금도 1388(문자 #1388)에서 24시간 이야기를 들어줘요.</p>`);
+  const d=el('div','sp sp-night',`<div class="stars"></div><img src="${(opts.img||'img/yawn.png')}" alt="하품하는 늘곰"><h3>본부 소등</h3><p>밤 10시부터 아침 6시까지는 늘곰 소장도 자요. 요원의 가장 중요한 임무는 잠. 오늘 모은 장비와 기록은 그대로 저장돼 있어요.</p><div class="help" style="margin-top:14px"><p style="margin:0 0 4px;font-weight:700">마음이 너무 힘든 밤이라면 지금 바로 전화해도 된다. 24시간 받는다.</p><a href="tel:109" style="display:block;margin:8px auto 0;max-width:300px;padding:14px 10px;border-radius:14px;border:3px solid #1a1917;font-size:19px;font-weight:800;text-decoration:none;color:#1a1917;background:#f3c744">109 전화하기<br><span style="font-size:13px;font-weight:600">자살예방 상담전화</span></a><a href="tel:1388" style="display:block;margin:8px auto 0;max-width:300px;padding:14px 10px;border-radius:14px;border:3px solid #1a1917;font-size:19px;font-weight:800;text-decoration:none;color:#1a1917;background:#fffaf0">1388 전화하기<br><span style="font-size:13px;font-weight:600">청소년 상담전화 · 문자는 #1388</span></a></div>`);
   if(opts.demo){ const b=el('button','b y','시연: 다시 켜기'); b.onclick=()=>{ demoTime=null; d.remove(); opts.onWake&&opts.onWake(); }; d.appendChild(b); }
   document.body.appendChild(d); return true; }
 

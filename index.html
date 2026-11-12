@@ -1843,9 +1843,9 @@ function openSquish(host,onDone,toy){
   host.innerHTML=`<div class="squish"><div class="sqhead"><b>${T.name}</b><span>말랑이</span></div><p class="note">${T.hint}</p><div class="sqstage" id="sq"></div><div class="sqcount" id="sqc"></div></div>`;
   const st=host.querySelector('#sq'), cnt=host.querySelector('#sqc'); let done=false;
   const fin=()=>{ buzz([20,40,20]); if(!done){ done=true; onDone&&onDone(); } };
-  if(n===1) softToy(st,cnt,fin,{items:[{img:'proc:apple',name:'사과'},{img:'proc:peach',name:'복숭아'},{img:'proc:mandarin',name:'귤'}], k:150,c:8,kn:60,drag:.55,need:10,label:'말랑',words:['말랑','탱글','몰캉','통통','쫀득']});
-  else if(n===2) softToy(st,cnt,fin,{items:[{img:'proc:butter',name:'버터 슬랑이'}], k:190,c:26,kn:30,drag:.5,plastic:5,need:10,label:'모양 내기',words:['쏙','푹','스윽','쑥'],reset:'다시 뭉치기'});
-  else if(n===3) softToy(st,cnt,fin,{items:[{img:'proc:mochi',name:'찹쌀떡'}], k:70,c:6.5,kn:45,drag:1.15,need:8,label:'쫀득',words:['쫀득','쭈욱','말랑','쫄깃']});
+  if(n===1) softToy(st,cnt,fin,{items:[{img:'img/sq-apple.webp',name:'사과'},{img:'img/sq-peach.webp',name:'복숭아'},{img:'img/sq-mandarin.webp',name:'귤'}], k:150,c:8,kn:60,drag:.55,need:10,label:'말랑',words:['말랑','탱글','몰캉','통통','쫀득']});
+  else if(n===2) softToy(st,cnt,fin,{items:[{img:'img/sq-butter.webp',name:'버터 슬랑이'}], k:190,c:26,kn:30,drag:.5,plastic:5,need:10,label:'모양 내기',words:['쏙','푹','스윽','쑥'],reset:'다시 뭉치기'});
+  else if(n===3) softToy(st,cnt,fin,{items:[{img:'img/sq-mochi.webp',name:'찹쌀떡'}], k:70,c:6.5,kn:45,drag:1.15,need:8,label:'쫀득',words:['쫀득','쭈욱','말랑','쫄깃']});
   else waxToy(st,cnt,fin);
 }
 /* ---- 말랑이 그림: 코드로 그린 실물풍 텍스처 (img/sq-*.png 파일이 있으면 그 파일로 바꿔 끼울 수 있음) ---- */
@@ -1989,9 +1989,10 @@ function wxBoing(p){ const A=wxAudio(); if(!A) return; try{ const t=A.currentTim
   g.gain.setValueAtTime(.2,t); g.gain.exponentialRampToValueAtTime(.001,t+.22); o.connect(g); g.connect(A.destination); o.start(t); o.stop(t+.23); }catch(e){} }
 
 function waxToy(st,cnt,finish){
-  const COL=[ // [진한색, 밝은색, 속 젤리, 이름]
-    ['#d4502d','#ff9a78','#ffd9c9','홍시','#7a2410'],['#e9a514','#ffe08a','#fff3c4','꿀','#8a5a00'],['#3f9f5a','#a6e3a1','#dff7d6','청포도','#1c5a30'],
-    ['#2f86c9','#9fd4ff','#dcefff','소다','#154a78'],['#7a56c2','#c9b2ff','#ebe1ff','포도','#3d2478'],['#c9365e','#ff9db5','#ffdbe5','딸기','#74122e']];
+  const COL=[ // [진한색, 밝은색, 속 젤리, 이름, 어두운색, 그림 번호]
+    ['#e06a12','#ffb46a','#ffe0bf','꿀','#7a3206',0],['#d3202f','#ff8f98','#ffd5d2','딸기','#74101c',1],['#4faa1e','#b6ee8a','#dcf7c8','청포도','#225a0c',2],['#1e9fc9','#9fe0f5','#d5eefc','소다','#0c5878',3]];
+  COL.forEach(c=>{ sqImg(`img/sq-candy-${c[5]}.webp`); sqImg(`img/sq-jelly-${c[5]}.webp`); });
+  const ok=i=>i&&i.complete&&i.naturalWidth; let cimg=null, jimg=null;
   st.style.height='310px'; st.style.background='radial-gradient(circle at 50% 38%,#fffaf0,#f1dfb8)';
   st.innerHTML='<canvas class="wxcv" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none"></canvas><button class="bk yellow wxagain" id="wxa" hidden>하나 더 깨기</button>';
   const cv=st.querySelector('canvas'), g=cv.getContext('2d'), again=st.querySelector('#wxa');
@@ -2012,13 +2013,14 @@ function waxToy(st,cnt,finish){
         poly=out; });
       let mx=0,my=0; poly.forEach(p=>{mx+=p[0];my+=p[1];}); mx/=poly.length||1; my/=poly.length||1;
       return {poly, c:[mx,my], dmg:0, on:poly.length>=3, tough:.8+Math.random()*.5, jit:[0,0]}; }).filter(x=>x.on);
+    cimg=sqImg(`img/sq-candy-${col[5]}.webp`); jimg=sqImg(`img/sq-jelly-${col[5]}.webp`);
     hair=[]; fly=[]; dust=[]; pops=[]; total=shards.length; gone=0; phase='shell'; sq=0; s=0; sv=0; jk=0; jv=0; jx=jy=tx=ty=0; hold=null; dropY=-H*.7; dropV=0; again.hidden=true;
     cnt.textContent=`${col[3]}맛 왁뿌볼 · 겉을 두드리거나 문질러서 깨요`;
   }
   const local=e=>{ const r=cv.getBoundingClientRect(); return [((e.clientX-r.left)-cx)/R, ((e.clientY-r.top)-cy-dropY)/R]; };
   function popShard(sh,hx,hy,power){ sh.on=false; gone++;
     const dx=sh.c[0]-hx*.35, dy=sh.c[1]-hy*.35, L=Math.hypot(dx,dy)||1, sp=(150+Math.random()*190)*(.7+power*.5);
-    fly.push({poly:sh.poly.map(p=>[(p[0]-sh.c[0])*R,(p[1]-sh.c[1])*R]), x:cx+sh.c[0]*R, y:cy+sh.c[1]*R, vx:dx/L*sp+(Math.random()-.5)*60, vy:dy/L*sp-120-Math.random()*120, r:0, vr:(Math.random()-.5)*14, t:0, b:0, lite:Math.random()<.4});
+    fly.push({ox:sh.c[0]*R, oy:sh.c[1]*R, poly:sh.poly.map(p=>[(p[0]-sh.c[0])*R,(p[1]-sh.c[1])*R]), x:cx+sh.c[0]*R, y:cy+sh.c[1]*R, vx:dx/L*sp+(Math.random()-.5)*60, vy:dy/L*sp-120-Math.random()*120, r:0, vr:(Math.random()-.5)*14, t:0, b:0, lite:Math.random()<.4});
     for(let i=0;i<5;i++) dust.push({x:cx+sh.c[0]*R,y:cy+sh.c[1]*R,vx:(Math.random()-.5)*260,vy:-Math.random()*240-20,t:0,z:1.5+Math.random()*2.5,w:Math.random()<.5});
     hair=hair.filter(h=>h.sh!==sh); }
   function hit(x,y,power,quiet){ if(phase!=='shell') return 0; const d0=Math.hypot(x,y); if(d0>1.04) return 0;
@@ -2069,14 +2071,14 @@ function waxToy(st,cnt,finish){
     // 속 젤리
     g.save(); g.translate(jx,jy+R); g.scale(1+jk,1-jk); g.translate(0,-R);
     const rc=R-7, cg=g.createRadialGradient(-rc*.35,-rc*.4,rc*.05,0,0,rc*1.05); cg.addColorStop(0,'#fff'); cg.addColorStop(.3,col[2]); cg.addColorStop(1,col[1]);
-    g.beginPath(); g.arc(0,0,rc,0,6.283); g.fillStyle=cg; g.fill(); g.lineWidth=1.5; g.strokeStyle=col[0]; g.globalAlpha=.5; g.stroke(); g.globalAlpha=1;
+    if(ok(jimg)){ g.drawImage(jimg,-rc,-rc,rc*2,rc*2); g.restore(); } else { g.beginPath(); g.arc(0,0,rc,0,6.283); g.fillStyle=cg; g.fill(); g.lineWidth=1.5; g.strokeStyle=col[0]; g.globalAlpha=.5; g.stroke(); g.globalAlpha=1;
     g.fillStyle='rgba(255,255,255,.8)'; g.beginPath(); g.ellipse(-rc*.38,-rc*.45,rc*.26,rc*.13,-.6,0,6.283); g.fill();
     g.fillStyle='rgba(255,255,255,.55)'; [[.3,.35,.07],[.5,.05,.04],[-.2,.5,.05],[.05,-.1,.03]].forEach(b=>{ g.beginPath(); g.arc(b[0]*rc,b[1]*rc,b[2]*rc,0,6.283); g.fill(); });
-    g.restore();
+    g.restore(); }
     // 껍질
-    if(gone<total){ ballPath(); g.lineJoin='round'; g.lineWidth=3.5; g.strokeStyle=col[4]; g.stroke();
+    if(gone<total){ ballPath(); g.lineJoin='round'; if(!ok(cimg)){ g.lineWidth=3.5; g.strokeStyle=col[4]; g.stroke(); }
       const sg=g.createRadialGradient(-R*.35,-R*.42,R*.06,0,0,R*1.08); sg.addColorStop(0,'#fff'); sg.addColorStop(.16,col[1]); sg.addColorStop(.72,col[0]); sg.addColorStop(1,col[4]);
-      ballPath(); g.fillStyle=sg; g.fill(); g.lineWidth=1.2; g.strokeStyle=sg; g.stroke();
+      if(ok(cimg)){ g.save(); ballPath(); g.clip(); g.drawImage(cimg,-R,-R,R*2,R*2); g.restore(); } else { ballPath(); g.fillStyle=sg; g.fill(); g.lineWidth=1.2; g.strokeStyle=sg; g.stroke(); }
       g.save(); ballPath(); g.clip();
       // 금
       shards.forEach(sh=>{ if(!sh.on||sh.dmg<=0) return; const a=Math.min(1,sh.dmg*1.5); const P=sh.poly;
@@ -2084,16 +2086,16 @@ function waxToy(st,cnt,finish){
           g.lineWidth=pass?1.7:1.2; g.strokeStyle=pass?`rgba(255,255,255,${a})`:`rgba(26,25,23,${a*.35})`; g.stroke(); } });
       g.lineWidth=1.1; g.strokeStyle='rgba(255,255,255,.85)'; g.beginPath(); hair.forEach(h=>{ h.pts.forEach((p,i)=>{ i?g.lineTo(p[0]*R,p[1]*R):g.moveTo(p[0]*R,p[1]*R); }); }); g.stroke();
       // 윤기
-      g.fillStyle='rgba(255,255,255,.78)'; g.beginPath(); g.ellipse(-R*.4,-R*.5,R*.3,R*.14,-.62,0,6.283); g.fill();
+      if(!ok(cimg)){ g.fillStyle='rgba(255,255,255,.78)'; g.beginPath(); g.ellipse(-R*.4,-R*.5,R*.3,R*.14,-.62,0,6.283); g.fill();
       g.fillStyle='rgba(255,255,255,.6)'; g.beginPath(); g.arc(-R*.62,-R*.18,R*.05,0,6.283); g.fill();
-      g.strokeStyle='rgba(255,255,255,.3)'; g.lineWidth=R*.07; g.lineCap='round'; g.beginPath(); g.arc(0,0,R*.8,.5,1.35); g.stroke();
+      g.strokeStyle='rgba(255,255,255,.3)'; g.lineWidth=R*.07; g.lineCap='round'; g.beginPath(); g.arc(0,0,R*.8,.5,1.35); g.stroke(); }
       g.restore(); }
     g.restore();
     // 날아가는 조각
     fly=fly.filter(f=>f.t<1.5); fly.forEach(f=>{ f.t+=dt; f.vy+=1500*dt; f.x+=f.vx*dt; f.y+=f.vy*dt; f.r+=f.vr*dt;
       if(f.y>fy&&f.vy>0&&f.b<2){ f.y=fy; f.vy*=-.38; f.vx*=.6; f.vr*=.5; f.b++; if(f.b===1) wxTick(.18,3000+Math.random()*2500,.02,0,7); }
       g.save(); g.globalAlpha=Math.max(0,Math.min(1,(1.5-f.t)*2.5)); g.translate(f.x,f.y); g.rotate(f.r); g.beginPath(); f.poly.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); g.closePath();
-      const fg=g.createLinearGradient(-14,-14,14,14); fg.addColorStop(0,col[1]); fg.addColorStop(.5,col[0]); fg.addColorStop(1,col[4]); g.fillStyle=fg; g.fill(); g.lineWidth=1; g.strokeStyle='rgba(255,255,255,.7)'; g.stroke(); g.fillStyle='rgba(255,255,255,.55)'; g.beginPath(); g.arc(f.poly[0][0]*.3,f.poly[0][1]*.3,2.2,0,6.283); g.fill(); g.restore(); });
+      const fg=g.createLinearGradient(-14,-14,14,14); fg.addColorStop(0,col[1]); fg.addColorStop(.5,col[0]); fg.addColorStop(1,col[4]); if(ok(cimg)){ g.save(); g.clip(); g.drawImage(cimg,-R-f.ox,-R-f.oy,R*2,R*2); g.restore(); } else { g.fillStyle=fg; g.fill(); } g.lineWidth=1; g.strokeStyle='rgba(255,255,255,.7)'; g.stroke(); g.fillStyle='rgba(255,255,255,.55)'; g.beginPath(); g.arc(f.poly[0][0]*.3,f.poly[0][1]*.3,2.2,0,6.283); g.fill(); g.restore(); });
     dust=dust.filter(d=>d.t<.7); dust.forEach(d=>{ d.t+=dt; d.vy+=900*dt; d.x+=d.vx*dt; d.y+=d.vy*dt; g.globalAlpha=1-d.t/.7; g.fillStyle=d.w?'#fff':col[1]; g.fillRect(d.x,d.y,d.z,d.z); }); g.globalAlpha=1;
     pops=pops.filter(p=>p.t<.8); pops.forEach(p=>{ p.t+=dt; const k=Math.min(1,p.t/.12); g.globalAlpha=Math.max(0,1-(p.t-.4)/.4); g.font=`900 ${(p.big?26:17)*(.6+.4*k)}px system-ui,sans-serif`; g.textAlign='center';
       const X=Math.max(40,Math.min(W-40,p.x)), Y=Math.max(22,p.y-p.t*38); g.lineWidth=4; g.strokeStyle='#fffaf0'; g.strokeText(p.s,X,Y); g.fillStyle='#1a1917'; g.fillText(p.s,X,Y); }); g.globalAlpha=1;

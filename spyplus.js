@@ -179,7 +179,7 @@ const GEAR=[
 const RNAME=['흔함','희귀','전설'];
 const RCOL=['#d7dbe0','#4aa6e8','#ffcc33'];
 /* 비밀 코드: 원문 대신 SHA-256만 저장(소스를 열어도 코드가 안 보이게). 운영 시 시트 '코드' 탭에서 바꾸면 됨.
-   시연용 코드: WEE3F, SKY10, 룰루랄라, DDAY1215, 천천히, 무지개 */
+   코드 원문은 저장소에 적지 않음(선생님 운영 안내서에 있음) */
 let codeTable={ // 시연용 기본 코드(해시). 운영 시 setCodes()로 교체
  "c4e23c5aef434f5d0cc64405a13e2a77c36e9c933634a2e11e936611cacb564c":{gear:"badge",msg:"Wee클래스 요원 인증!"},
  "2227c82f548a2163ba2cacf7c057b2750de704f02921d563cac747b628cba682":{gear:"scope",msg:"하늘을 10초 본 요원에게"},
@@ -475,7 +475,7 @@ function mountRaid(host,opts){ injectCSS(); opts=Object.assign({total:0,goal:900
       <div class="sp-boss">${bossSVG(p)}${p>=1?'<div style="position:absolute;font-family:var(--fd);font-size:30px;color:#fff;-webkit-text-stroke:1.5px #1c2130">정화 완료!</div>':''}</div>
       <div class="sp-hp"><i style="width:${(1-p)*100}%"></i><span>${opts.name} 안개 ${left} 남음</span></div>
       <p class="muted">전교 요원이 문을 통과하거나 미니게임·지령을 마칠 때마다 안개가 1씩 줄어요. 누가 했는지는 기록하지 않고 숫자만 더해요. 반별 순위도 없어요.</p>
-      <div class="sp-stat"><div><b>${total}</b><span>이번 주 전교 정화 횟수</span></div><div><b>${opts.today}</b><span>오늘 출근한 요원 수</span></div></div>
+      <div class="sp-stat"><div><b>${total}</b><span>전교 정화 횟수(누적)</span></div><div><b>${opts.today}</b><span>오늘 출근한 요원 수</span></div></div>
     </div>
     <div class="card"><h4 style="font-size:17px;margin-bottom:8px">함께 깨면 열리는 것</h4><ul class="sp-ms">${MS.map(([q,txt])=>`<li class="${p>=q?'ok':''}"><i>${p>=q?'✓':Math.round(q*100)}</i>${Math.round(q*100)}% · ${txt}</li>`).join('')}</ul>
     <p class="muted" style="margin-top:8px">내가 보탠 정화: ${S.contrib}회</p></div>`; }

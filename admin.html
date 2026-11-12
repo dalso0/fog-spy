@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>본부 관리실</title>
+<style>
+:root{--ink:#1a1917;--paper:#fffaf0;--bg:#f3ead8;--red:#e0522f;--green:#3dbb5c;--green-d:#2a8f45;--sky:#4aa6e8;--yellow:#ffcc33;--muted:#6b665e;--line:#d9cfbc;--r:10px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f3ede2;--paper:#24221f;--bg:#171614;--muted:#aaa397;--line:#3a3631}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:860px;margin:0 auto;padding:16px 16px 60px}
+h1{font-size:22px;margin:4px 0 2px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+.card{background:var(--paper);border:2px solid var(--ink);border-radius:var(--r);padding:14px;margin:12px 0;box-shadow:0 3px 0 var(--ink)}
+.card h2{font-size:17px;margin:0 0 8px}
+button,.btn{font:inherit;font-weight:800;border:2px solid var(--ink);border-radius:8px;background:#fff;color:#1a1917;padding:7px 12px;cursor:pointer;box-shadow:0 2px 0 var(--ink);text-decoration:none;display:inline-block}
+button:active{transform:translateY(2px);box-shadow:none}
+button:disabled{opacity:.5}
+.ok{background:var(--green);color:#fff}.no{background:#eee}.warn{background:var(--yellow)}
+input,textarea{font:inherit;border:2px solid var(--ink);border-radius:8px;padding:8px 10px;width:100%;background:#fff;color:#1a1917}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 4px}
+.tabs button[aria-selected=true]{background:var(--ink);color:var(--paper)}
+.post{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.post:first-child{border-top:0}
+.post .t{font-size:16px;font-weight:700;word-break:break-all}
+.post .m{font-size:12px;color:var(--muted)}
+.flag{display:inline-block;background:var(--red);color:#fff;border-radius:6px;padding:1px 6px;font-size:12px;font-weight:800;margin-right:4px}
+.pill{display:inline-block;border:1.5px solid var(--ink);border-radius:999px;padding:0 8px;font-size:12px;font-weight:800}
+.pill.p공개{background:var(--green);color:#fff;border-color:var(--green)}.pill.p숨김{background:#999;color:#fff;border-color:#999}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.kpi{border:2px solid var(--ink);border-radius:8px;padding:8px 10px;background:#fff;color:#1a1917}
+.kpi b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12.5px;color:#6b665e;font-weight:700}
+.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;min-width:100%}
+th,td{border:1px solid var(--line);padding:5px 7px;text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--paper)}
+thead th{background:var(--paper);font-size:12px}
+.note{font-size:12.5px;color:var(--muted)}
+.err{color:var(--red);font-weight:800}
+.help{background:#fff1f0;border-color:var(--red)}
+.help p{margin:4px 0}
+.empty{color:var(--muted);padding:6px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>본부 관리실</h1>
+  <p class="sub">회색 안개 작전 · 선생님 전용. 학생 이름이나 요원 코드는 여기에도 없습니다.</p>
+
+  <div class="card" id="login">
+    <h2>관리 비밀번호</h2>
+    <p class="note" id="cfgNote">구글 시트 '설정' 탭의 '관리 비밀번호'를 넣어 주세요.</p>
+    <form class="row" id="lf" onsubmit="return false">
+      <input id="pw" type="password" autocomplete="current-password" placeholder="비밀번호" style="flex:1;min-width:160px">
+      <button class="ok" id="go">들어가기</button>
+    </form>
+    <p class="err" id="lerr"></p>
+  </div>
+
+  <div id="main" hidden>
+    <div class="row" style="justify-content:space-between">
+      <div class="tabs" role="tablist">
+        <button role="tab" data-t="sky" aria-selected="true">하늘 게시판 <span id="pendN"></span></button>
+        <button role="tab" data-t="stats" aria-selected="false">참여 숫자</button>
+        <button role="tab" data-t="notice" aria-selected="false">공지</button>
+      </div>
+      <div class="row"><button id="reload">새로고침</button><a class="btn" id="sheetLink" target="_blank" rel="noopener">구글 시트 열기</a></div>
+    </div>
+    <p class="note" id="stamp"></p>
+
+    <section data-p="sky">
+      <div class="card help" id="riskCard" hidden>
+        <h2>걱정되는 말이 담긴 글이 있어요</h2>
+        <p>아래 빨간 표시 글은 학생 앱에는 보이지 않아요(대기 상태). 글쓴이는 알 수 없으니, 다음 날 전체 공지나 Wee클래스 홍보로 도움을 청할 곳을 한 번 더 알려 주세요.</p>
+        <p class="note">학생 앱은 걱정되는 단어를 쓰면 글을 보내지 않고 바로 도움전화(Wee클래스·1388·109)를 먼저 보여 줍니다. 이 목록에 있는 건 그 검사를 피해 들어온 글이에요.</p>
+      </div>
+      <div class="card"><h2>확인 기다리는 글</h2><div id="pend"></div></div>
+      <div class="card"><h2>하늘에 떠 있는 글 <span class="note">(최근 20개가 학생 앱에 보여요)</span></h2><div id="pub"></div></div>
+      <details class="card"><summary><b>숨긴 글</b></summary><div id="hid" style="margin-top:8px"></div></details>
+    </section>
+
+    <section data-p="stats" hidden>
+      <div class="card"><h2>한눈에 보기</h2><div class="kpis" id="kpis"></div>
+        <p class="note" style="margin-top:8px">숫자는 휴대폰 기준이에요. 같은 휴대폰은 하루 한 번만 '접속'으로 세고, 한 학생이 휴대폰 두 대를 쓰면 2로 세요. 참여율은 전교생 <input id="total" type="number" min="1" value="180" style="width:70px;padding:2px 6px;display:inline-block">명 기준.</p></div>
+      <div class="card"><h2>주차별 합계</h2><div class="tbl" id="weekly"></div></div>
+      <div class="card"><h2>날짜별 기록</h2><div class="tbl" id="daily"></div>
+        <div class="row" style="margin-top:10px"><button id="csv">CSV로 내려받기</button><span class="note">계획서·결과 보고서 표에 붙여 넣을 때 쓰세요.</span></div></div>
+    </section>
+
+    <section data-p="notice" hidden>
+      <div class="card"><h2>학생 앱 첫 화면 공지</h2>
+        <p class="note">한 줄(60자까지). 비우면 공지가 사라져요. 바꾸면 1분 안에 학생 앱에 반영돼요.</p>
+        <input id="notice" maxlength="60" placeholder="예) 이번 주 목요일 저녁은 암호 해독의 날!">
+        <div class="row" style="margin-top:8px"><button class="ok" id="saveNotice">저장</button><button id="clearNotice">공지 내리기</button><span id="nmsg" class="note"></span></div></div>
+      <div class="card"><h2>오늘의 곡 바꾸기</h2>
+        <p class="note">구글 시트 '음악' 탭에 날짜(2026-11-16 형식)·곡 제목·가수·늘곰 한마디를 적으면 그날 라디오에 나와요. 비워 두면 앱에 들어 있는 곡이 순서대로 나와요.</p></div>
+    </section>
+  </div>
+</div>
+
+<script src="config.js" charset="utf-8"></script>
+<script>
+const URL_=(window.HQ_URL||'').trim();
+const $=s=>document.querySelector(s);
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let PW='', D=null;
+try{ PW=sessionStorage.getItem('fog-admin')||''; }catch(e){}
+try{ const t=localStorage.getItem('fog-admin-total'); if(t) $('#total').value=t; }catch(e){}
+
+if(!URL_){ $('#cfgNote').innerHTML='<span class="err">아직 본부 서버 주소가 config.js에 들어가 있지 않아요.</span> 운영 안내서의 "서버 연결" 단계를 먼저 해 주세요.'; $('#go').disabled=true; }
+
+function call(body){
+  return fetch(URL_,{method:'POST',body:JSON.stringify(Object.assign({a:'admin',pw:PW},body||{})),headers:{'Content-Type':'text/plain;charset=utf-8'}}).then(r=>r.json());
+}
+function load(body){
+  $('#stamp').textContent='불러오는 중…';
+  return call(body).then(j=>{
+    if(!j||!j.ok){
+      if(j&&j.msg==='pw'){ PW=''; try{sessionStorage.removeItem('fog-admin')}catch(e){} showLogin('비밀번호가 맞지 않아요.'); }
+      else if(j&&j.msg==='locked'){ showLogin('비밀번호를 여러 번 틀려서 10분 동안 잠겼어요.'); }
+      else showLogin('서버 응답이 이상해요: '+esc(j&&j.msg||'?'));
+      return;
+    }
+    D=j; try{ sessionStorage.setItem('fog-admin',PW); }catch(e){}
+    $('#login').hidden=true; $('#main').hidden=false; render();
+  }).catch(e=>{ showLogin('서버에 연결하지 못했어요. 인터넷 연결이나 서버 주소를 확인해 주세요.'); });
+}
+function showLogin(msg){ $('#login').hidden=false; $('#main').hidden=true; $('#lerr').textContent=msg||''; }
+$('#go').onclick=()=>{ PW=$('#pw').value.trim(); if(!PW) return; $('#lerr').textContent=''; load(); };
+$('#reload').onclick=()=>load();
+document.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('[role=tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('section[data-p]').forEach(s=>s.hidden=s.dataset.p!==b.dataset.t);
+});
+
+function render(){
+  $('#stamp').textContent='마지막으로 불러온 시각: '+D.now;
+  $('#sheetLink').href=D.sheetUrl;
+  /* 하늘 게시판 */
+  const P=D.posts.slice().reverse();
+  const pend=P.filter(p=>p.status!=='공개'&&p.status!=='숨김'), pub=P.filter(p=>p.status==='공개'), hid=P.filter(p=>p.status==='숨김');
+  pend.sort((a,b)=>(b.flag?1:0)-(a.flag?1:0));
+  $('#pendN').textContent=pend.length?'('+pend.length+')':'';
+  $('#riskCard').hidden=!pend.some(p=>p.flag==='걱정되는 말');
+  const row=(p,btns)=>`<div class="post"><div><div class="t">${p.flag?`<span class="flag">${esc(p.flag)}</span>`:''}${esc(p.t)}</div><div class="m">${esc(p.at)} · <span class="pill p${esc(p.status)}">${esc(p.status)}</span></div></div><div class="row">${btns(p)}</div></div>`;
+  $('#pend').innerHTML=pend.length?pend.map(p=>row(p,p=>`<button class="ok" data-id="${p.id}" data-s="공개">공개</button><button class="no" data-id="${p.id}" data-s="숨김">숨김</button>`)).join(''):'<p class="empty">확인할 글이 없어요.</p>';
+  $('#pub').innerHTML=pub.length?pub.map(p=>row(p,p=>`<button class="no" data-id="${p.id}" data-s="숨김">숨기기</button>`)).join(''):'<p class="empty">아직 공개한 글이 없어요.</p>';
+  $('#hid').innerHTML=hid.length?hid.map(p=>row(p,p=>`<button data-id="${p.id}" data-s="공개">다시 공개</button>`)).join(''):'<p class="empty">없어요.</p>';
+  document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{ b.disabled=true; load({op:'sky',id:+b.dataset.id,status:b.dataset.s}); });
+  /* 공지 */
+  $('#notice').value=D.notice||'';
+  renderStats();
+}
+$('#saveNotice').onclick=()=>{ $('#nmsg').textContent='저장 중…'; load({op:'notice',notice:$('#notice').value.trim()}).then(()=>$('#nmsg').textContent='저장했어요.'); };
+$('#clearNotice').onclick=()=>{ $('#notice').value=''; $('#saveNotice').onclick(); };
+$('#total').oninput=()=>{ try{localStorage.setItem('fog-admin-total',$('#total').value)}catch(e){} if(D) renderStats(); };
+
+/* ---- 참여 숫자 ---- */
+const WEEKS=[['1주차','2026-11-16','2026-11-22'],['2주차','2026-11-23','2026-11-29'],['3주차','2026-11-30','2026-12-06']];
+function sum(rows,k){ return rows.reduce((a,r)=>a+(+r[k]||0),0); }
+function renderStats(){
+  const R=D.stats.slice().sort((a,b)=>a.date<b.date?-1:1), M=D.metrics, N=Math.max(1,+$('#total').value||180);
+  const days=R.filter(r=>r.visit>0);
+  const visit=sum(R,'visit'), avg=days.length?visit/days.length:0, peak=R.reduce((a,r)=>r.visit>(a?a.visit:-1)?r:a,null);
+  const od=sum(R,'ord_done'), oa=sum(R,'ord_alt'), on=sum(R,'ord_no'), ot=od+oa+on;
+  const pct=x=>(x*100).toFixed(0)+'%';
+  const K=[
+    [visit,'누적 접속 (휴대폰·일)'],
+    [avg.toFixed(1),'하루 평균 접속 ('+days.length+'일)'],
+    [pct(avg/N),'하루 평균 참여율'],
+    [peak?peak.visit+' ('+peak.date.slice(5)+')':'-','가장 많이 들어온 날'],
+    [sum(R,'brief'),'저녁 브리핑 완료'],
+    [ot?pct((od+oa)/ot):'-','지령 수행률 (했다+비슷하게)'],
+    [sum(R,'decode'),'주간 암호 해독'],
+    [sum(R,'finale'),'최종 작전 완료'],
+    [sum(R,'phone'),'도움전화 화면 열람'],
+    [sum(R,'risk'),'걱정되는 말 감지'],
+    [sum(R,'sky'),'하늘 게시판 글']
+  ];
+  $('#kpis').innerHTML=K.map(([v,l])=>`<div class="kpi"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join('');
+  /* 주차별 */
+  const wk=WEEKS.map(([n,a,b])=>({n,rows:R.filter(r=>r.date>=a&&r.date<=b)}));
+  const rest=R.filter(r=>r.date<WEEKS[0][1]||r.date>WEEKS[2][2]);
+  if(rest.length) wk.push({n:'기간 밖',rows:rest});
+  $('#weekly').innerHTML=`<table><thead><tr><th>항목</th>${wk.map(w=>`<th>${w.n}</th>`).join('')}<th>전체</th></tr></thead><tbody>${M.map(([k,l])=>`<tr><td>${esc(l)}</td>${wk.map(w=>`<td>${sum(w.rows,k)}</td>`).join('')}<td><b>${sum(R,k)}</b></td></tr>`).join('')}</tbody></table>`;
+  /* 날짜별 */
+  $('#daily').innerHTML=R.length?`<table><thead><tr><th>날짜</th>${M.map(([k,l])=>`<th>${esc(l)}</th>`).join('')}</tr></thead><tbody>${R.slice().reverse().map(r=>`<tr><td>${esc(r.date)}</td>${M.map(([k])=>`<td>${+r[k]||0}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<p class="empty">아직 기록이 없어요.</p>';
+}
+$('#csv').onclick=()=>{
+  const R=D.stats.slice().sort((a,b)=>a.date<b.date?-1:1), M=D.metrics;
+  const lines=[['날짜'].concat(M.map(m=>m[1])).join(',')].concat(R.map(r=>[r.date].concat(M.map(([k])=>+r[k]||0)).join(',')));
+  const blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='회색안개작전_참여숫자_'+D.now.slice(0,10)+'.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+if(PW && URL_) load();
+</script>
+</body>
+</html>

@@ -551,7 +551,7 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
       <h1>평범한<br><span>스파이</span></h1>
       <p>WANTED: ORDINARY SPIES · 회색 안개 작전</p>
     </div>
-    <div class="hero"><img class="hbear" src="img/neulgom.png" alt="늘곰 소장"><img class="hchick" src="img/chick.png" alt="병아리 요원"><div class="avatar-stage" id="lobbyAv" title="나"></div></div>
+    <div class="hero"><img class="hbear" src="img/neulgom.webp" alt="늘곰 소장"><img class="hchick" src="img/chick.webp" alt="병아리 요원"><div class="avatar-stage" id="lobbyAv" title="나"></div></div>
     <dl class="idcard">
       <dt>요원 코드</dt><dd id="spyCode">파란돌고래</dd>
       <dt>소속</dt><dd>3층 Wee클래스 비밀 본부</dd>
@@ -600,7 +600,7 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
 <script>
 /* ===== 미니게임 6종 (미니게임 시안에서 가져옴) ===== */
 const MG=(()=>{
-const IMG={base:"img/ng-base.jpg",agent:"img/neulgom-head.png",yawn:"img/ng-yawn.jpg"};
+const IMG={base:"img/ng-base.jpg",agent:"img/neulgom-head.webp",yawn:"img/ng-yawn.jpg"};
 const C={sky:"#4aa8f0",grass:"#4cbf62",sun:"#ffc93a",coral:"#ff7564",grape:"#9b82f5",mint:"#3cc6b4"};
 const $=(s,r=document)=>r.querySelector(s);
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
@@ -1136,8 +1136,8 @@ function stopTimers(){ timers.forEach(t=>{clearTimeout(t);clearInterval(t);}); t
 
 /* 대화 */
 function portraitHTML(k){
-  if(k==='neulgom') return `<div class="portrait pt-bear"><img src="img/neulgom-head.png" alt="늘곰 소장"></div>`;
-  if(k==='chick') return `<div class="portrait pt-chick"><img src="img/chick.png" alt="병아리 요원"></div>`;
+  if(k==='neulgom') return `<div class="portrait pt-bear"><img src="img/neulgom-head.webp" alt="늘곰 소장"></div>`;
+  if(k==='chick') return `<div class="portrait pt-chick"><img src="img/chick.webp" alt="병아리 요원"></div>`;
   if(k==='native') return `<div class="portrait av" style="background:#dff0ff">${avatarSVG(NATIVE.av)}</div>`;
   const L=LOCS[k];
   if(L.icon) return `<div class="portrait">${ICONS[L.icon]}</div>`;
@@ -1600,7 +1600,7 @@ function openOffice(){
 }
 
 /* ---------- 안개 복도 (잠입) ---------- */
-const SPIMG={base:'img/ng-base.jpg',agent:'img/neulgom-head.png',yawn:'img/ng-yawn.jpg',dance:'img/ng-dance.jpg'};
+const SPIMG={base:'img/ng-base.jpg',agent:'img/neulgom-head.webp',yawn:'img/ng-yawn.jpg',dance:'img/ng-dance.jpg'};
 function openFog(){
   sheet('안개 복도','3층 복도 끝 · 잠입 구역',`<div id="sneakHost"></div><p class="note">안개구름에게 들키지 않게 문까지 가요. 하루 3판, 5번째 문마다 안전가옥에서 숨을 고르고 보급상자를 받아요.</p>`, b=>{
     mgStop=SpyPlus.mountSneak(b.querySelector('#sneakHost'),{img:SPIMG, avatarSVG:()=>avatarSVG(S.av)});
@@ -1776,7 +1776,7 @@ function openSky(){
 function openPhone(lead){ if(typeof lead!=='string') lead='';
   const L=(cls,title,num,tel,desc)=>`<div class="line ${cls}"><h3>${title}</h3><div class="num">${num}</div><div class="acts">${tel?`<a class="bk green" href="tel:${tel}">전화</a><button class="bk" data-copy="${num}">번호 복사</button>`:''}</div><p>${desc}</p></div>`;
   sheet('본부 전화','혼자 버티지 않아도 돼요',`
-    <div class="npc"><div class="portrait pt-bear"><img src="img/neulgom-head.png" alt="늘곰 소장"></div><div class="bubble"><span class="who">늘곰 소장</span>${lead||"힘들 때 도움을 청하는 건 요원의 기본 수칙이다. 아래 번호는 언제든 열려 있다."} 상담한 내용은 함부로 알려지지 않는다. 다만 네 안전이 걱정될 때는, 너를 지키려고 도와줄 어른에게 알릴 수 있다.</div></div>
+    <div class="npc"><div class="portrait pt-bear"><img src="img/neulgom-head.webp" alt="늘곰 소장"></div><div class="bubble"><span class="who">늘곰 소장</span>${lead||"힘들 때 도움을 청하는 건 요원의 기본 수칙이다. 아래 번호는 언제든 열려 있다."} 상담한 내용은 함부로 알려지지 않는다. 다만 네 안전이 걱정될 때는, 너를 지키려고 도와줄 어른에게 알릴 수 있다.</div></div>
     ${L('hq','Wee클래스 (비밀 본부)','3층','', '쉬는 시간, 점심시간에 그냥 들러도 돼요. 전문상담 선생님이 기다려요.')}
     ${L('','청소년상담 1388','1388','1388','24시간 · 전화. 문자는 #1388, 카카오톡은 「청소년상담1388」 채널. 고민 무엇이든.')}
     ${L('','자살예방 상담전화','109','109','24시간. 죽고 싶다는 생각이 들 때, 주변 사람이 걱정될 때.')}
@@ -2106,5 +2106,7 @@ function waxToy(st,cnt,finish){
 SpyPlus.on('xp',()=>{ const h=$('#hudRank'); if(h) h.innerHTML=SpyPlus.rankHTML(); });
 SpyPlus.on('report',()=>{ if(raidSet && !$('#sheet').hidden) raidSet({total:RAID.total+SpyPlus._state().contrib}); });
 lobby();
+/* 대화창 그림은 시트가 열릴 때 처음 받으면 늦게 뜨므로, 시작하자마자 미리 받아 둔다 */
+['img/neulgom-head.webp','img/chick.webp','img/ng-base.jpg','img/ng-yawn.jpg','img/ng-dance.jpg','img/card.jpg'].forEach(src=>{ const i=new Image(); i.decoding='async'; i.src=src; });
 if(SpyPlus.isCurfew()) SpyPlus.nightGuard({img:'img/ng-yawn.jpg', demo:DEMO});
 </script>

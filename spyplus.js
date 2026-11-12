@@ -184,7 +184,7 @@ let codeTable={ // 시연용 기본 코드(해시). 운영 시 setCodes()로 교
  "c4e23c5aef434f5d0cc64405a13e2a77c36e9c933634a2e11e936611cacb564c":{gear:"badge",msg:"Wee클래스 요원 인증!"},
  "2227c82f548a2163ba2cacf7c057b2750de704f02921d563cac747b628cba682":{gear:"scope",msg:"하늘을 10초 본 요원에게"},
  "bb77618c8c8d7c7b7cde362805d2223c60ba7c15d367a903633d2eda341facb4":{gear:"phones",msg:"늘곰의 노래가 들린다"},
- "fefc56969a990d3a06b956921328eecf9ea3d9afd96456f94ebf7cbf7d5fa8b9":{gear:"shades",msg:"D-Day 작전 참가 확인"},
+ "0c14262752ddbf3b2a3b8a4f4bdfa938f45d6f89286d9a17b1be1b1e160fc29f":{gear:"shades",msg:"D-Day 작전 참가 확인"},
  "71c0b7db98a074453c8748f4b8082755cf2cbe4507bcaacee11ad0a7c79bcf6c":{gear:"candy",msg:"천천히 먹은 요원에게"},
  "1e821ffcefd0cae04600520d9d08206b46ae05fa0fbbf12064c2f95ece85584b":{gear:"umbrella",msg:"전교 정화 작전 성공 보상"}
 };

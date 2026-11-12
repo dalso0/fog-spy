@@ -859,16 +859,16 @@ const WEEKS = [
 ];
 
 const LOCS = {
-  fog:     {open:2, name:'안개 복도', sub:'3층 복도 끝 · 잠입 구역', x:8, y:14.3, w:84, h:5, cls:'corr'},
+  fog:     {open:1, name:'안개 복도', sub:'3층 복도 끝 · 잠입 구역', x:8, y:14.3, w:84, h:5, cls:'corr'},
   hq:      {open:1, name:'Wee클래스', sub:'3층 · 비밀 본부', x:8,  y:20.5, w:38, h:12.5, cls:'hq'},
   career:  {open:1, rc:'#ffd9a8', name:'진로실', sub:'3층', x:48, y:20.5, w:20, h:12.5, npc:'진로 선생님', av:{face:1,hair:1,top:5,bottom:0,tc:3}},
   art:     {open:1, rc:'#ffe58a', name:'미술실', sub:'3층', x:70, y:20.5, w:22, h:12.5, npc:'미술 선생님', av:{face:4,hair:5,top:3,bottom:2,tc:2}},
   library: {open:2, rc:'#a9d4ff', name:'도서관', sub:'2층', x:8,  y:35, w:28, h:13, npc:'오래된 백과사전', icon:'book'},
   music:   {open:2, rc:'#d9c3ff', name:'음악실', sub:'2층', x:38, y:35, w:24, h:13, npc:'음악 선생님', av:{face:4,hair:2,top:1,bottom:1,tc:5}},
-  office:  {open:2, name:'교무실', sub:'출입금지', x:64, y:35, w:28, h:13, cls:'lock', npc:'교무실 선생님', av:{face:3,hair:0,top:5,bottom:0,tc:4}},
+  office:  {open:1, name:'교무실', sub:'출입금지', x:64, y:35, w:28, h:13, cls:'lock', npc:'교무실 선생님', av:{face:3,hair:0,top:5,bottom:0,tc:4}},
   cafeteria:{open:3, rc:'#ffb7a3', name:'급식실', sub:'1층', x:8,  y:50, w:26, h:13, npc:'영양 선생님', av:{face:1,hair:4,top:2,bottom:0,tc:0}},
   nurse:   {open:3, rc:'#c9f2d0', name:'보건실', sub:'1층', x:36, y:50, w:22, h:13, npc:'보건 선생님', av:{face:0,hair:1,top:2,bottom:1,tc:0}},
-  principal:{open:2, rc:'#e9d6b8', name:'교장실', sub:'1층', x:60, y:50, w:32, h:13, npc:'교장 선생님', av:{face:1,hair:0,top:5,bottom:0,tc:4}},
+  principal:{open:1, rc:'#e9d6b8', name:'교장실', sub:'1층', x:60, y:50, w:32, h:13, npc:'교장 선생님', av:{face:1,hair:0,top:5,bottom:0,tc:4}},
   ground:  {open:1, name:'운동장', sub:'철봉 앞', x:5,  y:72, w:56, h:22, cls:'out', npc:'녹슨 철봉', icon:'bar'},
   forest:  {open:2, name:'명상숲', sub:'뒤뜰', x:64, y:72, w:31, h:22, cls:'forest', npc:'명상숲 큰 나무', icon:'tree'}
 };
@@ -1217,7 +1217,7 @@ const wkStart=n=>{ const [m,d]=WEEK_START[n-1]; return new Date(2026,m-1,d); };
 const inWeek=(k,n)=>+k>=dkey(wkStart(n)) && +k<=dkey(addDays(wkStart(n),6));
 function isOrderDay(dt){ const k=dkey(dt), g=dt.getDay(); return k>=OP_FIRST && k<=OP_LAST && g>=1 && g<=5; }
 function orderIdx(dt){ return Math.floor(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate())/864e5)%ORDERS.length; }
-const UNLOCK_EXTRA={2:['안개 복도 잠입','장비 도감','본부 라디오'],3:['교무실 원어민 선생님','비밀 코드']};
+const UNLOCK_EXTRA={2:['교무실 문 열림(원어민 선생님)','본부 라디오'],3:['비밀 코드']};
 function unlockText(n){ return Object.entries(LOCS).filter(([k,L])=>L.open===n&&!['fog','office'].includes(k)).map(([k,L])=>L.name).concat(UNLOCK_EXTRA[n]||[]).join(', '); }
 const LIT_NAME={sky:'하늘',sun:'해',grass:'잔디밭'};
 const litName=k=>LIT_NAME[k]||LOCS[k].name;
@@ -1590,7 +1590,7 @@ function clearWeek(host,w){
 }
 
 /* ---------- 교무실 (출제 기간 출입금지) ---------- */
-function officeLocked(){ return S.week<=2; }
+function officeLocked(){ return S.week<=1; }
 function openOffice(){
   if(!officeLocked()) return openOfficeOpen();
   const L=LOCS.office;
@@ -1617,7 +1617,7 @@ function openFog(){
 
 /* ---------- 요원 (카드·도감·비밀 코드·꾸미기) ---------- */
 function openAgent(tab){
-  const TABS=[['locker','사물함',1],['card','장비 도감',2],['code','비밀 코드',3],['closet','꾸미기',1]];
+  const TABS=[['locker','사물함',1],['card','장비 도감',1],['code','비밀 코드',3],['closet','꾸미기',1]];
   if(!TABS.some(x=>x[0]===tab)) tab='locker';
   sheet('요원실',`요원 코드 ${S.code}`,`
     <div class="tabs" role="tablist" style="grid-template-columns:repeat(4,1fr)">${TABS.map(([k,n,o])=>`<button role="tab" data-t="${k}" ${o>S.week?'data-lock="1"':''} aria-selected="${tab===k}">${o>S.week?'🔒 ':''}${n}</button>`).join('')}</div>
@@ -1647,14 +1647,17 @@ function drawLocker(host){
   host.querySelectorAll('[data-toy]').forEach(x=>x.onclick=()=>{ stopMG(); const th=host.querySelector('#toyHost'); openSquish(th,()=>toast('손맛 확인 완료'),+x.dataset.toy); th.scrollIntoView({behavior:'smooth',block:'nearest'}); });
 }
 
-/* ---------- 교무실 (3주차부터 열림) + 원어민 선생님 ---------- */
+/* ---------- 교무실 (2주차부터 열림) + 원어민 선생님 ---------- */
 const NATIVE={name:'원어민 선생님 Ms. Lily', av:{face:1,hair:2,top:1,bottom:2,tc:3}};
 const OFFICE_T={
-  3:[['출제 끝! 드디어 교무실 문을 열었다~','그동안 문 앞에서 평범하게 지나가 준 요원들 고마워.','책상 위 사탕 하나 가져가. 천천히 녹여 먹기, 그게 이번 주 미각 훈련이야.'],
+  2:[['출제 끝! 드디어 교무실 문을 열었다.','지난주에 문 앞에서 평범하게 지나가 준 요원들, 고맙다.','교무실은 생각보다 조용하지? 귀 기울이면 프린터 소리, 분필 소리가 들린다. 그게 이번 주 청각 훈련이야.'],
+     ['또 왔니? 교무실이 이렇게 인기 있을 줄이야.','채점은… 아직 비밀이다. 평범하게 기다리기!']],
+  3:[['3주차네. 교무실 사탕 바구니가 새로 찼다.','마지막 주까지 평범하게 와 줘서 고맙다.','책상 위 사탕 하나 가져가. 천천히 녹여 먹기, 그게 이번 주 미각 훈련이야.'],
      ['또 왔니? 교무실이 이렇게 인기 있을 줄이야.','채점은… 아직 비밀이다. 평범하게 기다리기!']],
   4:[['D-Day 주간이네! 선생님들도 부스 도우미로 나가.','싱잉볼, 차 테라피, 마음돌… 넌 어디 신청했어?'],
      ['4주 동안 수고 많았다, 요원.','룰루랄라, 우리 다 같이 평범하게 끝내 보자.']]};
 const NATIVE_T={
+  2:{word:'listen',ko:'귀 기울여 듣다',tip:'quiet 조용한',lines:[['Hi, agent! 안녕하세요~','This week\'s word is… listen! 듣다, 맞죠?','Close your eyes. 눈 감고, listen. What do you hear?'],['Oh, you again! 반가워요!','Shh… listen. 지금 무슨 소리 들려요? Tell me one sound!']]},
   3:{word:'taste',ko:'맛보다',tip:'slowly 천천히',lines:[['Hi, agent! 안녕하세요~','This week\'s word is… taste! 맛, 맞죠?','Eat slowly. 천천히, 천천히. Your tongue will say thank you!'],['Oh, you again! 반가워요!','Today\'s lunch… delicious? 맛있어요? Tell me one taste!']]},
   4:{word:'together',ko:'함께',tip:'colorful 알록달록',lines:[['Wow, colors are coming back! 색깔 돌아와요!','Final word: together. 함께!','You are a very… 평범한? ordinary spy. Best compliment!'],['Last week! 마지막 주!','Thank you, agent. 고마워요. See you at the booth!']]}};
 function openOfficeOpen(){

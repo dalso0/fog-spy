@@ -1222,7 +1222,7 @@ function unlockText(n){ return Object.entries(LOCS).filter(([k,L])=>L.open===n&&
 const LIT_NAME={sky:'하늘',sun:'해',grass:'잔디밭'};
 const litName=k=>LIT_NAME[k]||LOCS[k].name;
 const TOY={1:{ico:'🍎',name:'말랑 과일'},2:{ico:'🧈',name:'버터 슬랑이'},3:{ico:'🍡',name:'말랑 찹쌀떡'},4:{ico:'🍬',name:'왁뿌볼'}}; // 말랑이 이름은 아래 SQUISH와 맞춤
-const toyHave=n=> n<=WEEKS.length ? !!S.cleared[n] : !!S.finale;
+const toyHave=n=> DEMO || (n<=WEEKS.length ? !!S.cleared[n] : !!S.finale); // 시연 주소에서는 모두 열어 둠
 /* 요원 사물함: 출근할 때마다 하나씩 */
 const LOCKER=[
   ['📻','낡은 무전기','본부와 연결되는 첫 장비. 지지직 소리가 난다.'],

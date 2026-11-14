@@ -1954,8 +1954,8 @@ function softToy(st,cnt,finish,O){
     return e; }
   function tri(x0,y0,x1,y1,x2,y2,u0,v0,u1,v1,u2,v2){ const d=(u1-u0)*(v2-v0)-(u2-u0)*(v1-v0); if(!d) return;
     const a=((x1-x0)*(v2-v0)-(x2-x0)*(v1-v0))/d, b=((y1-y0)*(v2-v0)-(y2-y0)*(v1-v0))/d, c=((x2-x0)*(u1-u0)-(x1-x0)*(u2-u0))/d, e=((y2-y0)*(u1-u0)-(y1-y0)*(u2-u0))/d;
-    const mx=(x0+x1+x2)/3, my=(y0+y1+y2)/3, ex=p=>p+(p>mx?.7:-.7), ey=p=>p+(p>my?.7:-.7);
-    g.save(); g.beginPath(); g.moveTo(ex(x0),ey(y0)); g.lineTo(ex(x1),ey(y1)); g.lineTo(ex(x2),ey(y2)); g.closePath(); g.clip(); g.transform(a,b,c,e,x0-a*u0-c*v0,y0-b*u0-e*v0); g.drawImage(img,0,0); g.restore(); }
+    const mx=(x0+x1+x2)/3, my=(y0+y1+y2)/3, E=1.6, P=(x,y)=>{ const ux=x-mx, uy=y-my, L=Math.hypot(ux,uy)||1; return [x+ux/L*E, y+uy/L*E]; }, A=P(x0,y0), B=P(x1,y1), Cc=P(x2,y2);
+    g.save(); g.beginPath(); g.moveTo(A[0],A[1]); g.lineTo(B[0],B[1]); g.lineTo(Cc[0],Cc[1]); g.closePath(); g.clip(); g.transform(a,b,c,e,x0-a*u0-c*v0,y0-b*u0-e*v0); g.drawImage(img,0,0); g.restore(); }
   function frame(now){ if(!st.isConnected||!cv.isConnected) return; requestAnimationFrame(frame);
     const dt=Math.min(.033,(now-(lastT||now))/1000); lastT=now;
     if(st.clientWidth&&Math.abs(cv.width-st.clientWidth*dpr)>2){ fit(); live=1; }

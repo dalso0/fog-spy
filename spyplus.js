@@ -163,7 +163,7 @@ const XP={minigame:20, order:15, door:10, shard:5, safe:15, code:30, daily:10, r
 /* 픽셀 아이콘: 10x10, 글자=색 */
 const PAL={k:'#1c2130',w:'#ffffff',y:'#ffcc33',r:'#e0522f',s:'#4aa6e8',g:'#3dbb5c',p:'#9b82f5',m:'#3cc6b4',o:'#ff7564',b:'#c58b55',n:'#8c6a4a',a:'#a7adb5',d:'#727985',l:'#d7dbe0',c:'#f3c99e'};
 const GEAR=[
- {id:'glasses', name:'평범한 안경', r:0, d:'아무도 의심하지 않는 평범함의 상징.', px:['..........','..........','..........','kkkk..kkkk','kwwk..kwwk','kwwkkkkwwk','kwwk..kwwk','kkkk..kkkk','..........','..........']},
+ {id:'glasses', name:'평범한 안경', r:0, d:'쓰면 아무도 의심하지 않는다.', px:['..........','..........','..........','kkkk..kkkk','kwwk..kwwk','kwwkkkkwwk','kwwk..kwwk','kkkk..kkkk','..........','..........']},
  {id:'memo', name:'요원 수첩', r:0, d:'오늘 본 하늘색을 적어 두는 곳.', px:['.kkkkkkkk.','.kyyyyyyyk','.kywwwwwyk','.kykkkkwyk','.kywwwwwyk','.kykkkkwyk','.kywwwwwyk','.kykkkwwyk','.kyyyyyyyk','.kkkkkkkk.']},
  {id:'earbud', name:'잠입 이어폰', r:0, d:'음악이 아니라 주변 소리를 듣는 데 씀.', px:['...kkkk...','..kwwwwk..','.kw....wk.','.k......k.','kk......kk','kwk....kwk','kwk....kwk','kkk....kkk','..........','..........']},
  {id:'light', name:'손전등', r:0, d:'안개 속 발밑을 비춘다.', px:['..........','.kkk......','.kyykkkkk.','.kyywwwwk.','.kyykkkkk.','.kkk......','..........','..........','..........','..........']},
@@ -173,7 +173,7 @@ const GEAR=[
  {id:'plant', name:'위장용 화분', r:1, d:'뒤에 숨으면 아무도 못 알아본다(아마도).', px:['....gg....','..gggggg..','.gg.gg.gg.','..g.gg.g..','....gg....','.kkkkkkkk.','..kbbbbk..','..kbbbbk..','..kbbbbk..','...kkkk...']},
  {id:'badge', name:'늘곰 배지', r:1, d:'Wee클래스 요원의 증표.', px:['...kkkk...','..kyyyyk..','.kycyyyck.','.kyyyyyyk.','.kykyykyk.','.kyyccyyk.','..kyyyyk..','...kkkk...','..kr..rk..','..kr..rk..']},
  {id:'shades', name:'소장의 선글라스', r:2, d:'늘곰 소장이 몰래 빌려준 진짜 요원 장비.', px:['..........','..........','kkkkkkkkkk','kkkkkkkkkk','.kkkk.kkkk','.kkwk.kkwk','.kkkk.kkkk','..kk...kk.','..........','..........']},
- {id:'umbrella', name:'무지개 우산', r:2, d:'회색 비도 이 우산 아래에선 색이 된다.', px:['....k.....','..rrooyy..','.rrrooyyy.','rrrrooyyyy','kkkkkkkkkk','....k.....','....k.....','....k.....','..k.k.....','...k......']},
+ {id:'umbrella', name:'무지개 우산', r:2, d:'이걸 쓰면 회색 비도 알록달록해 보인다.', px:['....k.....','..rrooyy..','.rrrooyyy.','rrrrooyyyy','kkkkkkkkkk','....k.....','....k.....','....k.....','..k.k.....','...k......']},
  {id:'phones', name:'룰루랄라 헤드폰', r:2, d:'늘곰이 매일 부르는 노래가 들린다.', px:['..kkkkkk..','.kppppppk.','kpk....kpk','kk......kk','k........k','kkk....kkk','kmmk..kmmk','kmmk..kmmk','kmmk..kmmk','.kk....kk.']}
 ];
 const RNAME=['흔함','희귀','전설'];
@@ -227,7 +227,7 @@ const EMOTES=[{id:'idle',name:'기본',lv:1,img:'base',cls:''},{id:'bounce',name
 function addXP(n,why){ const before=rankOf(S.xp); S.xp+=n; save(); pop('+'+n+' XP'); emit('xp',{n,why,total:S.xp});
   const after=rankOf(S.xp);
   if(after>before){ setTimeout(()=>{ vib([40,60,40]); const em=EMOTES.find(e=>e.lv===after+1);
-    modal(`<span class="chip">계급 상승</span><h3>${RANKS[after][0]}</h3><p class="muted">Lv.${after+1}. 본부가 요원님의 평범함을 인정했습니다.</p>${em?`<p style="font-size:14px">새 이모트 해금: <b>${em.name}</b></p>`:''}`,'계속 작전'); emit('rankup',{lv:after+1}); },700); }
+    modal(`<span class="chip">계급 상승</span><h3>${RANKS[after][0]}</h3><p class="muted">Lv.${after+1}. 본부가 요원의 평범함을 인정했다.</p>${em?`<p style="font-size:14px">새 이모트 해금: <b>${em.name}</b></p>`:''}`,'계속 작전'); emit('rankup',{lv:after+1}); },700); }
 }
 function checkIn(){ const t=today(); if(!S.days[t]){ S.days[t]=1; save(); addXP(XP.daily,'출근'); return true; } return false; }
 function daysCount(){ return Object.keys(S.days).length; }
@@ -434,7 +434,7 @@ function mountGear(host,opts){ injectCSS(); opts=opts||{}; const IMG=Object.assi
     <div class="card" style="display:flex;flex-direction:column;gap:10px">
       <div class="sp-prog"><h3 style="font-size:20px">스파이 장비 도감</h3><b>${have} / ${GEAR.length}</b></div>
       <div class="sp-grid">${GEAR.map(g=>S.gear[g.id]?`<button class="sp-slot ${S.equip===g.id?'on':''}" data-g="${g.id}" aria-label="${g.name}"><span class="rd" style="background:${RCOL[g.r]}"></span>${iconSVG(g)}</button>`:`<div class="sp-slot no" aria-label="아직 못 찾은 장비"></div>`).join('')}</div>
-      <p class="muted" id="gi">장비는 안전가옥 보급 상자와 비밀 코드로 모아요. 눌러서 착용. 능력 차이는 없고 멋만 납니다.</p>
+      <p class="muted" id="gi">장비는 안전가옥 보급 상자와 비밀 코드로 모아요. 눌러서 착용. 능력 차이는 없고 멋만 나요.</p>
     </div>`;
     root.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{ S.emote=b.dataset.e; save(); draw(); emit('emote',S.emote); });
     root.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{ const g=GEAR.find(x=>x.id===b.dataset.g); S.equip=S.equip===g.id?null:g.id; save(); draw(); root.querySelector('#gi').innerHTML=`<b>${g.name}</b> <span class="rar r${g.r}">${RNAME[g.r]}</span><br>${g.d}`; emit('equip',S.equip); });
@@ -453,7 +453,7 @@ function mountCode(host){ injectCSS(); const root=el('div','sp sp-code'); host.i
     <button class="b g w" id="cb">확인</button>
     <p class="res" id="cr"></p></div>
     <div class="card"><h4 style="font-size:17px;margin-bottom:4px">코드가 숨어 있는 곳</h4>
-    <ul><li>마음돌봄 부스 6곳 입구 안내판</li><li>3층 Wee클래스 문 앞 늘곰 포스터</li><li>웹앱 본부 라디오 '오늘의 추천곡' 아래 한마디</li><li>전교 정화 작전 100% 달성 시 공개</li></ul></div>`;
+    <ul><li>마음돌봄 부스 6곳 입구 안내판</li><li>3층 Wee클래스 문 앞 늘곰 포스터</li><li>본부 라디오 '오늘의 추천곡' 아래 한마디</li><li>전교 정화 작전 100% 달성 시 공개</li></ul></div>`;
   const ci=root.querySelector('#ci'), cr=root.querySelector('#cr');
   async function go(){ const c=norm(ci.value); if(!c) return; let h=''; try{ h=await sha(c); }catch(e){ cr.textContent='이 기기에서는 코드 확인이 안 돼요'; return; }
     const hit=codeTable&&codeTable[h];

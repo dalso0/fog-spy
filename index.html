@@ -248,9 +248,6 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance
 .wxsh{position:absolute;left:50%;top:50%;border:1.5px solid var(--ink);pointer-events:none;animation:wxfly .85s cubic-bezier(.2,.7,.4,1) forwards}
 @keyframes wxfly{to{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0}}
 .wxagain{position:absolute;bottom:8px;right:8px;font-size:13px;padding:6px 10px}
-.wordc{background:#fff;border:var(--bw) solid var(--ink);border-radius:12px;padding:14px;text-align:center;box-shadow:0 4px 0 var(--ink)}
-.wordc b{display:block;font-family:var(--f-display);font-weight:400;font-size:40px;color:var(--sky-d);margin:4px 0}
-.wordc span{font-size:14px;font-weight:700}
 .skyin input{flex:1;min-width:0;font:inherit;font-size:16px;border:var(--bw) solid var(--ink);border-radius:8px;padding:8px 10px;background:#fff;color:var(--ink)}
 .skyin .bk{flex:none;font-size:16px}
 .linkbtn{background:none;border:0;padding:0;font:inherit;color:var(--sky-d);text-decoration:underline;font-weight:700}
@@ -557,7 +554,7 @@ a.bk{display:block;text-align:center;text-decoration:none;color:inherit}
     <dl class="idcard">
       <dt>요원 코드</dt><dd id="spyCode">파란돌고래</dd>
       <dt>소속</dt><dd>3층 Wee클래스 비밀 본부</dd>
-      <dt>임무</dt><dd>학교의 잃어버린 색채를 되찾아라</dd>
+      <dt>임무</dt><dd>학교가 잃어버린 색을 되찾아라</dd>
     </dl>
     <p class="hqnotice" id="hqNotice" hidden></p>
     <div class="row" style="width:100%;max-width:340px">
@@ -758,10 +755,10 @@ function emotion(stage,g){
 /* ---------- E. 오감 수색 ---------- */
 function senses(stage,g){
   const COLS=7,ROWS=9;const S=[
-    ['눈','보이는 것','지금 주변에서 파란색 물건을 하나 찾아 봐.','찾았어'],
+    ['눈','보이는 것','지금 주변에서 파란색 물건을 하나 찾아봐.','찾았어'],
     ['귀','들리는 것','3초만 눈을 감아. 가장 멀리서 들리는 소리는 뭐야?','들었어'],
-    ['코','냄새','숨을 천천히 들이쉬어. 교실에서 어떤 냄새가 나?','맡았어'],
-    ['손','닿는 것','책상이나 옷을 손끝으로 쓸어 봐. 차가워, 따뜻해?','느꼈어'],
+    ['코','냄새','숨을 천천히 들이쉬어. 지금 있는 곳에서 무슨 냄새가 나?','맡았어'],
+    ['손','닿는 것','책상이나 옷을 손끝으로 쓸어 봐. 차가워? 따뜻해?','느꼈어'],
     ['입','맛','침을 한 번 꿀꺽. 입 안에 남은 맛이 있어?','확인했어']];
   let found=0,taps=0,busy=false;
   stage.innerHTML=`<div class="hud"><b>오감 수색</b><span class="chip" id="fc">감각 조각 0 / 5</span></div>
@@ -836,9 +833,9 @@ const WEEKS = [
    brief:'아침부터 하늘이 회색으로만 보인다는 제보가 쏟아졌다. 안개가 가장 먼저 훔쳐 간 것은 하늘의 색이다.',
    motto:'오늘 하늘, 한 번 올려다봤나요?', clue:'회색 안개가 가장 먼저 훔쳐 간 것', word:'하늘빛',
    spots:[
-    {loc:'ground', piece:'하', task:'sky', lines:['요원인가? 나는 30년째 여기 서 있는 철봉이다.','요즘 아이들이 고개를 안 들어. 그래서 하늘이 색을 잊어버렸지.','지금 진짜 하늘을 10초만 올려다봐. 그리고 오늘 하늘이 무슨 색이었는지 알려줘.']},
-    {loc:'art', piece:'늘', task:'find', target:'brush', hint:'색이 남아 있는 건 붓 끝이야.', lines:['쉿, 미술실은 지금 회색 먼지투성이야.','그래도 딱 하나, 아직 색을 붙잡고 있는 물건이 있어.','미술실을 천천히 둘러보렴. 붓 끝을 잘 보렴.']},
-    {loc:'career', piece:'빛', task:'mg:breath', lines:['진로실 창문은 학교에서 제일 멀리까지 보이는 창이야.','먼 곳을 바라보면서 숨을 쉬면 눈이 쉬고, 안개도 옅어진대.','창밖 가장 먼 곳에 시선을 두고, 숨 세 번만 같이 쉬어 보자.']}
+    {loc:'ground', piece:'하', task:'sky', lines:['요원인가? 나는 30년째 여기 서 있는 철봉이다.','요즘 아이들이 고개를 안 들어. 그래서 하늘이 색을 잊어버렸지.','지금 창밖 하늘을 10초만 올려다봐라. 무슨 색인지 나한테 알려 주고.']},
+    {loc:'art', piece:'늘', task:'find', target:'brush', hint:'색이 남아 있는 건 붓 끝이야.', lines:['쉿, 미술실은 지금 회색 먼지투성이야.','그래도 딱 하나, 아직 색을 붙잡고 있는 물건이 있어.','미술실을 천천히 둘러보렴. 힌트는 붓 끝이야.']},
+    {loc:'career', piece:'빛', task:'mg:breath', lines:['진로실 창문은 학교에서 제일 멀리까지 보이는 창이야.','먼 곳을 바라보면서 숨을 쉬면 눈이 쉬고, 안개도 옅어진대.','창밖 제일 먼 곳을 보면서 숨 세 번만 같이 쉬어 보자.']}
    ]},
   {n:2, dates:'11.23 – 11.27', sense:'청각', title:'소리 없는 복도',
    brief:'안개가 짙어진 복도에서 발소리가 들리지 않는다. 귀를 기울이는 요원만 단서를 찾을 수 있다.',
@@ -849,10 +846,10 @@ const WEEKS = [
     {loc:'forest', piece:'리', task:'mg:breath', lines:['…스으… 나는 명상숲의 큰 나무란다.','바람 소리는 내 숨소리야. 너도 같이 쉬어 볼래?','바람이 들어오고 나가는 박자에 맞춰, 숨 네 번.']}
    ]},
   {n:3, dates:'11.30 – 12.4', sense:'미각', title:'맛을 잃은 급식',
-   brief:'급식실 반찬이 전부 같은 맛이 난다. 안개는 서두르는 입을 노린다. 특별 지령 미니게임이 열렸다.',
+   brief:'급식실 반찬이 전부 같은 맛이 난다. 안개는 급하게 먹는 입을 노린다.',
    motto:'천천히 먹어도 괜찮아', clue:'서두르지 않고 먹는 방법', word:'한입씩',
    spots:[
-    {loc:'cafeteria', piece:'한', task:'slow', secs:30, slowTitle:'먹기 명상 30초', slowText:'저녁의 첫 숟가락(또는 물 한 모금)을 입에 넣고, 30초 동안 천천히 씹으며 맛이 어떻게 변하는지 느껴 봐요.', lines:['요원님, 급식이 아무 맛도 안 난다는 신고가 들어왔어요.','맛은 혀가 아니라 시간에 숨어 있거든요.','오늘 점심 첫 입은 30초 동안 천천히. 같이 해 볼까요?']},
+    {loc:'cafeteria', piece:'한', task:'slow', secs:30, slowTitle:'먹기 명상 30초', slowText:'저녁 첫 숟가락(아니면 물 한 모금)을 입에 넣고 30초 동안 천천히 씹어 봐요. 맛이 어떻게 바뀌는지 봐요.', lines:['요원님, 급식이 아무 맛도 안 난다는 신고가 들어왔어요.','맛은 천천히 씹어야 나오거든요.','오늘 저녁 첫 입은 30초 동안 천천히. 같이 해 볼까요?']},
     {loc:'nurse', piece:'입', task:'mg:breath', lines:['어디 아파서 온 건 아니지? 다행이다.','배가 꼬르륵하는 것도 감각이야. 몸이 말을 거는 거지.','배에 손을 얹고, 배가 부풀었다 꺼지는 걸 느끼며 숨 세 번.']},
     {loc:'library', piece:'씩', task:'find', target:'recipe', hint:'맛있는 냄새가 나는 책을 찾아라.', lines:['또 왔구먼, 요원.','이번엔 맛을 기록해 둔 책이 숨었다.','요리책이 어디 있는지, 하나씩 눌러 보거라.']}
    ]}
@@ -875,31 +872,31 @@ const LOCS = {
 
 const ORDERS = [ // 평범지령 (매일 하나)
   ['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기. 사진은 찍지 않기.'],
-  ['낯선 계단','오늘은 평소와 다른 계단이나 복도로 한 번 걸어 보기.'],
+  ['다른 길','오늘은 평소와 다른 길로 한번 걸어 보기.'],
   ['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기. 아무도 눈치채지 못하게.'],
-  ['조용한 인사','친구 한 명에게 "좋은 아침" 한마디. 평범하게, 자연스럽게.'],
-  ['바람 세 번','창문을 열고 바람을 세 번 느끼기. 추우면 금방 닫아도 됨.'],
-  ['발바닥 수사','신발 끈을 다시 묶으며 발바닥이 땅에 닿는 느낌 확인하기.'],
-  ['소리 세기','쉬는 시간 1분, 눈을 감고 들리는 소리를 세어 보기.'],
+  ['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디. 평범하게, 티 안 나게.'],
+  ['바람 세 번','창가에서 바람을 세 번 느껴 보기. 추우면 바로 닫아도 됨.'],
+  ['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.'],
+  ['소리 세기','쉬는 시간에 1분만 눈 감고, 들리는 소리가 몇 가지인지 세어 보기.'],
   ['물 한 컵','물 한 컵을 세 번에 나눠 천천히 마시기.'],
   ['초록 세 개','오늘 학교에서 초록색 세 개 찾기.'],
-  ['고마운 하나','잠들기 전 오늘 고마웠던 일 하나 떠올리기.']
+  ['고마운 하나','자기 전에 오늘 고마웠던 일 하나 떠올리기.']
 ];
 
 const SONGS = [ // 라디오: 실제 운영에서는 시트 '음악' 탭 (아래는 예시)
-  {t:'Love wins all', a:'아이유', note:'회색 안개도 이 노래 앞에선 조금 옅어진대.'},
+  {t:'Love wins all', a:'아이유', note:'이 노래 틀면 회색 안개도 좀 옅어진다더라.'},
   {t:'주저하는 연인들을 위해', a:'잔나비', note:'창밖을 보면서 들으면 하늘색이 더 잘 보여.'},
-  {t:'여행', a:'볼빨간사춘기', note:'쉬는 시간 3분, 마음만 잠깐 여행 다녀오기.'},
-  {t:'산책', a:'백예린', note:'오늘 걷기 지령이랑 잘 어울리는 곡.'},
-  {t:'Square (2017)', a:'백예린', note:'멍때리기 좋은 곡. 늘곰 소장 추천.'}
+  {t:'여행', a:'볼빨간사춘기', note:'3분 동안 마음만 잠깐 여행 갔다 오기.'},
+  {t:'산책', a:'백예린', note:'걸으면서 듣기 좋은 곡.'},
+  {t:'Square (2017)', a:'백예린', note:'멍때릴 때 듣는 곡. 내가 자주 듣는다.'}
 ];
 
 const MOODS = [
-  {k:'sun',  name:'맑음', reply:'좋아, 맑음 요원! 그 기분 그대로 평범하게 위장해.'},
-  {k:'cloud',name:'구름', reply:'구름 낀 날도 평범한 날이야. 그냥 그런 날도 괜찮아.'},
-  {k:'fog',  name:'안개', reply:'멍한 날이구나. 늘곰 소장도 자주 그래. 숨 세 번 쉬고 가.'},
-  {k:'rain', name:'비',   reply:'축 처지는 날이구나. 혼자 버티지 않아도 돼. 본부 문은 열려 있어.'},
-  {k:'storm',name:'번개', reply:'속이 답답하거나 화가 나는 날이지. 그 마음도 정상이야. 잠깐 쉬어 가자.'}
+  {k:'sun',  name:'맑음', reply:'맑음이군. 좋다. 그 기분 그대로 평범하게 지내라.'},
+  {k:'cloud',name:'구름', reply:'구름 낀 날도 평범한 날이다. 그냥 그런 날도 있다.'},
+  {k:'fog',  name:'안개', reply:'멍한 날이군. 나도 자주 그렇다. 숨 세 번 쉬고 가라.'},
+  {k:'rain', name:'비',   reply:'축 처지는 날이군. 혼자 버티지 않아도 된다. 본부 문은 열려 있다.'},
+  {k:'storm',name:'번개', reply:'속이 답답하거나 화나는 날이군. 그럴 수 있다. 잠깐 쉬었다 가라.'}
 ];
 const RAID={total:412, goal:900, today:37}; // 예시: 나중에 시트 합계로
 let raidSet=null, raidLocal=0;
@@ -1148,7 +1145,6 @@ function stopTimers(){ timers.forEach(t=>{clearTimeout(t);clearInterval(t);}); t
 function portraitHTML(k){
   if(k==='neulgom') return `<div class="portrait pt-bear"><img src="img/neulgom-head.webp" alt="늘곰 소장"></div>`;
   if(k==='chick') return `<div class="portrait pt-chick"><img src="img/chick.webp" alt="병아리 요원"></div>`;
-  if(k==='native') return `<div class="portrait av" style="background:#dff0ff">${avatarSVG(NATIVE.av)}</div>`;
   const L=LOCS[k];
   if(L.icon) return `<div class="portrait">${ICONS[L.icon]}</div>`;
   return `<div class="portrait av" style="background:#e6ecf3">${avatarSVG(L.av)}</div>`;
@@ -1219,7 +1215,7 @@ const wkStart=n=>{ const [m,d]=WEEK_START[n-1]; return new Date(2026,m-1,d); };
 const inWeek=(k,n)=>+k>=dkey(wkStart(n)) && +k<=dkey(addDays(wkStart(n),6));
 function isOrderDay(dt){ const k=dkey(dt), g=dt.getDay(); return k>=OP_FIRST && k<=OP_LAST && g>=1 && g<=5; }
 function orderIdx(dt){ return Math.floor(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate())/864e5)%ORDERS.length; }
-const UNLOCK_EXTRA={2:['안개 복도 잠입','장비 도감','본부 라디오'],3:['교무실 원어민 선생님','비밀 코드']};
+const UNLOCK_EXTRA={2:['안개 복도 잠입','장비 도감','본부 라디오'],3:['교무실','비밀 코드']};
 function unlockText(n){ return Object.entries(LOCS).filter(([k,L])=>L.open===n&&!['fog','office'].includes(k)).map(([k,L])=>L.name).concat(UNLOCK_EXTRA[n]||[]).join(', '); }
 const LIT_NAME={sky:'하늘',sun:'해',grass:'잔디밭'};
 const litName=k=>LIT_NAME[k]||LOCS[k].name;
@@ -1332,7 +1328,7 @@ function openBrief(){
           spotPanel(host,box,sp.loc,ti,ah=>{ if(tonightSpot()>=0){ ah.innerHTML=`<div class="row"><button class="bk" id="bMore">밀린 조각 이어서</button><button class="bk green" id="bNext">다음</button></div>`; ah.querySelector('#bMore').onclick=step2; ah.querySelector('#bNext').onclick=to3; } else next('다음',to3,ah); }); }); }
       if(allGot && !cleared){
         if(decodeOpen()) return say(['조각 셋이 다 모였다.','오늘 밤은 암호 해독이다. 수사보드로 가자.'],'수사보드 열기',()=>{ briefBack=true; openBoard(); });
-        return say(['조각 셋이 다 모였다.','암호 해독은 목요일 밤이다. 단서를 머릿속에 굴려 둬라.']); }
+        return say(['조각 셋이 다 모였다.','암호 해독은 목요일 밤이다. 그때까지 단서나 곱씹어 봐라.']); }
       if(!cleared){ const ni=w.spots.findIndex((s,i)=>!S.got[gotKey(w.n,i)]);
         return say(['오늘 밤 조각은 이미 찾았다.',`다음 조각은 ${OPEN_DAY[ni]}요일 밤에 열린다. 미리는 안 된다.`]); }
       if(last){
@@ -1381,12 +1377,12 @@ function openBrief(){
 /* 3주차 금요일 밤: 최종 작전 */
 function runFinale(host,box,after){
   box.innerHTML='';
-  talk(host,{k:'forest',name:LOCS.forest.npc},['…왔구나, 요원. 3주 동안 학교에 색이 조금씩 돌아왔다.','마지막 숨 다섯 번. 학교 전체에 색을 보내 주렴.'],()=>{
+  talk(host,{k:'forest',name:LOCS.forest.npc},['…왔구나, 요원. 3주 동안 학교에 색이 조금씩 돌아왔단다.','마지막 숨 다섯 번. 학교 전체에 색을 보내 주렴.'],()=>{
     box.innerHTML='<div id="fb"></div>';
     breathe(box.querySelector('#fb'),5,()=>{ if(!S.finale) HQ.add('finale'); S.finale=true; save(); SpyPlus.addXP(50,'최종 작전');
       box.innerHTML=`<div class="got ending"><div class="label">최종 작전 완료</div><h2 style="font-size:28px;margin:6px 0">학교의 색이 돌아왔다</h2>
         <div class="tile" style="width:auto;padding:0 12px;font-size:32px">룰루랄라</div>
-        <img src="img/card.jpg" alt="늘곰 룰루랄라 카드"><p style="margin-top:10px">요원 ${S.code}, 3주 동안 평범하게 잘 해냈어요. 마지막 장비 「${TOY[4].name}」이 사물함에 들어갔어요. 마음돌봄 D-Day 부스에서 만나요.</p></div><div id="fAfter" style="margin-top:12px"></div>`;
+        <img src="img/card.jpg" alt="늘곰 룰루랄라 카드"><p style="margin-top:10px">요원 ${S.code}, 3주 동안 평범하게 잘 해냈어요. 마지막 장비 「${TOY[4].name}」이 사물함에 들어갔어요. 12월 10일 마음돌봄 팝업에서 만나요.</p></div><div id="fAfter" style="margin-top:12px"></div>`;
       refresh(); after(box.querySelector('#fAfter')); });
   });
 }
@@ -1424,10 +1420,10 @@ const IDLE={
     ['쉿, 지금 상담 준비 중이야.','…는 핑계고, 사실 커피 마시는 중.'],
     ['요원, 오늘 기분은 몇 점이야?','몇 점이든 괜찮아. 점수 매기는 날 아니니까.']],
   art:[['미술실은 오늘 정리 중이야.','물감이 다 회색이 돼서 큰일이다.'],
-    ['너 그림 그리는 거 좋아해?','못 그려도 돼. 선 하나 긋는 것도 명상이야.'],
+    ['너 그림 그리는 거 좋아해?','못 그려도 돼. 선 하나만 그어도 마음이 좀 조용해져.'],
     ['{sense} 작전 중이구나.','미술실 창가 화분 봤어? 걔 이름이 "평범이"야.'],
     ['석고상이 오늘따라 나를 쳐다보는 것 같아…','기분 탓이겠지? 그치?'],
-    ['다음 주 마음돌 부스 재료 들어왔어.','돌 만질 때 손이 차가우면 먼저 비벼 두렴.']],
+    ['마음돌 부스에 쓸 돌이 들어왔어. 12월에 쓸 거야.','돌이 차가우니까 만지기 전에 손부터 비벼 두렴.']],
   library:[['쉿, 도서관에서는 평범하게.','이번 주엔 내 책장에 단서가 없구먼.'],
     ['에헴, 나는 1987년판 백과사전이다.','요즘 아이들은 나를 안 펴 봐서 섭섭하구먼.'],
     ['{sense}라… 내 342쪽에 나와 있지.','펴 보진 말거라. 먼지가 많다.'],
@@ -1437,9 +1433,9 @@ const IDLE={
     ['라디오 오늘의 곡 들어 봤어요?','늘곰 소장 취향이 은근 괜찮더라고요.'],
     ['{sense} 작전이라고요? 음악도 감각이죠.','눈 감고 들으면 소리가 더 잘 들려요.'],
     ['리코더 소리가 안 나요…','아, 거꾸로 들고 있었네요. 평범하게 실수했어요.'],
-    ['요원님 발소리가 박자가 좋네요.','쿵, 짝. 걷기 명상도 리듬이에요.']],
+    ['요원님 발소리, 박자가 좋네요.','쿵, 짝. 걷는 것도 리듬이에요.']],
   cafeteria:[['오늘 메뉴는 비밀이에요.','첫 입은 천천히, 알죠?'],
-    ['어머, 또 왔어요? 배고파요?','급식 시간까지 조금만 참아요. 물 한 컵은 괜찮아요.'],
+    ['또 왔어요? 배고파요?','내일 급식까지 조금만 참아요. 물 한 컵은 괜찮아요.'],
     ['{sense} 작전 중이라고요?','오늘 반찬 중에 무슨 색이 제일 많았는지 기억해요?'],
     ['국자 들고 있으면 요원 같지 않아요?','…아니라고요? 평범하네요.'],
     ['편식해도 괜찮아요, 오늘은.','대신 하나만 천천히 씹어 봐요.']],
@@ -1523,7 +1519,7 @@ function breathe(host,cycles,done,free){
       timers.push(setTimeout(()=>{ ph.textContent='잠깐 멈춤'; count(2);
         timers.push(setTimeout(()=>{ ph.textContent='내쉬기'; orb.style.transitionDuration='6s'; orb.style.transform='scale(1)'; count(6);
           timers.push(setTimeout(()=>{ dots[c].classList.add('on'); c++; fog.style.opacity=Math.max(0,1-c/cycles);
-            if(c<cycles) cyc(); else { ph.textContent='안개 정화 완료'; cnt.textContent='잘했어요. 지금 숨이 어떤지 잠깐 살펴봐요.'; if(done) timers.push(setTimeout(done,900)); else { const b=document.createElement('button'); b.className='bk sky wide'; b.textContent='한 번 더'; b.onclick=()=>breathe(host,cycles,null,true); host.querySelector('.breath').appendChild(b);} }
+            if(c<cycles) cyc(); else { ph.textContent='안개 정화 완료'; cnt.textContent='잘했어요. 숨이 아까랑 좀 다른지 느껴 봐요.'; if(done) timers.push(setTimeout(done,900)); else { const b=document.createElement('button'); b.className='bk sky wide'; b.textContent='한 번 더'; b.onclick=()=>breathe(host,cycles,null,true); host.querySelector('.breath').appendChild(b);} }
           },6000)); },2000)); },4000));
     };
     const count=n=>{ let k=n; cnt.textContent=k+'초'; const iv=setInterval(()=>{k--; if(k>0) cnt.textContent=k+'초'; else clearInterval(iv);},1000); timers.push(iv); };
@@ -1649,32 +1645,14 @@ function drawLocker(host){
   host.querySelectorAll('[data-toy]').forEach(x=>x.onclick=()=>{ stopMG(); const th=host.querySelector('#toyHost'); openSquish(th,()=>toast('손맛 확인 완료'),+x.dataset.toy); th.scrollIntoView({behavior:'smooth',block:'nearest'}); });
 }
 
-/* ---------- 교무실 (3주차부터 열림) + 원어민 선생님 ---------- */
-const NATIVE={name:'원어민 선생님 Ms. Lily', av:{face:1,hair:2,top:1,bottom:2,tc:3}};
-const OFFICE_T={
-  3:[['출제 끝! 드디어 교무실 문을 열었다~','그동안 문 앞에서 평범하게 지나가 준 요원들 고마워.','책상 위 사탕 하나 가져가. 천천히 녹여 먹기, 그게 이번 주 미각 훈련이야.'],
-     ['또 왔니? 교무실이 이렇게 인기 있을 줄이야.','채점은… 아직 비밀이다. 평범하게 기다리기!']],
-  4:[['D-Day 주간이네! 선생님들도 부스 도우미로 나가.','싱잉볼, 차 테라피, 마음돌… 넌 어디 신청했어?'],
-     ['4주 동안 수고 많았다, 요원.','룰루랄라, 우리 다 같이 평범하게 끝내 보자.']]};
-const NATIVE_T={
-  3:{word:'taste',ko:'맛보다',tip:'slowly 천천히',lines:[['Hi, agent! 안녕하세요~','This week\'s word is… taste! 맛, 맞죠?','Eat slowly. 천천히, 천천히. Your tongue will say thank you!'],['Oh, you again! 반가워요!','Today\'s lunch… delicious? 맛있어요? Tell me one taste!']]},
-  4:{word:'together',ko:'함께',tip:'colorful 알록달록',lines:[['Wow, colors are coming back! 색깔 돌아와요!','Final word: together. 함께!','You are a very… 평범한? ordinary spy. Best compliment!'],['Last week! 마지막 주!','Thank you, agent. 고마워요. See you at the booth!']]}};
+/* ---------- 교무실 (3주차부터 열림) ---------- */
+const OFFICE_T=[
+  ['출제 끝! 드디어 교무실 문 열었다.','그동안 문 앞을 평범하게 지나가 준 요원들, 고맙다.','책상 위 사탕 하나 가져가. 깨물지 말고 천천히 녹여 먹기. 그게 이번 주 미각 훈련이야.'],
+  ['또 왔니? 교무실이 이렇게 인기 있을 줄은 몰랐네.','채점은… 아직 비밀이다. 평범하게 기다려.']];
 function openOfficeOpen(){
   const w=W(), L=LOCS.office; const v=visit('office-'+w.n);
-  sheet('교무실','2층 · 출제 끝! 문 열림',`
-    <div class="speakers"><button class="bk" id="oT" aria-pressed="true">담임 선생님</button><button class="bk" id="oN" aria-pressed="false">원어민 선생님</button></div>
-    <div id="talkHost"></div><div id="wordCard"></div>`, b=>{
-    const host=b.querySelector('#talkHost'), wc=b.querySelector('#wordCard');
-    const teacher=()=>{ b.querySelector('#oT').setAttribute('aria-pressed','true'); b.querySelector('#oN').setAttribute('aria-pressed','false'); wc.innerHTML='';
-      const set=OFFICE_T[w.n]; talk(host,{k:'office',name:L.npc}, set[Math.min(v,set.length-1)]); };
-    const native=()=>{ b.querySelector('#oN').setAttribute('aria-pressed','true'); b.querySelector('#oT').setAttribute('aria-pressed','false'); wc.innerHTML='';
-      const N=NATIVE_T[w.n]; S.eng=S.eng||{};
-      talk(host,{k:'native',name:NATIVE.name}, N.lines[S.eng[w.n]?1:0], ()=>{
-        wc.innerHTML=`<div class="wordc"><div class="label">이번 주 감각 영단어</div><b>${N.word}</b><span>${N.ko} · ${N.tip}</span></div>`;
-        if(!S.eng[w.n]){ S.eng[w.n]=true; save(); SpyPlus.addXP(5,'영단어'); }
-      }); };
-    b.querySelector('#oT').onclick=teacher; b.querySelector('#oN').onclick=native;
-    teacher();
+  sheet('교무실','2층 · 출제 끝! 문 열림',`<div id="talkHost"></div>`, b=>{
+    talk(b.querySelector('#talkHost'),{k:'office',name:L.npc}, OFFICE_T[Math.min(v,OFFICE_T.length-1)]);
   });
 }
 
@@ -1738,7 +1716,7 @@ function openEmotion(){
   sheet('안개 몬스터 이름 붙이기','마음 훈련실',`<div id="emoHost"></div><p class="note">고른 단어는 어디에도 저장되지 않아요.</p>`, b=>{
     const h=b.querySelector('#emoHost');
     mgStop=MG.run(h,'emotion',{doneBtn:'감정 도감 배지 받기',doneLabel:'특별 배지 · 감정 도감',onDone:()=>{ stopMG(); SpyPlus.addXP(SpyPlus.XP.minigame,'미니게임'); S.badges=Object.assign({},S.badges,{emotion:true}); save();
-      h.innerHTML='<div class="got"><div class="label">특별 배지</div><h3 style="font-size:24px;margin:6px 0">감정 도감</h3><p>마음에 이름을 붙이면 조금 떨어져서 볼 수 있어요. 마음이 너무 크게 느껴지면 본부 전화를 눌러요.</p></div><div class="row"><button class="bk" id="emoW">마음 날씨로</button><button class="bk green" id="emoP">본부 전화</button></div>';
+      h.innerHTML='<div class="got"><div class="label">특별 배지</div><h3 style="font-size:24px;margin:6px 0">감정 도감</h3><p>마음에 이름을 붙이면 조금 떨어져서 볼 수 있어요. 혼자 감당하기 벅차면 본부 전화를 눌러요.</p></div><div class="row"><button class="bk" id="emoW">마음 날씨로</button><button class="bk green" id="emoP">본부 전화</button></div>';
       h.querySelector('#emoP').onclick=openPhone; h.querySelector('#emoW').onclick=openWeather; }});
   });
 }
@@ -1796,9 +1774,9 @@ function openSky(){
 function openPhone(lead){ if(typeof lead!=='string') lead=''; HQ.once('phone');
   const L=(cls,title,num,tel,desc)=>`<div class="line ${cls}"><h3>${title}</h3><div class="num">${num}</div><div class="acts">${tel?`<a class="bk green" href="tel:${tel}">전화</a><button class="bk" data-copy="${num}">번호 복사</button>`:''}</div><p>${desc}</p></div>`;
   sheet('본부 전화','혼자 버티지 않아도 돼요',`
-    <div class="npc"><div class="portrait pt-bear"><img src="img/neulgom-head.webp" alt="늘곰 소장"></div><div class="bubble"><span class="who">늘곰 소장</span>${lead||"힘들 때 도움을 청하는 건 요원의 기본 수칙이다. 아래 번호는 언제든 열려 있다."} 상담한 내용은 함부로 알려지지 않는다. 다만 네 안전이 걱정될 때는, 너를 지키려고 도와줄 어른에게 알릴 수 있다.</div></div>
+    <div class="npc"><div class="portrait pt-bear"><img src="img/neulgom-head.webp" alt="늘곰 소장"></div><div class="bubble"><span class="who">늘곰 소장</span>${lead||"힘들 때 도움을 청하는 건 요원의 기본 수칙이다. 아래 번호는 언제든 받는다."} 상담한 내용은 함부로 알려지지 않는다. 다만 네 안전이 걱정될 때는, 너를 지키려고 도와줄 어른에게 알릴 수 있다.</div></div>
     ${L('hq','Wee클래스 (비밀 본부)','3층','', '쉬는 시간, 점심시간에 그냥 들러도 돼요. 전문상담 선생님이 기다려요.')}
-    ${L('','청소년상담 1388','1388','1388','24시간 · 전화. 문자는 #1388, 카카오톡은 「청소년상담1388」 채널. 고민 무엇이든.')}
+    ${L('','청소년상담 1388','1388','1388','24시간 · 전화. 문자는 #1388, 카카오톡은 「청소년상담1388」 채널. 무슨 고민이든 괜찮아요.')}
     ${L('','자살예방 상담전화','109','109','24시간. 죽고 싶다는 생각이 들 때, 주변 사람이 걱정될 때.')}
     ${L('','학교폭력 신고·상담','117','117','24시간. 문자 #0117도 가능.')}
     <p class="note">지금 위험한 상황이면 112(경찰) 또는 119로 바로 연락하세요.</p>`, b=>{
@@ -1811,7 +1789,7 @@ function openPhone(lead){ if(typeof lead!=='string') lead=''; HQ.once('phone');
 function openCloset(){
   let tab='face';
   const T={face:['표정',FACES],hair:['머리',HAIRS],top:['상의',TOPS],bottom:['하의',BOTS]};
-  sheet('요원 위장실','완벽한 평범함으로 위장하라',`
+  sheet('요원 위장실','최대한 평범하게 위장하라',`
     <div class="closet"><div class="mirror" id="mir"></div>
       <div style="min-width:0"><div class="tabs" role="tablist">${Object.entries(T).map(([k,v])=>`<button role="tab" data-t="${k}" aria-selected="${k===tab}">${v[0]}</button>`).join('')}</div>
       <div class="opts" id="opts"></div><div class="colors" id="cols"></div></div></div>

@@ -8,7 +8,7 @@
  *  - 이름, 학번, 요원 코드, 기기 번호, IP 등 누구인지 알 수 있는 정보는 받지도 저장하지도 않습니다.
  *
  * 시트 탭 (처음 실행할 때 자동으로 만들어집니다)
- *  - 설정       : 관리 비밀번호, 공지 한 줄, 전교 정화 목표
+ *  - 설정       : 관리 비밀번호, 공지 한 줄, 전교 정화 목표, 표어 1~3주차
  *  - 하늘게시판 : 번호 | 받은 시각 | 내용 | 상태(대기/공개/숨김) | 확인 필요
  *  - 통계       : 날짜 | 접속 | 브리핑 완료 | ... (서버가 자동 기록)
  *  - 음악       : 날짜 | 곡 제목 | 가수 | 늘곰 한마디 (비워 두면 앱에 들어 있는 곡이 나옴)
@@ -97,6 +97,7 @@ function publicState() {
     ok: true,
     date: today,
     notice: cfg.notice || '',
+    mottos: cfg.mottos,
     raid: { total: raidTotal, today: num(trow.raid), goal: cfg.goal || 900 },
     moods: moods,
     visitToday: num(trow.visit),
@@ -198,6 +199,10 @@ function admin(req) {
   } else if (op === 'notice') {
     setConfig('공지 한 줄', String(req.notice || '').replace(/[<>&]/g, '').slice(0, 60));
     dropCache();
+  } else if (op === 'motto') {
+    var ms = req.mottos || [];
+    for (var i = 0; i < 3; i++) setConfig('표어 ' + (i + 1) + '주차', String(ms[i] || '').replace(/[<>&]/g, '').trim().slice(0, 30));
+    dropCache();
   }
   return adminData();
 }
@@ -223,6 +228,7 @@ function adminData() {
     ok: true,
     now: nowStr(),
     notice: cfg.notice || '',
+    mottos: cfg.mottos,
     goal: cfg.goal || 900,
     sheetUrl: SpreadsheetApp.getActive().getUrl(),
     metrics: METRICS,
@@ -271,19 +277,20 @@ function initSheet(name, sh) {
   }
 }
 function readConfig() {
-  var v = sheet(SH.cfg).getDataRange().getValues(), c = {};
+  var v = sheet(SH.cfg).getDataRange().getValues(), c = { mottos: ['', '', ''] };
   v.forEach(function (r) {
     var k = String(r[0]).trim();
     if (k === '관리 비밀번호') c.pw = String(r[1]).trim();
     else if (k === '공지 한 줄') c.notice = String(r[1] || '').trim();
     else if (k === '전교 정화 목표') c.goal = num(r[1]) || 900;
+    else if (/^표어 [1-3]주차$/.test(k)) c.mottos[Number(k.charAt(3)) - 1] = String(r[1] || '').replace(/[<>&]/g, '').trim().slice(0, 30);
   });
   return c;
 }
 function setConfig(key, val) {
   var sh = sheet(SH.cfg), v = sh.getDataRange().getValues();
   for (var i = 0; i < v.length; i++) if (String(v[i][0]).trim() === key) { sh.getRange(i + 1, 2).setValue(val); return; }
-  sh.appendRow([key, val, '']);
+  sh.appendRow([key, val, key.indexOf('표어') === 0 ? '수사보드 금주의 표어(30자까지). 비우면 앱에 들어 있는 기본 표어가 나옴.' : '']);
 }
 function statRows() {
   var sh = sheet(SH.stats), last = sh.getLastRow(), rows = [], byDate = {};

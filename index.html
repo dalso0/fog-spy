@@ -946,6 +946,8 @@ const finaleOpen=()=>S.week===WEEKS.length && weekDay()>=5; // 최종 작전 = 3
 const locOpen=k=>(LOCS[k].open||1)<=S.week;
 const OPEN_DAY=['월','화','수'];
 const gotKey=(w,i)=>w+'-'+i;
+/* 금주의 표어: 선생님이 본부(시트·관리실)에 적어 두면 그 문구, 없으면 기본 문구 */
+function mottoOf(w){ const m=((HQ.cached()||{}).mottos||[])[w.n-1]; return (m&&String(m).trim()) ? String(m).replace(/[<>&]/g,'').slice(0,30) : w.motto; }
 const piecesOf=w=>WEEKS[w-1].spots.filter((s,i)=>S.got[gotKey(w,i)]).length;
 const progress=()=>Object.keys(S.cleared).filter(k=>+k<=WEEKS.length).length/WEEKS.length;
 /* 출근(=저녁 브리핑 완료)한 날 수. 연속 기록은 없고, 쌓이기만 한다 */
@@ -1551,7 +1553,7 @@ function openBoard(){
   const pool=[...letters].sort((a,b)=>((a.ch.charCodeAt(0)*7)%5)-((b.ch.charCodeAt(0)*7)%5));
   sheet('수사보드',`${w.n}주차 · ${w.dates}`,`
     <div class="board">
-      <div class="memo"><div class="label">금주의 표어</div><h3>“${w.motto}”</h3><p>사건: ${w.title} · 감각: ${w.sense}</p></div>
+      <div class="memo"><div class="label">금주의 표어</div><h3 id="bMotto">“${mottoOf(w)}”</h3><p>사건: ${w.title} · 감각: ${w.sense}</p></div>
       <div class="memo" style="transform:rotate(1deg);background:#fff"><div class="label">암호 단서</div><p style="font-size:14px;font-weight:700">${w.clue}</p></div>
       <div class="slots" id="slots">${letters.map(()=>'<div class="slot"></div>').join('')}</div>
       <div class="pool" id="pool">${pool.map(l=>`<button class="ptile ${l.got?'':'lock'}" data-ch="${l.ch}" ${l.got&&decodeOpen()?'':'disabled'} aria-label="${l.got?l.ch:'아직 못 찾은 조각'}">${l.got?l.ch:'?'}</button>`).join('')}</div>
@@ -1565,7 +1567,7 @@ function openBoard(){
     ${(DEMO||HQ.on)?`<div><div class="label" style="margin-bottom:6px">전교 정화 작전${HQ.cached()?'':' (시연용 예시 숫자)'}</div><div id="raidHost"></div></div>`:""}
   `, body=>{
     if(DEMO||HQ.on){ const rd=SpyPlus.mountRaid(body.querySelector('#raidHost'),Object.assign(raidNums(),{week:w.n+'주차', name:'회색 거인'}));
-    mgStop=rd.stop; raidSet=rd.set; HQ.state(true).then(st=>{ if(st&&raidSet===rd.set){ raidLocal=0; rd.set(raidNums()); } }); }
+    mgStop=rd.stop; raidSet=rd.set; HQ.state(true).then(st=>{ const bm=body.querySelector('#bMotto'); if(st&&bm&&bm.isConnected) bm.textContent='“'+mottoOf(w)+'”'; if(st&&raidSet===rd.set){ raidLocal=0; rd.set(raidNums()); } }); }
     const slots=[...body.querySelectorAll('.slot')], tiles=[...body.querySelectorAll('.ptile')];
     let seq=[];
     const draw=()=>{ slots.forEach((s,i)=>{ s.textContent=seq[i]?seq[i].ch:''; s.classList.toggle('f',!!seq[i]); }); tiles.forEach(t=>t.classList.toggle('used',seq.some(q=>q.el===t))); };

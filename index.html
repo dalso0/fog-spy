@@ -835,22 +835,22 @@ const WEEKS = [
    spots:[
     {loc:'ground', piece:'하', task:'sky', lines:['요원인가? 나는 30년째 여기 서 있는 철봉이다.','요즘 아이들이 고개를 안 들어. 그래서 하늘이 색을 잊어버렸지.','지금 창밖 하늘을 10초만 올려다봐라. 무슨 색인지 나한테 알려 주고.']},
     {loc:'art', piece:'늘', task:'find', target:'brush', hint:'색이 남아 있는 건 붓 끝이야.', lines:['쉿, 미술실은 지금 회색 먼지투성이야.','그래도 딱 하나, 아직 색을 붙잡고 있는 물건이 있어.','미술실을 천천히 둘러보렴. 힌트는 붓 끝이야.']},
-    {loc:'career', piece:'빛', task:'mg:breath', lines:['진로실 창문은 학교에서 제일 멀리까지 보이는 창이야.','먼 곳을 바라보면서 숨을 쉬면 눈이 쉬고, 안개도 옅어진대.','창밖 제일 먼 곳을 보면서 숨 세 번만 같이 쉬어 보자.']}
+    {loc:'career', piece:'빛', task:'mg:breath', lines:['진로실 창문은 학교에서 제일 멀리까지 보이는 창이야.','먼 데를 보면서 숨을 쉬면 눈도 쉬고, 안개도 옅어진대.','창밖 제일 먼 곳을 보면서 숨 세 번만 같이 쉬어 보자.']}
    ]},
   {n:2, dates:'11.23 – 11.27', sense:'청각', title:'소리 없는 복도',
    brief:'안개가 짙어진 복도에서 발소리가 들리지 않는다. 귀를 기울이는 요원만 단서를 찾을 수 있다.',
    motto:'멈추면 들린다', clue:'가장 가까이에서 들리는, 내가 살아 있다는 소리', word:'숨소리',
    spots:[
-    {loc:'music', piece:'숨', task:'mg:senses', lines:['어서 와요, 요원. 음악실 피아노가 일주일째 소리를 안 내요.','소리를 되찾으려면 먼저 우리가 들어야 해요.','안개 낀 음악실 어딘가에 감각 조각이 숨어 있어요. 하나씩 비춰 봐요.']},
+    {loc:'music', piece:'숨', task:'mg:senses', lines:['어서 와요, 요원. 음악실 피아노가 일주일째 소리를 안 내요.','소리를 되찾으려면 우리가 먼저 귀를 기울여야 해요.','안개 낀 음악실 어딘가에 감각 조각이 숨어 있어요. 하나씩 찾아봐요.']},
     {loc:'library', piece:'소', task:'mg:meong', lines:['에헴, 나는 도서관에서 제일 오래된 백과사전이다.','도서관에서 가장 큰 소리는 조용함이지.','화면에서 손을 떼고 가만히 있어 보거라. 알림이 와도 넘어가지 말고.']},
-    {loc:'forest', piece:'리', task:'mg:breath', lines:['…스으… 나는 명상숲의 큰 나무란다.','바람 소리는 내 숨소리야. 너도 같이 쉬어 볼래?','바람이 들어오고 나가는 박자에 맞춰, 숨 네 번.']}
+    {loc:'forest', piece:'리', task:'mg:breath', lines:['…스으… 나는 명상숲의 큰 나무란다.','바람 소리는 내 숨소리야. 너도 같이 쉬어 볼래?','바람이 불었다 멎는 박자에 맞춰서, 숨 네 번.']}
    ]},
   {n:3, dates:'11.30 – 12.4', sense:'미각', title:'맛을 잃은 급식',
    brief:'급식실 반찬이 전부 같은 맛이 난다. 안개는 급하게 먹는 입을 노린다.',
    motto:'천천히 먹어도 괜찮아', clue:'서두르지 않고 먹는 방법', word:'한입씩',
    spots:[
     {loc:'cafeteria', piece:'한', task:'slow', secs:30, slowTitle:'먹기 명상 30초', slowText:'저녁 첫 숟가락(아니면 물 한 모금)을 입에 넣고 30초 동안 천천히 씹어 봐요. 맛이 어떻게 바뀌는지 봐요.', lines:['요원님, 급식이 아무 맛도 안 난다는 신고가 들어왔어요.','맛은 천천히 씹어야 나오거든요.','오늘 저녁 첫 입은 30초 동안 천천히. 같이 해 볼까요?']},
-    {loc:'nurse', piece:'입', task:'mg:breath', lines:['어디 아파서 온 건 아니지? 다행이다.','배가 꼬르륵하는 것도 감각이야. 몸이 말을 거는 거지.','배에 손을 얹고, 배가 부풀었다 꺼지는 걸 느끼며 숨 세 번.']},
+    {loc:'nurse', piece:'입', task:'mg:breath', lines:['어디 아파서 온 건 아니지? 다행이다.','배가 꼬르륵하는 것도 감각이야. 몸이 말을 거는 거지.','배에 손을 얹어 봐. 배가 부풀었다 꺼지는 걸 느끼면서 숨 세 번.']},
     {loc:'library', piece:'씩', task:'find', target:'recipe', hint:'맛있는 냄새가 나는 책을 찾아라.', lines:['또 왔구먼, 요원.','이번엔 맛을 기록해 둔 책이 숨었다.','요리책이 어디 있는지, 하나씩 눌러 보거라.']}
    ]}
 ];
@@ -1294,7 +1294,7 @@ function openBrief(){
     <div class="bsteps" id="bSteps"></div>
     <div id="talkHost" style="margin-top:12px"></div>
     <div id="bStep"></div>
-    <p class="note">3분이면 끝나요. 밀린 조각은 몰아서 해도 되고, 빠진 날이 있어도 손해는 없어요.</p>`, body=>{
+    <p class="note">3분이면 끝나요. 밀린 조각은 몰아서 해도 되고, 빠진 날이 있어도 손해 볼 건 없어요.</p>`, body=>{
     const host=body.querySelector('#talkHost'), box=body.querySelector('#bStep'), steps=body.querySelector('#bSteps');
     const NG={k:'neulgom',name:'늘곰 소장'};
     const mark=i=>{ steps.innerHTML=['1 지령 보고','2 오늘 밤 조각','3 내일의 지령'].map((t,j)=>`<div class="${j<i?'ok':j===i?'now':''}">${j<i?'✓ ':''}${t}</div>`).join(''); };
@@ -1414,7 +1414,7 @@ function spotPanel(host,task,k,si,after){
 }
 /* 장소별 잡담: 방문할 때마다 돌아가며 나옴. {sense}는 이번 주 감각 */
 const IDLE={
-  career:[['진로실은 오늘 조용해.','이번 주 단서는 여기 없지만, 창밖은 한 번 보고 가.'],
+  career:[['진로실은 오늘 조용해.','이번 주 단서는 여기 없어. 그래도 창밖은 한번 보고 가.'],
     ['또 왔네? 진로 고민은 아니고?','농담이야. 요원도 꿈은 있어야지. 나중에 얘기하자.'],
     ['이번 주는 {sense} 작전이라며?','진로실 창문에서 보면 운동장이 다 보여. 요원들이 바쁘게 다니더라.'],
     ['쉿, 지금 상담 준비 중이야.','…는 핑계고, 사실 커피 마시는 중.'],
@@ -1457,7 +1457,7 @@ const IDLE={
 };
 const GOT_LINES=[['이번 주 조각은 이미 챙겼구나.','조각 「{p}」, 잃어버리지 말고.'],
   ['또 왔어? 조각 「{p}」은 벌써 네 거야.','나머지 조각 찾으러 가 봐.'],
-  ['다시 와 줘서 고마워.','「{p}」 조각이 네 주머니에서 반짝이는 게 보인다.'],
+  ['또 들렀네.','「{p}」 조각이 네 주머니에서 반짝이는 게 보인다.'],
   ['임무 완료한 요원이 다시 오다니, 수상한데?','…농담이야. 쉬다 가.']];
 const RETRY_OPEN=['다시 왔구나. 이어서 해 볼까?','준비됐어? 천천히 해도 돼.','또 만났네. 이번엔 될 거야.'];
 function visit(k){ S.visits=S.visits||{}; const v=S.visits[k]||0; S.visits[k]=v+1; save(); return v; }
@@ -1661,7 +1661,7 @@ function openPrincipal(){
   const L=LOCS.principal, w=W();
   sheet('교장실','1층 · 늘 열려 있는 방',`<div id="talkHost"></div><div id="opts" class="row"></div><div id="task"></div>`, body=>{
     const host=body.querySelector('#talkHost'), opts=body.querySelector('#opts'), task=body.querySelector('#task');
-    const pv=visit('principal-'+w.n); const PL=[['오, 평범한 스파이 요원이구먼. 소문 들었네.',`이번 주는 ${w.sense} 작전이라지? 열심히 하되, 너무 열심히는 말게.`],['또 왔구먼! 교장실 문턱이 닳겠어.','하하, 좋은 일이지.'],['요즘 학교가 조금씩 색을 되찾는 것 같아.','자네 같은 요원들 덕분일세.'],['교장도 사실 시험 기간엔 긴장한다네.','비밀일세. 평범하게 지켜 주게.'],['창밖 운동장 좀 보게.',`${w.sense}… 오늘은 무엇이 느껴지나?`]];
+    const pv=visit('principal-'+w.n); const PL=[['오, 평범한 스파이 요원이구먼. 소문 들었네.',`이번 주는 ${w.sense} 작전이라지? 열심히 하되, 너무 열심히는 말게.`],['또 왔구먼! 교장실 문턱이 닳겠어.','하하, 좋은 일이지.'],['요즘 학교가 조금씩 색을 되찾는 것 같아.','자네 같은 요원들 덕분일세.'],['교장도 사실 시험 기간엔 긴장한다네.','비밀일세. 평범하게 지켜 주게.'],['창밖 운동장 좀 보게.',`${w.sense}… 오늘은 뭐가 느껴지나?`]];
     talk(host,{k:'principal',name:L.npc},[...PL[pv%PL.length],'교장실 소파가 학교에서 제일 푹신하다네. 잠깐 멍때리고 가겠나?'],()=>{
       opts.innerHTML=`<button class="bk green" id="p1">소파에서 멍 지키기</button>`;
       opts.querySelector('#p1').onclick=()=>{ opts.innerHTML=''; mgStop=MG.run(task,'meong',{doneBtn:'교장선생님께 보고',doneLabel:'특별 배지 · 교장실 소파 멍',onDone:()=>{ stopMG(); SpyPlus.addXP(SpyPlus.XP.minigame,'미니게임'); S.badges=Object.assign({},S.badges,{principal:true}); save(); task.innerHTML=`<div class="got"><div class="label">특별 배지</div><h3 style="font-size:24px;margin:6px 0">교장실 소파 멍</h3><p>"훌륭하군. 나도 가끔 여기서 멍때린다네. 비밀일세."</p></div>`; }}); };
@@ -1737,7 +1737,7 @@ function openSky(){
   if(!S.skyPend) S.skyPend=[]; if(!S.skyOk) S.skyOk=[];
   sheet('하늘 게시판','안개 낀 하늘에 한 줄 띄우기',`
     <div class="skybox" id="skyBox"><div class="skyfog"></div><div class="skymsgs"></div></div>
-    <p class="note">${HQ.on?"요원들이 남긴 한 줄은 선생님이 확인한 뒤 하늘에 떠요. 한 줄이 뜰 때마다 그 주변 안개가 걷혀요. 이름은 어디에도 남지 않아요.":DEMO?"요원들이 남긴 한 줄이 하늘에 뜰 때마다 그 주변 안개가 걷혀요. (시연: 아직 본부와 연결되지 않아 이 휴대폰 안에서만 보여요.)":"내가 띄운 한 줄마다 하늘의 안개가 걷혀요. 이 글은 이 휴대폰에만 저장되고, 다른 사람에게는 보이지 않아요."}</p>
+    <p class="note">${HQ.on?"요원들이 남긴 한 줄은 선생님이 확인한 다음 하늘에 떠요. 한 줄 뜰 때마다 그 주변 안개가 걷혀요. 이름은 어디에도 안 남아요.":DEMO?"요원들이 남긴 한 줄이 하늘에 뜰 때마다 그 주변 안개가 걷혀요. (시연: 아직 본부와 연결되지 않아 이 휴대폰 안에서만 보여요.)":"내가 띄운 한 줄마다 하늘의 안개가 걷혀요. 이 글은 이 휴대폰에만 저장되고, 다른 사람에게는 보이지 않아요."}</p>
     <div class="card"><div class="label">한 줄 남기기 · 이름 없이</div>
       <div class="skyin"><input id="skyText" maxlength="30" placeholder="오늘 본 하늘, 고마운 일, 응원 한마디" autocomplete="off"><button class="bk green" id="skySend">띄우기</button></div>
       <p class="note" id="skyMsg" style="margin-top:6px">30자까지 쓸 수 있어요. 이름이나 연락처, 친구 이름은 쓰지 않기.</p>
@@ -1774,8 +1774,8 @@ function openSky(){
 function openPhone(lead){ if(typeof lead!=='string') lead=''; HQ.once('phone');
   const L=(cls,title,num,tel,desc)=>`<div class="line ${cls}"><h3>${title}</h3><div class="num">${num}</div><div class="acts">${tel?`<a class="bk green" href="tel:${tel}">전화</a><button class="bk" data-copy="${num}">번호 복사</button>`:''}</div><p>${desc}</p></div>`;
   sheet('본부 전화','혼자 버티지 않아도 돼요',`
-    <div class="npc"><div class="portrait pt-bear"><img src="img/neulgom-head.webp" alt="늘곰 소장"></div><div class="bubble"><span class="who">늘곰 소장</span>${lead||"힘들 때 도움을 청하는 건 요원의 기본 수칙이다. 아래 번호는 언제든 받는다."} 상담한 내용은 함부로 알려지지 않는다. 다만 네 안전이 걱정될 때는, 너를 지키려고 도와줄 어른에게 알릴 수 있다.</div></div>
-    ${L('hq','Wee클래스 (비밀 본부)','3층','', '쉬는 시간, 점심시간에 그냥 들러도 돼요. 전문상담 선생님이 기다려요.')}
+    <div class="npc"><div class="portrait pt-bear"><img src="img/neulgom-head.webp" alt="늘곰 소장"></div><div class="bubble"><span class="who">늘곰 소장</span>${lead||"힘들 때 도움을 청하는 건 요원의 기본 수칙이다. 아래 번호는 언제든 받는다."} 상담한 내용은 함부로 새어 나가지 않는다. 다만 네가 위험해 보일 때는, 너를 지키려고 도와줄 어른에게 알릴 수 있다.</div></div>
+    ${L('hq','Wee클래스 (비밀 본부)','3층','', '쉬는 시간이나 점심시간에 그냥 들러도 돼요. 전문상담 선생님이 있어요.')}
     ${L('','청소년상담 1388','1388','1388','24시간 · 전화. 문자는 #1388, 카카오톡은 「청소년상담1388」 채널. 무슨 고민이든 괜찮아요.')}
     ${L('','자살예방 상담전화','109','109','24시간. 죽고 싶다는 생각이 들 때, 주변 사람이 걱정될 때.')}
     ${L('','학교폭력 신고·상담','117','117','24시간. 문자 #0117도 가능.')}

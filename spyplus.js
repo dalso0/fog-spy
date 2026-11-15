@@ -164,17 +164,17 @@ const XP={minigame:20, order:15, door:10, shard:5, safe:15, code:30, daily:10, r
 const PAL={k:'#1c2130',w:'#ffffff',y:'#ffcc33',r:'#e0522f',s:'#4aa6e8',g:'#3dbb5c',p:'#9b82f5',m:'#3cc6b4',o:'#ff7564',b:'#c58b55',n:'#8c6a4a',a:'#a7adb5',d:'#727985',l:'#d7dbe0',c:'#f3c99e'};
 const GEAR=[
  {id:'glasses', name:'평범한 안경', r:0, d:'쓰면 아무도 의심하지 않는다.', px:['..........','..........','..........','kkkk..kkkk','kwwk..kwwk','kwwkkkkwwk','kwwk..kwwk','kkkk..kkkk','..........','..........']},
- {id:'memo', name:'요원 수첩', r:0, d:'오늘 본 하늘색을 적어 두는 곳.', px:['.kkkkkkkk.','.kyyyyyyyk','.kywwwwwyk','.kykkkkwyk','.kywwwwwyk','.kykkkkwyk','.kywwwwwyk','.kykkkwwyk','.kyyyyyyyk','.kkkkkkkk.']},
- {id:'earbud', name:'잠입 이어폰', r:0, d:'음악이 아니라 주변 소리를 듣는 데 씀.', px:['...kkkk...','..kwwwwk..','.kw....wk.','.k......k.','kk......kk','kwk....kwk','kwk....kwk','kkk....kkk','..........','..........']},
+ {id:'memo', name:'요원 수첩', r:0, d:'오늘 본 하늘색을 적어 둔다.', px:['.kkkkkkkk.','.kyyyyyyyk','.kywwwwwyk','.kykkkkwyk','.kywwwwwyk','.kykkkkwyk','.kywwwwwyk','.kykkkwwyk','.kyyyyyyyk','.kkkkkkkk.']},
+ {id:'earbud', name:'잠입 이어폰', r:0, d:'음악 말고 주변 소리 듣는 데 쓴다.', px:['...kkkk...','..kwwwwk..','.kw....wk.','.k......k.','kk......kk','kwk....kwk','kwk....kwk','kkk....kkk','..........','..........']},
  {id:'light', name:'손전등', r:0, d:'안개 속 발밑을 비춘다.', px:['..........','.kkk......','.kyykkkkk.','.kyywwwwk.','.kyykkkkk.','.kkk......','..........','..........','..........','..........']},
  {id:'candy', name:'비상 사탕', r:0, d:'천천히 녹여 먹으면 맛이 돌아온다.', px:['..........','..........','k........k','kk.kkkk.kk','kokooooroo','kk.kkkk.kk','k........k','..........','..........','..........']},
  {id:'radio', name:'무전기', r:0, d:'본부와 연결. 지지직.', px:['....k.....','....k.....','..kkkkkk..','..kddddk..','..kdssdk..','..kddddk..','..kdkdkk..','..kdkdkk..','..kddddk..','..kkkkkk..']},
- {id:'scope', name:'접이식 망원경', r:1, d:'먼 곳을 보면 눈이 쉰다.', px:['..........','.........k','.......kkk','.....kkbbk','...kkbbbk.','.kkbbbbk..','kssbbbk...','kssbbk....','.kkkk.....','..........']},
+ {id:'scope', name:'접이식 망원경', r:1, d:'먼 데를 보면 눈이 쉰다.', px:['..........','.........k','.......kkk','.....kkbbk','...kkbbbk.','.kkbbbbk..','kssbbbk...','kssbbk....','.kkkk.....','..........']},
  {id:'plant', name:'위장용 화분', r:1, d:'뒤에 숨으면 아무도 못 알아본다(아마도).', px:['....gg....','..gggggg..','.gg.gg.gg.','..g.gg.g..','....gg....','.kkkkkkkk.','..kbbbbk..','..kbbbbk..','..kbbbbk..','...kkkk...']},
- {id:'badge', name:'늘곰 배지', r:1, d:'Wee클래스 요원의 증표.', px:['...kkkk...','..kyyyyk..','.kycyyyck.','.kyyyyyyk.','.kykyykyk.','.kyyccyyk.','..kyyyyk..','...kkkk...','..kr..rk..','..kr..rk..']},
- {id:'shades', name:'소장의 선글라스', r:2, d:'늘곰 소장이 몰래 빌려준 진짜 요원 장비.', px:['..........','..........','kkkkkkkkkk','kkkkkkkkkk','.kkkk.kkkk','.kkwk.kkwk','.kkkk.kkkk','..kk...kk.','..........','..........']},
+ {id:'badge', name:'늘곰 배지', r:1, d:'Wee클래스 요원이라는 표시.', px:['...kkkk...','..kyyyyk..','.kycyyyck.','.kyyyyyyk.','.kykyykyk.','.kyyccyyk.','..kyyyyk..','...kkkk...','..kr..rk..','..kr..rk..']},
+ {id:'shades', name:'소장의 선글라스', r:2, d:'늘곰 소장이 몰래 빌려줬다. 진짜 요원 장비.', px:['..........','..........','kkkkkkkkkk','kkkkkkkkkk','.kkkk.kkkk','.kkwk.kkwk','.kkkk.kkkk','..kk...kk.','..........','..........']},
  {id:'umbrella', name:'무지개 우산', r:2, d:'이걸 쓰면 회색 비도 알록달록해 보인다.', px:['....k.....','..rrooyy..','.rrrooyyy.','rrrrooyyyy','kkkkkkkkkk','....k.....','....k.....','....k.....','..k.k.....','...k......']},
- {id:'phones', name:'룰루랄라 헤드폰', r:2, d:'늘곰이 매일 부르는 노래가 들린다.', px:['..kkkkkk..','.kppppppk.','kpk....kpk','kk......kk','k........k','kkk....kkk','kmmk..kmmk','kmmk..kmmk','kmmk..kmmk','.kk....kk.']}
+ {id:'phones', name:'룰루랄라 헤드폰', r:2, d:'늘곰이 맨날 부르는 그 노래가 나온다.', px:['..kkkkkk..','.kppppppk.','kpk....kpk','kk......kk','k........k','kkk....kkk','kmmk..kmmk','kmmk..kmmk','kmmk..kmmk','.kk....kk.']}
 ];
 const RNAME=['흔함','희귀','전설'];
 const RCOL=['#d7dbe0','#4aa6e8','#ffcc33'];
@@ -411,7 +411,7 @@ function mountSneak(host,opts){
     function done(){ S.ckpt=n+1; S.door=n+1; if(S.run) S.run.hearts=3; save(); report('safe'); addXP(XP.safe,'안전가옥');
       root.innerHTML=`<div class="card sp-safe"><span class="chip">저장 완료 · 다음엔 ${n+1}번 문부터</span><h3 style="font-size:24px">보급 상자가 도착했다</h3><p class="muted">눌러서 열기. 뭐가 나올지는 몰라요.</p><div class="sp-crate" id="cr" role="button" aria-label="보급 상자 열기"></div><img src="${IMG.agent}" alt="늘곰 소장"></div>`;
       const cr=root.querySelector('#cr'); cr.onclick=()=>{ cr.classList.add('shk'); vib([20,20,20,20,20]); later(()=>{ const res=giveGear(rollGear()); gearModal(res,()=>{
-        root.innerHTML=`<div class="card sp-safe"><h3>위장 하트 3개 회복</h3><p class="muted">계속 가도 되고, 오늘은 여기까지 해도 저장돼 있어요.</p><button class="b g w" id="nx">${n+1}번 문 열기</button><button class="b w" id="st">오늘은 여기까지</button></div>`;
+        root.innerHTML=`<div class="card sp-safe"><h3>위장 하트 3개 회복</h3><p class="muted">계속 가도 되고, 오늘은 여기서 끝내도 돼요. 저장은 돼 있어요.</p><button class="b g w" id="nx">${n+1}번 문 열기</button><button class="b w" id="st">오늘은 여기까지</button></div>`;
         root.querySelector('#nx').onclick=()=>start(n+1); root.querySelector('#st').onclick=()=>{ S.run=null; save(); lobby(); };
       }); },900); }; }
   }
@@ -484,7 +484,7 @@ function mountRaid(host,opts){ injectCSS(); opts=Object.assign({total:0,goal:900
 
 /* ---------------- 본부 소등 ---------------- */
 function nightGuard(opts){ injectCSS(); opts=opts||{}; const old=document.querySelector('.sp-night'); if(old) old.remove(); if(!isCurfew()) return false;
-  const d=el('div','sp sp-night',`<div class="stars"></div><img src="${(opts.img||'img/yawn.png')}" alt="하품하는 늘곰"><h3>본부 소등</h3><p>밤 10시부터 아침 6시까지는 늘곰 소장도 자요. 요원의 가장 중요한 임무는 잠. 오늘 모은 장비와 기록은 그대로 저장돼 있어요.</p><div class="help" style="margin-top:14px"><p style="margin:0 0 4px;font-weight:700">마음이 너무 힘든 밤이라면 지금 바로 전화해도 된다. 24시간 받는다.</p><a href="tel:109" style="display:block;margin:8px auto 0;max-width:300px;padding:14px 10px;border-radius:14px;border:3px solid #1a1917;font-size:19px;font-weight:800;text-decoration:none;color:#1a1917;background:#f3c744">109 전화하기<br><span style="font-size:13px;font-weight:600">자살예방 상담전화</span></a><a href="tel:1388" style="display:block;margin:8px auto 0;max-width:300px;padding:14px 10px;border-radius:14px;border:3px solid #1a1917;font-size:19px;font-weight:800;text-decoration:none;color:#1a1917;background:#fffaf0">1388 전화하기<br><span style="font-size:13px;font-weight:600">청소년 상담전화 · 문자는 #1388</span></a></div>`);
+  const d=el('div','sp sp-night',`<div class="stars"></div><img src="${(opts.img||'img/yawn.png')}" alt="하품하는 늘곰"><h3>본부 소등</h3><p>밤 10시부터 아침 6시까지는 늘곰 소장도 자요. 요원한테 제일 중요한 임무는 잠이에요. 오늘 모은 장비와 기록은 그대로 있어요.</p><div class="help" style="margin-top:14px"><p style="margin:0 0 4px;font-weight:700">너무 힘든 밤이면 지금 바로 전화해도 된다. 24시간 받는다.</p><a href="tel:109" style="display:block;margin:8px auto 0;max-width:300px;padding:14px 10px;border-radius:14px;border:3px solid #1a1917;font-size:19px;font-weight:800;text-decoration:none;color:#1a1917;background:#f3c744">109 전화하기<br><span style="font-size:13px;font-weight:600">자살예방 상담전화</span></a><a href="tel:1388" style="display:block;margin:8px auto 0;max-width:300px;padding:14px 10px;border-radius:14px;border:3px solid #1a1917;font-size:19px;font-weight:800;text-decoration:none;color:#1a1917;background:#fffaf0">1388 전화하기<br><span style="font-size:13px;font-weight:600">청소년 상담전화 · 문자는 #1388</span></a></div>`);
   if(opts.demo){ const b=el('button','b y','시연: 다시 켜기'); b.onclick=()=>{ demoTime=null; d.remove(); opts.onWake&&opts.onWake(); }; d.appendChild(b); }
   document.body.appendChild(d); return true; }
 

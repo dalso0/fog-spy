@@ -829,7 +829,7 @@ return {run,GAMES};
    데이터 (실제 운영에서는 구글 시트 '주차' 탭에서 바꿀 부분)
    ========================================================= */
 const WEEKS = [
-  {n:1, dates:'11.16 – 11.20', sense:'시각', title:'사라진 하늘색',
+  {n:1, dates:'11.23 – 11.27', sense:'시각', title:'사라진 하늘색',
    brief:'아침부터 하늘이 회색으로만 보인다는 제보가 쏟아졌다. 안개가 가장 먼저 훔쳐 간 것은 하늘의 색이다.',
    motto:'오늘 하늘, 한 번 올려다봤나요?', clue:'회색 안개가 가장 먼저 훔쳐 간 것', word:'하늘빛',
    spots:[
@@ -837,7 +837,7 @@ const WEEKS = [
     {loc:'art', piece:'늘', task:'find', target:'brush', hint:'색이 남아 있는 건 붓 끝이야.', lines:['쉿, 미술실은 지금 회색 먼지투성이야.','그래도 딱 하나, 아직 색을 붙잡고 있는 물건이 있어.','미술실을 천천히 둘러보렴. 힌트는 붓 끝이야.']},
     {loc:'career', piece:'빛', task:'mg:breath', lines:['진로실 창문은 학교에서 제일 멀리까지 보이는 창이야.','먼 데를 보면서 숨을 쉬면 눈도 쉬고, 안개도 옅어진대.','창밖 제일 먼 곳을 보면서 숨 세 번만 같이 쉬어 보자.']}
    ]},
-  {n:2, dates:'11.23 – 11.27', sense:'청각', title:'소리 없는 복도',
+  {n:2, dates:'11.30 – 12.4', sense:'청각', title:'소리 없는 복도',
    brief:'안개가 짙어진 복도에서 발소리가 들리지 않는다. 귀를 기울이는 요원만 단서를 찾을 수 있다.',
    motto:'멈추면 들린다', clue:'가장 가까이에서 들리는, 내가 살아 있다는 소리', word:'숨소리',
    spots:[
@@ -845,7 +845,7 @@ const WEEKS = [
     {loc:'library', piece:'소', task:'mg:meong', lines:['에헴, 나는 도서관에서 제일 오래된 백과사전이다.','도서관에서 가장 큰 소리는 조용함이지.','화면에서 손을 떼고 가만히 있어 보거라. 알림이 와도 넘어가지 말고.']},
     {loc:'forest', piece:'리', task:'mg:breath', lines:['…스으… 나는 명상숲의 큰 나무란다.','바람 소리는 내 숨소리야. 너도 같이 쉬어 볼래?','바람이 불었다 멎는 박자에 맞춰서, 숨 네 번.']}
    ]},
-  {n:3, dates:'11.30 – 12.4', sense:'미각', title:'맛을 잃은 급식',
+  {n:3, dates:'12.7 – 12.10', sense:'미각', title:'맛을 잃은 급식',
    brief:'급식실 반찬이 전부 같은 맛이 난다. 안개는 급하게 먹는 입을 노린다.',
    motto:'천천히 먹어도 괜찮아', clue:'서두르지 않고 먹는 방법', word:'한입씩',
    spots:[
@@ -924,7 +924,7 @@ if(!window.HQ) window.HQ={on:false,once(){},add(){},mood(){},state(){return Prom
 const W=()=>WEEKS[S.week-1];
 /* 시연 모드: 시연 주소(claude.ai 미리보기, 파일 열기)나 주소 끝 ?demo 에서만 켜짐. 학생용 배포(github.io)에서는 꺼짐 */
 const DEMO = /[?&]demo\b/.test(location.search) || !/github\.io$/.test(location.hostname);
-const WEEK_START=[[11,16],[11,23],[11,30]]; // 2026년 주차 시작일(월요일). 3주 운영: 11.16 ~ 12.4
+const WEEK_START=[[11,23],[11,30],[12,7]]; // 2026년 주차 시작일(월요일). 11.16~22 안내 주간, 3주 운영: 11.23 ~ 12.10(마음돌봄 팝업)
 function autoWeek(){ const d=new Date(), k=(d.getMonth()+1)*100+d.getDate(); if(d.getFullYear()>2026) return WEEKS.length; let w=1; WEEK_START.forEach(([m,dd],i)=>{ if(k>=m*100+dd) w=i+1; }); return Math.min(w,WEEKS.length); }
 if(!DEMO){ S.week=autoWeek(); }
 /* 시간: 실제 운영은 오늘 날짜, 시연은 로비에서 고른 주차·요일의 저녁 7시 */
@@ -933,13 +933,16 @@ function demoDate(){ const [m,d]=WEEK_START[S.week-1]; const dt=new Date(2026,m-
 function NOW(){ return DEMO ? demoDate() : new Date(); }
 const dkey=dt=>dt.getFullYear()*10000+(dt.getMonth()+1)*100+dt.getDate();
 const today=()=>dkey(NOW());
-const OP_FIRST=20261116, OP_LAST=20261204; // 지령이 나가는 마지막 날: 3주차 금요일
+const OP_FIRST=20261123, OP_LAST=20261209; // 지령이 있는 마지막 날: 3주차 수요일 (12.10 목요일은 마음돌봄 팝업)
+/* 안내 주간(11.16~11.21): 작전 전, 말랑이·마음 날씨 등을 먼저 둘러보는 주. 11.22(일) 밤 브리핑에서 첫 지령이 나감 */
+const PROMO_LAST=20261121, TRY_TOYS_LAST=20261122;
+const isPromo=()=>!DEMO && today()<=PROMO_LAST;
 /* 이번 주 안에서 오늘이 며칠째인지: 0=작전 시작 전, 1=월 … 5=금, 6=토, 7=일, 8=작전 끝 */
 function weekDay(){ const n=NOW(); const [m,d]=WEEK_START[S.week-1]; const mon=new Date(2026,m-1,d); const t=new Date(n.getFullYear(),n.getMonth(),n.getDate());
   return Math.max(0,Math.min(8,Math.round((t-mon)/864e5)+1)); }
 const spotOpen=i=>weekDay()>=i+1;          // 조각 1·2·3 = 월·화·수 저녁에 하나씩
-const decodeOpen=()=>weekDay()>=4;         // 암호 해독 = 목요일 저녁
-const finaleOpen=()=>S.week===WEEKS.length && weekDay()>=5; // 최종 작전 = 3주차 금요일 저녁
+const decodeOpen=()=>weekDay()>=4;         // 암호 해독 = 목요일 저녁 (3주차는 12.10 팝업 날)
+const finaleOpen=()=>S.week===WEEKS.length && weekDay()>=4; // 최종 작전 = 3주차 목요일 12.10 마음돌봄 팝업 (암호 해독 다음)
 const locOpen=k=>(LOCS[k].open||1)<=S.week;
 const OPEN_DAY=['월','화','수'];
 const gotKey=(w,i)=>w+'-'+i;
@@ -1220,7 +1223,8 @@ function unlockText(n){ return Object.entries(LOCS).filter(([k,L])=>L.open===n&&
 const LIT_NAME={sky:'하늘',sun:'해',grass:'잔디밭'};
 const litName=k=>LIT_NAME[k]||LOCS[k].name;
 const TOY={1:{ico:'🍎',name:'말랑 과일'},2:{ico:'🧈',name:'버터 슬랑이'},3:{ico:'🍡',name:'말랑 찹쌀떡'},4:{ico:'🍬',name:'왁뿌볼'}}; // 말랑이 이름은 아래 SQUISH와 맞춤
-const toyHave=n=> DEMO || (n<=WEEKS.length ? !!S.cleared[n] : !!S.finale); // 시연 주소에서는 모두 열어 둠
+const toyTrial=()=>!DEMO && today()<=TRY_TOYS_LAST; // 안내 주간에는 말랑이를 모두 체험
+const toyHave=n=> DEMO || toyTrial() || (n<=WEEKS.length ? !!S.cleared[n] : !!S.finale); // 시연 주소에서는 모두 열어 둠
 /* 요원 사물함: 출근할 때마다 하나씩 */
 const LOCKER=[
   ['📻','낡은 무전기','본부와 연결되는 첫 장비. 지지직 소리가 난다.'],
@@ -1262,11 +1266,11 @@ function nextHint(){
   const wd=weekDay(), last=S.week===WEEKS.length, tmk=dkey(addDays(NOW(),1))+'';
   const o=S.orders[tmk]!=null ? `내일 지령 「${ORDERS[S.orders[tmk]][0]}」 · ` : '';
   let h;
-  if(wd===0) h='작전은 11월 16일 월요일 저녁에 시작돼요';
+  if(wd===0) h='작전은 11월 23일 월요일 저녁에 시작돼요';
   else if(wd>=8 || (last&&S.finale)) h='작전 끝. 3주 동안 고생했어요';
   else if(wd<=2) h=`내일 밤 ${['','두 번째','세 번째'][wd]} 조각이 열려요`;
-  else if(wd===3) h='내일 밤 암호 해독';
-  else if(wd===4) h=last?'내일 밤 최종 작전':'내일 밤 주간 결산';
+  else if(wd===3) h=last?'내일 마음돌봄 팝업에서 암호 해독과 최종 작전':'내일 밤 암호 해독';
+  else if(wd===4) h=last?'최종 작전이 열려 있어요':'내일 밤 주간 결산';
   else if(wd===5) h=last?'최종 작전이 열려 있어요':'주말엔 쉬어도 돼요. 월요일 지령은 일요일 밤에';
   else if(wd===6) h='월요일 지령은 내일 밤에 받아요';
   else h=last?'작전 끝. 3주 동안 고생했어요':'내일 밤 다음 주 작전 시작';
@@ -1276,6 +1280,7 @@ function drawTodayBar(){
   const bar=$('#todayBar'); if(!bar) return;
   const tk=today(), done=!!S.brief[tk], n=done?3:bpN();
   const dots=['보고','조각','내일 지령'].map((t,i)=>`<i class="${i<n?'on':''}">${i<n?'✓ ':''}${t}</i>`).join('');
+  if(isPromo()){ bar.className='today'; bar.innerHTML=`<div class="tx"><b>안내 주간 · 작전은 11월 23일(월) 저녁 시작</b><span>이번 주는 말랑이, 마음 날씨, 라디오, 하늘 게시판을 먼저 둘러봐요. 첫 지령은 22일(일) 밤에.</span></div><button class="bk" id="tbGo">안내</button>`; bar.querySelector('#tbGo').onclick=()=>openBrief(); return; }
   bar.className='today'+(done?' done':'');
   bar.innerHTML = done
     ? `<div class="tx"><b>오늘 밤 작전 완료 · 출근 ${attend()}일</b><span>${nextHint()}</span></div><button class="bk" id="tbGo">다시 보기</button>`
@@ -1288,6 +1293,7 @@ function demoNextDay(){
 }
 let briefBack=false; // 수사보드에서 해독하고 브리핑으로 돌아오기
 function openBrief(){
+  if(isPromo()){ sheet('본부 안내','안내 주간 · 작전 시작 전','<div id="talkHost"></div>',body=>talk(body.querySelector('#talkHost'),{k:'neulgom',name:'늘곰 소장'},['작전은 11월 23일 월요일 저녁부터다.','이번 주는 안내 주간이다. 본부를 먼저 둘러봐라.','말랑이는 아래 「요원」의 사물함에, 마음 날씨와 라디오는 본부(Wee클래스)에 있다.','첫 지령은 11월 22일 일요일 밤 브리핑에서 준다.'])); return; }
   const w=W(), dt=NOW(), tk=today()+'', wd=weekDay();
   const resume=briefBack; briefBack=false;
   sheet('오늘 밤 브리핑',`${dt.getMonth()+1}월 ${dt.getDate()}일 (${DAYN[dt.getDay()]}) 저녁 · ${w.n}주차 ${w.sense} 작전`,`
@@ -1322,19 +1328,19 @@ function openBrief(){
     function step2(){ mark(1); box.innerHTML='';
       const ti=tonightSpot(), allGot=piecesOf(w.n)===w.spots.length, cleared=!!S.cleared[w.n], last=S.week===WEEKS.length;
       const say=(lines,btn,fn)=>talk(host,NG,lines,()=>{ if(btn){ box.innerHTML=`<button class="bk red wide" id="bGo">${btn}</button>`; box.querySelector('#bGo').onclick=fn; } else next('다음',to3); });
-      if(wd===0) return say(['작전은 11월 16일 월요일 저녁부터다.','오늘은 지령만 받아 가라.']);
+      if(wd===0) return say(['작전은 11월 23일 월요일 저녁부터다.','오늘은 지령만 받아 가라.']);
       if(ti>=0){ const sp=w.spots[ti], L=LOCS[sp.loc];
         return say([`오늘 밤 조각은 ${L.name}에 있다.`, ti<wd-1?'밀린 조각이다. 지금 찾아도 된다.':ti===0?'이번 주 첫 조각이다. 천천히 해라.':'어제 조각에 이어서다.'], `${L.name}(으)로 가기`, ()=>{ box.innerHTML='';
           spotPanel(host,box,sp.loc,ti,ah=>{ if(tonightSpot()>=0){ ah.innerHTML=`<div class="row"><button class="bk" id="bMore">밀린 조각 이어서</button><button class="bk green" id="bNext">다음</button></div>`; ah.querySelector('#bMore').onclick=step2; ah.querySelector('#bNext').onclick=to3; } else next('다음',to3,ah); }); }); }
       if(allGot && !cleared){
         if(decodeOpen()) return say(['조각 셋이 다 모였다.','오늘 밤은 암호 해독이다. 수사보드로 가자.'],'수사보드 열기',()=>{ briefBack=true; openBoard(); });
-        return say(['조각 셋이 다 모였다.','암호 해독은 목요일 밤이다. 그때까지 단서나 곱씹어 봐라.']); }
+        return say(['조각 셋이 다 모였다.',last?'암호 해독은 12월 10일 마음돌봄 팝업 날이다. 그때까지 단서나 곱씹어 봐라.':'암호 해독은 목요일 밤이다. 그때까지 단서나 곱씹어 봐라.']); }
       if(!cleared){ const ni=w.spots.findIndex((s,i)=>!S.got[gotKey(w.n,i)]);
         return say(['오늘 밤 조각은 이미 찾았다.',`다음 조각은 ${OPEN_DAY[ni]}요일 밤에 열린다. 미리는 안 된다.`]); }
       if(last){
         if(S.finale) return say(['작전은 끝났다.','그래도 들러 줘서 고맙다.']);
-        if(finaleOpen()) return say(['요원, 오늘 밤은 최종 작전이다.','명상숲 큰 나무에게 가서 학교 전체에 색을 보내자.'],'최종 작전 시작',()=>runFinale(host,box,ah=>next('다음',to3,ah)));
-        return say(['이번 주 암호까지 풀었다.','최종 작전은 금요일 밤이다.']); }
+        if(finaleOpen()) return say(['요원, 오늘은 최종 작전이다.','명상숲 큰 나무에게 가서 학교 전체에 색을 보내자.'],'최종 작전 시작',()=>runFinale(host,box,ah=>next('다음',to3,ah)));
+        return say(['이번 주 암호까지 풀었다.','최종 작전은 12월 10일 마음돌봄 팝업에서 한다.']); }
       if(wd===5) return weekly();
       if(wd>=6) return say(['주말엔 본부도 쉰다.',`쉬는 것도 작전이다. ${w.n+1}주차 작전은 월요일 밤에 열린다.`]);
       return say(['이번 주 암호는 풀었다.','금요일 밤에 주간 결산을 하자.']);
@@ -1349,7 +1355,7 @@ function openBrief(){
     function step3(){ mark(2); box.innerHTML='';
       const tmr=addDays(NOW(),1), tmk=dkey(tmr)+'';
       if(!isOrderDay(tmr)){
-        const ln = dkey(tmr)>OP_LAST ? ['내일부터는 지령이 없다.','지령 없이도 평범하게 지내라. 그게 진짜 요원이다.'] : ['내일은 주말이다. 지령은 없다.','월요일 지령은 일요일 밤에 준다.'];
+        const ln = dkey(tmr)===OP_LAST+1 ? ['내일은 마음돌봄 팝업이다. 지령 대신 팝업에서 만나자.','암호 해독과 최종 작전은 거기서 같이 한다.'] : dkey(tmr)>OP_LAST ? ['내일부터는 지령이 없다.','지령 없이도 평범하게 지내라. 그게 진짜 요원이다.'] : ['내일은 주말이다. 지령은 없다.','월요일 지령은 일요일 밤에 준다.'];
         return talk(host,NG,ln,()=>next('브리핑 마치기',finish)); }
       if(S.orders[tmk]==null){ S.orders[tmk]=orderIdx(tmr); save(); }
       const o=ORDERS[S.orders[tmk]];
@@ -1374,7 +1380,7 @@ function openBrief(){
     [step1,step2,step3][Math.min(bpN(),2)]();
   });
 }
-/* 3주차 금요일 밤: 최종 작전 */
+/* 3주차 목요일 12.10 마음돌봄 팝업: 최종 작전 */
 function runFinale(host,box,after){
   box.innerHTML='';
   talk(host,{k:'forest',name:LOCS.forest.npc},['…왔구나, 요원. 3주 동안 학교에 색이 조금씩 돌아왔단다.','마지막 숨 다섯 번. 학교 전체에 색을 보내 주렴.'],()=>{
@@ -1382,7 +1388,7 @@ function runFinale(host,box,after){
     breathe(box.querySelector('#fb'),5,()=>{ if(!S.finale) HQ.add('finale'); S.finale=true; save(); SpyPlus.addXP(50,'최종 작전');
       box.innerHTML=`<div class="got ending"><div class="label">최종 작전 완료</div><h2 style="font-size:28px;margin:6px 0">학교의 색이 돌아왔다</h2>
         <div class="tile" style="width:auto;padding:0 12px;font-size:32px">룰루랄라</div>
-        <img src="img/card.jpg" alt="늘곰 룰루랄라 카드"><p style="margin-top:10px">요원 ${S.code}, 3주 동안 평범하게 잘 해냈어요. 마지막 장비 「${TOY[4].name}」이 사물함에 들어갔어요. 12월 10일 마음돌봄 팝업에서 만나요.</p></div><div id="fAfter" style="margin-top:12px"></div>`;
+        <img src="img/card.jpg" alt="늘곰 룰루랄라 카드"><p style="margin-top:10px">요원 ${S.code}, 3주 동안 평범하게 잘 해냈어요. 마지막 장비 「${TOY[4].name}」이 사물함에 들어갔어요.</p></div><div id="fAfter" style="margin-top:12px"></div>`;
       refresh(); after(box.querySelector('#fAfter')); });
   });
 }
@@ -1580,7 +1586,7 @@ function openBoard(){
 function clearWeek(host,w){
   const last=w.n===WEEKS.length, T=TOY[w.n], back=briefBack;
   host.innerHTML=`<div class="got"><div class="label">${w.n}주차 작전 성공</div><div class="tile" style="width:auto;padding:0 12px;font-size:36px">${w.word}</div>
-    <p>장비 획득: ${T.ico} ${T.name}. 요원실 사물함에서 갖고 놀 수 있어요.${last?' 최종 작전은 금요일 밤 브리핑에서 열려요.':''}</p></div>
+    <p>장비 획득: ${T.ico} ${T.name}. 요원실 사물함에서 갖고 놀 수 있어요.${last?' 이어서 브리핑에서 최종 작전을 해요.':''}</p></div>
     ${back?'<button class="bk green wide" id="cwBack" style="margin-top:12px">브리핑 이어서</button>':''}`;
   const cb=host.querySelector('#cwBack'); if(cb) cb.onclick=openBrief;
   host.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -1633,7 +1639,7 @@ function openAgent(tab){
 }
 function drawLocker(host){
   const n=attend(), k=Math.min(n,LOCKER.length);
-  host.innerHTML=`<div class="label" style="margin:4px 0 6px">말랑이 · 매주 암호를 풀면 하나씩</div>
+  host.innerHTML=`<div class="label" style="margin:4px 0 6px">말랑이 · 매주 암호를 풀면 하나씩</div>${toyTrial()?'<p class="note" style="margin:0 0 6px">안내 주간이라 11월 22일까지 모두 열어 뒀어요. 23일부터는 매주 암호를 풀어야 하나씩 열려요.</p>':''}
     <div class="toys">${[1,2,3,4].map(i=>`<button class="bk" data-toy="${i}" ${toyHave(i)?'':'disabled'}><span>${toyHave(i)?TOY[i].ico:'🔒'}</span>${toyHave(i)?TOY[i].name:(i<=WEEKS.length?i+'주차 암호':'최종 작전')}</button>`).join('')}</div>
     <div id="toyHost"></div>
     <div class="label" style="margin:14px 0 6px">사물함 · 출근할 때마다 하나씩 (${k}/${LOCKER.length})</div>
@@ -1821,7 +1827,7 @@ function lobby(){
   $('#dayChips').innerHTML=['월','화','수','목','금','토','일'].map((d,i)=>`<button class="chip" data-d="${i+1}" aria-pressed="${(S.dday||1)===i+1}">${d}</button>`).join('');
   document.querySelectorAll('#dayChips .chip').forEach(c=>c.onclick=()=>{ S.dday=+c.dataset.d; save(); lobby(); });
 }
-$('#playBtn').onclick=()=>{ $('#lobby').hidden=true; $('#game').hidden=false; buildMap(); SpyPlus.checkIn(); setTimeout(()=>toast('맨 위 「작전 시작」부터 눌러 보세요'),300); };
+$('#playBtn').onclick=()=>{ $('#lobby').hidden=true; $('#game').hidden=false; buildMap(); SpyPlus.checkIn(); setTimeout(()=>toast(isPromo()?'이번 주는 안내 주간이에요. 본부와 「요원」 메뉴부터 둘러보세요':'맨 위 「작전 시작」부터 눌러 보세요'),300); };
 $('#closetBtn').onclick=()=>{ onClose=lobby; openCloset(); };
 $('#hudMe').onclick=()=>openAgent('locker');
 $('#resetBtn').onclick=()=>{ if(!confirm('이 기기의 진행 기록을 모두 지울까요?')) return; const c=S.code; S=JSON.parse(JSON.stringify(DEF)); S.code=c; save(); lobby(); };

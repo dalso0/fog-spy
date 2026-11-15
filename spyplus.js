@@ -333,10 +333,10 @@ function mountSneak(host,opts){
     root.innerHTML=`<div class="card" style="text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center">
       <span class="chip">안개 복도 잠입</span>
       <h3 style="font-size:28px">${run?`${S.door}번 문에서 이어하기`:`${S.ckpt}번 문부터 출발`}</h3>
-      <p class="muted" style="max-width:280px">안개 구름의 시선(회색 줄무늬)을 피해 초록 문까지. 한 칸 움직이면 구름도 한 칸 움직여요. 5번째 문마다 안전가옥에서 숨 고르고 저장.</p>
+      <p class="muted" style="max-width:280px">안개구름의 시선(회색 줄무늬)을 피해 초록 문까지 가요. 한 칸 움직이면 구름도 한 칸 움직여요. 5번째 문마다 안전가옥에서 숨 고르고 저장.</p>
       <div class="sp-stat" style="width:100%"><div><b>${S.best}</b><span>내 최고 기록(문)</span></div><div><b>${e} / ${ENERGY}</b><span>오늘 남은 작전</span></div></div>
       <button class="b g w" id="go" ${(!run&&e<=0)?'disabled':''} style="font-size:22px;padding:13px">${run?'이어서 잠입':'작전 시작 (1회 사용)'}</button>
-      ${(!run&&e<=0)?`<p style="font-size:14px">오늘 잠입 작전은 끝! 내일 다시 3번 열려요.<br>본부 미니게임과 평범지령은 계속 할 수 있어요.</p>`:''}
+      ${(!run&&e<=0)?`<p style="font-size:14px">오늘 잠입 작전은 끝났어요. 내일 다시 3번 할 수 있어요.<br>본부 미니게임과 평범지령은 계속 할 수 있어요.</p>`:''}
       <div class="sp-legend"><span><i style="background:#e3dccb"></i>복도</span><span><i style="background:#8c6a4a"></i>책상</span><span><i style="background:#6f9ec9"></i>사물함(숨기)</span><span><i style="background:repeating-linear-gradient(135deg,#6b717c 0 3px,#9aa0a8 3px 6px)"></i>시선</span><span><i style="background:var(--green)"></i>출구</span></div>
     </div>`;
     root.querySelector('#go').onclick=()=>{ if(!S.run){ if(energyLeft()<=0) return; S.energy.used++; S.run={hearts:3}; S.door=S.ckpt; save(); } start(S.door); };
@@ -389,7 +389,7 @@ function mountSneak(host,opts){
     else root.querySelector('#msg').innerHTML=L.hide[pr][pc]?'<b>사물함에 숨었다.</b> 시선이 지나가도 안전.':'';
   }
   function caughtFx(){ const bd=root.querySelector('#bd'); bd.classList.add('shake'); vib([60,40,90]); S.run.hearts--; save(); render();
-    const lines=['안개 구름: "…저 학생, 너무 수상하게 평범한데?"','들켰다! 하지만 평범하게 지나가는 척 성공.','안개 구름이 하품하는 사이 빠져나왔다. 다시!'];
+    const lines=['안개구름: "…저 학생, 수상할 만큼 평범한데?"','들켰다! 그래도 평범하게 지나가는 척은 성공.','안개구름이 하품하는 사이에 빠져나왔다. 다시!'];
     if(S.run.hearts>0){ const o=el('div','sp-over',`<h3>들켰다!</h3><p>${lines[Math.floor(Math.random()*lines.length)]}<br>위장 하트 ${S.run.hearts}개 남음</p>`); const b=el('button','b y','같은 문 다시'); b.onclick=()=>start(L.n); o.appendChild(b); bd.appendChild(o); }
     else { const reached=L.n; S.run=null; S.door=S.ckpt; save(); emit('runover',{reached});
       const o=el('div','sp-over',`<h3>작전 종료</h3><p>${reached}번 문까지 왔어요. 최고 기록 <b>${S.best}</b>번 문.<br>다음엔 <b>${S.ckpt}</b>번 문(안전가옥 저장 지점)부터 시작해요.</p>`); const b=el('button','b y','본부로'); b.onclick=lobby; o.appendChild(b); bd.appendChild(o); }
@@ -409,7 +409,7 @@ function mountSneak(host,opts){
       st='out'; orb.className='orb out'; sg.textContent='천천히 내쉬고…'; later(()=>{ k++; st='idle'; hold.textContent=`꾹 누르고 들이쉬기 (${k}/${N})`; sg.textContent=k<N?'한 번 더':'좋아요.'; vib(20); if(k>=N) done(); },4200); };
     hold.addEventListener('pointerdown',down); hold.addEventListener('pointerup',up); hold.addEventListener('pointerleave',up); hold.addEventListener('pointercancel',up);
     function done(){ S.ckpt=n+1; S.door=n+1; if(S.run) S.run.hearts=3; save(); report('safe'); addXP(XP.safe,'안전가옥');
-      root.innerHTML=`<div class="card sp-safe"><span class="chip">저장 완료 · 다음엔 ${n+1}번 문부터</span><h3 style="font-size:24px">보급 상자가 도착했다</h3><p class="muted">눌러서 열기. 무엇이 나올지는 몰라요.</p><div class="sp-crate" id="cr" role="button" aria-label="보급 상자 열기"></div><img src="${IMG.agent}" alt="늘곰 소장"></div>`;
+      root.innerHTML=`<div class="card sp-safe"><span class="chip">저장 완료 · 다음엔 ${n+1}번 문부터</span><h3 style="font-size:24px">보급 상자가 도착했다</h3><p class="muted">눌러서 열기. 뭐가 나올지는 몰라요.</p><div class="sp-crate" id="cr" role="button" aria-label="보급 상자 열기"></div><img src="${IMG.agent}" alt="늘곰 소장"></div>`;
       const cr=root.querySelector('#cr'); cr.onclick=()=>{ cr.classList.add('shk'); vib([20,20,20,20,20]); later(()=>{ const res=giveGear(rollGear()); gearModal(res,()=>{
         root.innerHTML=`<div class="card sp-safe"><h3>위장 하트 3개 회복</h3><p class="muted">계속 가도 되고, 오늘은 여기까지 해도 저장돼 있어요.</p><button class="b g w" id="nx">${n+1}번 문 열기</button><button class="b w" id="st">오늘은 여기까지</button></div>`;
         root.querySelector('#nx').onclick=()=>start(n+1); root.querySelector('#st').onclick=()=>{ S.run=null; save(); lobby(); };

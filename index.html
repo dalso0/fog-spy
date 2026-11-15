@@ -640,12 +640,12 @@ function breath(stage,g){
       while(cleared<target){const r=cleared;cells.filter(x=>+x.dataset.r===r).forEach((x,i)=>setTimeout(()=>x.style.background=skyColor(r,i),i*40));cleared++}
       if(p>=1){breaths++;$('#cnt',stage).textContent=`호흡 ${breaths} / ${TOTAL}`;state='idle';
         if(breaths>=TOTAL){$('#sun',stage).style.transform='scale(1)';btn.disabled=true;
-          setTimeout(()=>finish(stage,g,{title:'하늘색을 되찾았어',msg:'숨을 길게 내쉬는 동안 몸이 조금 느슨해졌을 거야. 지금 진짜 하늘도 한 번 올려다봐.'}),900);return}
+          setTimeout(()=>finish(stage,g,{title:'하늘색을 되찾았다',msg:'숨을 길게 내쉬면 몸에 힘이 좀 빠진다. 창밖 하늘도 한번 올려다봐라.'}),900);return}
         gd.textContent='잘했어요. 버튼을 다시 누르고 숨을 들이쉬어요'}}
     raf=requestAnimationFrame(loop)}
   function down(e){e.preventDefault();if(state!=='idle')return;state='in';t0=performance.now();btn.classList.add('down')}
   function up(){btn.classList.remove('down');if(state!=='in')return;const d=performance.now()-t0;
-    if(d<2500){state='idle';orb.style.transform='scale(.45)';gd.textContent='조금만 더 길게, 4초 동안 들이쉬어 볼까?';stage.querySelector('.orbwrap').classList.add('shake');setTimeout(()=>stage.querySelector('.orbwrap')?.classList.remove('shake'),500);return}
+    if(d<2500){state='idle';orb.style.transform='scale(.45)';gd.textContent='조금만 더 길게, 4초 동안 들이쉬어 봐요';stage.querySelector('.orbwrap').classList.add('shake');setTimeout(()=>stage.querySelector('.orbwrap')?.classList.remove('shake'),500);return}
     state='out';t0=performance.now()}
   btn.addEventListener('pointerdown',down);['pointerup','pointercancel','pointerleave'].forEach(t=>btn.addEventListener(t,up));
   btn.addEventListener('contextmenu',e=>e.preventDefault());
@@ -670,16 +670,16 @@ function stone(stage,g){
   paint();
   function rub(e){if(doneFlag)return;const rect=grid.getBoundingClientRect();const x=e.clientX-rect.left,y=e.clientY-rect.top;const now=performance.now();
     if(last){const dist=Math.hypot(x-last.x,y-last.y),dt=Math.max(1,now-last.t),speed=dist/dt;
-      if(speed>1.5){if(now-warnT>600){gd.textContent='살살 문질러 닦아야지';warnT=now}}
+      if(speed>1.5){if(now-warnT>600){gd.textContent='너무 세요. 살살 문질러요';warnT=now}}
       else{const cw=rect.width/N;const cc=Math.floor(x/cw),rr=Math.floor(y/cw);const gain=dist/cw*0.09;
         for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const r2=rr+a,c2=cc+b;if(r2<0||c2<0||r2>=N||c2>=N)continue;const k=r2*N+c2;if(vals[k]<0)continue;vals[k]=Math.min(1,vals[k]+gain*(a||b?.5:1))}
-        if(now-warnT>900)gd.textContent='딱 좋은 속도. 돌이 반짝이기 시작한다';paint()}}
+        if(now-warnT>900)gd.textContent='딱 좋은 속도예요. 돌이 반짝이기 시작해요';paint()}}
     last={x,y,t:now};
     const pct=Math.round(vals.filter(v=>v>=.85).length/total*100);$('#pc',stage).textContent=pct+'%';$('#bar',stage).style.width=pct+'%';
     if(pct>=88&&!doneFlag){doneFlag=true;vals=vals.map(v=>v<0?v:1);paint();
       const box=el('div','word');box.innerHTML='<input id="worryword" maxlength="12" placeholder="걱정 한 단어 (저장 안 됨)" aria-label="이 돌에 맡길 걱정 한 단어"><button class="blk">맡기기</button>';
-      box.querySelector('button').onclick=()=>{const v=box.querySelector('input').value.trim();box.outerHTML=`<p class="chip">${v?'"'+v.replace(/[<>&]/g,'')+'"':'말하지 않은 걱정'}은 마음돌이 맡아 둘게</p>`};
-      setTimeout(()=>finish(stage,g,{title:'마음돌 완성',msg:'걱정이 많을 때 돌 닦기처럼 손으로 한 가지 일에 집중하면 생각이 차분해져. 진짜 돌이나 키링으로도 해 봐.',extra:box}),400)}}
+      box.querySelector('button').onclick=()=>{const v=box.querySelector('input').value.trim();box.outerHTML=`<p class="chip">${v?'"'+v.replace(/[<>&]/g,'')+'"':'말하지 않은 걱정'}은 마음돌이 맡아 둘게요</p>`};
+      setTimeout(()=>finish(stage,g,{title:'마음돌 완성',msg:'걱정이 많을 땐 손으로 한 가지만 하고 있어 봐라. 머릿속이 좀 조용해진다. 진짜 돌이나 키링으로 해도 된다.',extra:box}),400)}}
   st.addEventListener('pointerdown',e=>{st.setPointerCapture(e.pointerId);last=null;rub(e)});
   st.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='touch')rub(e)});
   st.addEventListener('pointerup',()=>last=null);
@@ -698,16 +698,16 @@ function meong(stage,g){
   [30,60].forEach(s=>{const b=el('button','blk',s+'초');b.setAttribute('aria-pressed',s===dur);b.onclick=()=>{if(running)return;dur=s;$('#t',stage).textContent=s;seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b))};seg.appendChild(b)});
   const bait=[['새 메시지 3개','지금 확인하지 않으면 사라져요!'],['친구가 좋아요를 눌렀어요','누가 눌렀는지 볼까요?'],['급식 메뉴 업데이트','오늘 디저트는…?']];
   function fail(why){if(!running)return;running=false;cancelAnimationFrame(raf);timers.forEach(clearTimeout);stage.querySelector('.toast')?.remove();
-    m.classList.add('shake');setTimeout(()=>m.classList.remove('shake'),500);gd.textContent=why+' 괜찮아, 다시 멍~';go.hidden=false;seg.hidden=false;arc.style.strokeDashoffset=603.2;bear.style.filter='';m.style.background=''}
+    m.classList.add('shake');setTimeout(()=>m.classList.remove('shake'),500);gd.textContent=why+' 괜찮아요, 다시 멍…';go.hidden=false;seg.hidden=false;arc.style.strokeDashoffset=603.2;bear.style.filter='';m.style.background=''}
   function loop(){const p=Math.min(1,(performance.now()-t0)/(dur*1000));arc.style.strokeDashoffset=603.2*(1-p);$('#t',stage).textContent=Math.ceil(dur*(1-p));
     bear.style.filter=`grayscale(${1-p})`;m.style.background=`color-mix(in srgb, ${C.grape} ${Math.round(p*28)}%, transparent)`;
-    if(p>=1){running=false;timers.forEach(clearTimeout);stage.querySelector('.toast')?.remove();finish(stage,g,{img:IMG.yawn,title:'멍 성공',msg:`${dur}초 동안 아무것도 안 했어. 뇌도 쉬는 시간이 필요해. 하품이 나오면 그것도 성공이야.`});return}
+    if(p>=1){running=false;timers.forEach(clearTimeout);stage.querySelector('.toast')?.remove();finish(stage,g,{img:IMG.yawn,title:'멍 성공',msg:`${dur}초 동안 아무것도 안 했다. 머리도 쉬는 시간이 필요하다. 하품이 나왔으면 그것도 성공이다.`});return}
     raf=requestAnimationFrame(loop)}
   go.onclick=()=>{go.hidden=true;seg.hidden=true;gd.textContent='3';let n=3;const tick=()=>{n--;if(n>0){gd.textContent=n;timers.push(setTimeout(tick,700))}else{gd.textContent='멍…';running=true;t0=performance.now();raf=requestAnimationFrame(loop);
       [.3,.62].forEach((f,i)=>timers.push(setTimeout(()=>{if(!running)return;const [a,b]=bait[(i+Math.floor(Math.random()*3))%3];const t=el('div','toast',`<span class="dot"></span><span><b>${a}</b>${b}</span>`);m.appendChild(t);timers.push(setTimeout(()=>t.remove(),3200))},dur*1000*f)))}};timers.push(setTimeout(tick,700))};
-  const onDown=e=>{if(running){e.preventDefault();fail(e.target.closest('.toast')?'앗, 알림에 넘어갔다!':'앗, 손이 움직였어.')}};
+  const onDown=e=>{if(running){e.preventDefault();fail(e.target.closest('.toast')?'알림에 넘어갔어요.':'손이 움직였어요.')}};
   stage.addEventListener('pointerdown',onDown);
-  const vis=()=>{if(document.hidden)fail('다른 앱으로 갔다 왔네.')};document.addEventListener('visibilitychange',vis);
+  const vis=()=>{if(document.hidden)fail('다른 앱에 갔다 왔네요.')};document.addEventListener('visibilitychange',vis);
   return()=>{running=false;cancelAnimationFrame(raf);timers.forEach(clearTimeout);document.removeEventListener('visibilitychange',vis)};
 }
 
@@ -724,9 +724,9 @@ function emotion(stage,g){
     stage.innerHTML=`<div class="hud"><b>안개 몬스터 이름 붙이기</b><span class="chip">${round+1} / ${ROUNDS.length}</span></div>
     <div class="situ">${R.s}</div>
     <div class="monster" id="mon"><div class="grid" id="mg" style="grid-template-columns:repeat(8,1fr);gap:1px"></div><span class="eye" style="left:30%"></span><span class="eye" style="left:58%"></span></div>
-    <p class="sub">이 안개 속 마음에 이름을 붙여 줘. 정답은 없어. 두 개까지.</p>
+    <p class="sub">이 장면 속 마음에 이름을 붙여 봐요. 정답은 없어요. 두 개까지.</p>
     <div class="words" id="ws"></div>
-    <p class="sub">얼마나 커?</p>
+    <p class="sub">얼마나 커요?</p>
     <div class="size" id="sz"></div>
     <button class="blk go" id="ok" disabled style="width:100%;padding:12px">이름 붙이기</button>
     <div class="shelf" id="sh"></div>`;
@@ -744,25 +744,25 @@ function emotion(stage,g){
     mon.style.transform='scale(.62)';const t=el('span','tag',picked.join(' + '));mon.appendChild(t);
     picked.forEach(w=>shelf.push([w,COL[w]||C.mint]));
     stage.querySelectorAll('.words button,.size button,#ok').forEach(b=>b.disabled=true);
-    $('.sub',stage).textContent=size>=4?'큰 마음이었네. 이름을 붙이니 조금 작아졌어.':'이름을 붙이니 안개가 걷혔어.';
+    $('.sub',stage).textContent=size>=4?'꽤 큰 마음이었네요. 이름을 붙이니까 조금 작아졌어요.':'이름을 붙이니까 안개가 걷혔어요.';
     renderShelf();
     setTimeout(()=>{round++;if(round<ROUNDS.length)render();else{
       stage.innerHTML='<div class="hud"><b>안개 몬스터 이름 붙이기</b></div><div class="grow"></div><div class="shelf" id="sh"></div><div class="grow"></div>';renderShelf();
-      finish(stage,g,{title:'감정 도감 3칸',msg:'마음에 이름을 붙이면 그 마음을 조금 떨어져서 볼 수 있어. 정답 고르기가 아니라 알아차리기 연습이야.'})}},1900)}
+      finish(stage,g,{title:'감정 도감 3칸',msg:'마음에 이름을 붙이면 한 발 떨어져서 볼 수 있다. 정답 맞히기가 아니다. 지금 내 마음이 뭔지 알아보는 연습이다.'})}},1900)}
   render();return()=>{};
 }
 
 /* ---------- E. 오감 수색 ---------- */
 function senses(stage,g){
   const COLS=7,ROWS=9;const S=[
-    ['눈','보이는 것','지금 주변에서 파란색 물건을 하나 찾아봐.','찾았어'],
-    ['귀','들리는 것','3초만 눈을 감아. 가장 멀리서 들리는 소리는 뭐야?','들었어'],
-    ['코','냄새','숨을 천천히 들이쉬어. 지금 있는 곳에서 무슨 냄새가 나?','맡았어'],
-    ['손','닿는 것','책상이나 옷을 손끝으로 쓸어 봐. 차가워? 따뜻해?','느꼈어'],
-    ['입','맛','침을 한 번 꿀꺽. 입 안에 남은 맛이 있어?','확인했어']];
+    ['눈','보이는 것','지금 주변에서 파란색 물건을 하나 찾아봐요.','찾았다'],
+    ['귀','들리는 것','3초만 눈을 감아요. 제일 멀리서 들리는 소리는 뭐예요?','들었다'],
+    ['코','냄새','숨을 천천히 들이쉬어요. 지금 있는 곳에서 무슨 냄새가 나요?','맡았다'],
+    ['손','닿는 것','책상이나 옷을 손끝으로 쓸어 봐요. 차가워요? 따뜻해요?','느꼈다'],
+    ['입','맛','침을 한 번 꿀꺽. 입 안에 남은 맛이 있어요?','확인했다']];
   let found=0,taps=0,busy=false;
   stage.innerHTML=`<div class="hud"><b>오감 수색</b><span class="chip" id="fc">감각 조각 0 / 5</span></div>
-  <p class="sub">안개 낀 복도 어딘가에 감각 조각 5개가 숨어 있어. 블록을 눌러 비춰 봐.</p>
+  <p class="sub">안개 낀 복도 어딘가에 감각 조각 5개가 숨어 있어요. 블록을 눌러서 비춰 봐요.</p>
   <div class="grid hunt" id="g" style="grid-template-columns:repeat(${COLS},1fr)"></div>
   <p class="guide" id="gd" style="font-size:17px">탐색 0번</p>`;
   const grid=$('#g',stage),cells=[],gd=$('#gd',stage);
@@ -777,8 +777,8 @@ function senses(stage,g){
     spots.forEach(s=>{if(!s.found&&Math.abs(s.r-r)<=1&&Math.abs(s.c-c)<=1){s.found=true;const t=cells[s.k];t.dataset.s=s.s[0];t.classList.add('found');gd.textContent=`'${s.s[0]}' 조각 발견! 눌러서 지령 확인`}})});
   function ask(sp){busy=true;const [k,name,q,ok]=sp.s;const p=el('div','prompt',`<span class="chip" style="align-self:flex-start">${k} · ${name}</span><b>${q}</b>`);
     const b=el('button','blk go',ok);b.style.padding='12px';b.onclick=()=>{p.remove();busy=false;sp.done=true;cells[sp.k].classList.add('done');found++;$('#fc',stage).textContent=`감각 조각 ${found} / 5`;
-      gd.textContent=found<5?'좋아, 다음 조각을 찾아 봐':'복도에 색이 돌아왔어';
-      if(found>=5){cells.forEach((x,i)=>setTimeout(()=>lit(+x.dataset.r,+x.dataset.c),i*15));setTimeout(()=>finish(stage,g,{title:'오감이 깨어났어',msg:`탐색 ${taps}번 만에 다섯 감각을 모두 깨웠어. 불안할 때 '보이는 것, 들리는 것, 닿는 것'을 하나씩 세어 보면 지금 여기로 돌아올 수 있어.`}),1300)}};
+      gd.textContent=found<5?'좋아요, 다음 조각을 찾아봐요':'복도에 색이 돌아왔어요';
+      if(found>=5){cells.forEach((x,i)=>setTimeout(()=>lit(+x.dataset.r,+x.dataset.c),i*15));setTimeout(()=>finish(stage,g,{title:'오감이 깨어났다',msg:`탐색 ${taps}번 만에 다섯 감각을 다 깨웠다. 불안할 땐 보이는 것, 들리는 것, 닿는 것을 하나씩 세어 봐라. 마음이 좀 가라앉는다.`}),1300)}};
     p.appendChild(b);stage.appendChild(p)}
   return()=>{};
 }
@@ -787,7 +787,7 @@ function senses(stage,g){
 function walk(stage,g){
   const STEPS=12;let pos=0,lastT=0,lastFoot=null,beatT=0,beatOn=false,raf=0;const BEAT=1100;
   stage.innerHTML=`<div class="hud"><b>평범하게 걷기</b><span class="chip" id="pc">0 / ${STEPS}걸음</span></div>
-  <p class="sub">감시 카메라를 지나 Wee클래스까지. 너무 빨리 걸으면 수상해 보여. 발바닥이 바닥에 닿는 느낌에 집중해.</p>
+  <p class="sub">감시 카메라를 지나 Wee클래스까지 가요. 너무 빨리 걸으면 수상해 보여요. 발바닥이 바닥에 닿는 느낌만 따라가요.</p>
   <div class="grid path" id="g" style="grid-template-columns:repeat(6,1fr);gap:4px"></div>
   <div class="beat" id="bt" title="걸음 박자"></div>
   <p class="guide" id="gd">네모가 반짝일 때 한 걸음씩</p>
@@ -801,13 +801,13 @@ function walk(stage,g){
   function loop(t){const on=(t%BEAT)<160;if(on!==beatOn){beatOn=on;$('#bt',stage).classList.toggle('on',on)}raf=requestAnimationFrame(loop)}
   raf=requestAnimationFrame(loop);
   function step(f){const now=performance.now();const dt=now-lastT;
-    if(lastFoot===f){gd.textContent='같은 발로 두 번? 왼발, 오른발 번갈아';stage.querySelector('.feet').classList.add('shake');setTimeout(()=>stage.querySelector('.feet')?.classList.remove('shake'),500);return}
-    if(lastFoot&&dt<650){gd.textContent='너무 서두르면 들켜! 천천히';lastT=now;lastFoot=f;cells[order[pos]].style.outline='3px solid '+C.coral;setTimeout(()=>cells[order[pos]]&&(cells[order[pos]].style.outline=''),400);return}
-    if(lastFoot&&dt>2600){gd.textContent='너무 멈췄어. 자연스럽게 다시 한 걸음';lastT=now;lastFoot=f;return}
+    if(lastFoot===f){gd.textContent='같은 발로 두 번? 왼발, 오른발 번갈아서';stage.querySelector('.feet').classList.add('shake');setTimeout(()=>stage.querySelector('.feet')?.classList.remove('shake'),500);return}
+    if(lastFoot&&dt<650){gd.textContent='서두르면 들켜요. 천천히';lastT=now;lastFoot=f;cells[order[pos]].style.outline='3px solid '+C.coral;setTimeout(()=>cells[order[pos]]&&(cells[order[pos]].style.outline=''),400);return}
+    if(lastFoot&&dt>2600){gd.textContent='너무 오래 멈췄어요. 자연스럽게 다시 한 걸음';lastT=now;lastFoot=f;return}
     lastT=now;lastFoot=f;cells[order[pos]].classList.add('ok');pos++;if(pos>=STEPS-1){cells[order[STEPS-1]].classList.add('ok');pos=STEPS}$('#pc',stage).textContent=`${pos} / ${STEPS}걸음`;
     if(pos<STEPS){cells[order[pos]].appendChild(me);gd.textContent=['쿵… 뒤꿈치','발바닥 전체','발가락 끝','자연스러워'][pos%4]}
     if(pos>=STEPS){cells[order[STEPS-1]].appendChild(me);cancelAnimationFrame(raf);$('#L',stage).disabled=$('#R',stage).disabled=true;
-      setTimeout(()=>finish(stage,g,{img:IMG.agent,title:'Wee클래스 도착',msg:'아무도 눈치채지 못했어. 천천히 걸으면 발바닥, 숨, 주변 소리가 같이 느껴져. 오늘 복도에서 한 번 해 봐.'}),600)}}
+      setTimeout(()=>finish(stage,g,{img:IMG.agent,title:'Wee클래스 도착',msg:'아무도 눈치채지 못했다. 천천히 걸으면 발바닥, 숨, 주변 소리가 같이 느껴진다. 내일 복도에서 한번 해 봐라.'}),600)}}
   $('#L',stage).onclick=()=>step('L');$('#R',stage).onclick=()=>step('R');
   return()=>cancelAnimationFrame(raf);
 }
@@ -1401,7 +1401,7 @@ function openLoc(k){
     const who={k, name:L.npc}; const v=visit(k+'-'+w.n);
     if(!spot){ talk(host,who,idleLine(k,v)); return; }
     if(got){ talk(host,who,fill(GOT_LINES[v%GOT_LINES.length],{p:spot.piece})); return; }
-    if(!spotOpen(si)){ talk(host,who,['아직은 조용해.',`여기 조각은 ${OPEN_DAY[si]}요일 밤에 나타나. 그때 다시 와 줘.`]); return; }
+    if(!spotOpen(si)){ talk(host,who,['아직은 조용해.',`여기 조각은 ${OPEN_DAY[si]}요일 밤에 나와. 그때 다시 와.`]); return; }
     spotPanel(host,task,k,si,null);
   });
 }
@@ -1598,17 +1598,17 @@ function openOffice(){
     const host=body.querySelector('#talkHost'), opts=body.querySelector('#opts'), task=body.querySelector('#task');
     const who={k:'office',name:L.npc};
     const menu=()=>{ opts.innerHTML=`<button class="bk" id="o1">노크하기</button><button class="bk" id="o2">문틈 엿보기</button><button class="bk green" id="o3">평범하게 지나가기</button>`;
-      opts.querySelector('#o1').onclick=()=>talk(host,who,['(문 너머로) 누구니? 지금은 못 열어 줘~','질문은 쉬는 시간에 복도에서! 시험지는 문 안쪽에 꽁꽁.']);
-      opts.querySelector('#o2').onclick=()=>talk(host,who,['…보이는 건 선생님들 등과 산더미 같은 종이뿐.','(아무것도 못 봤다. 진짜로.)','엿보는 요원은 평범하지 않아. 수상해 보인다고!']);
-      opts.querySelector('#o3').onclick=()=>{ opts.innerHTML=''; mgStop=MG.run(task,'walk',{doneBtn:'위장 훈련 완료',doneLabel:'특별 배지 · 교무실 위장 통과',onDone:()=>{ stopMG(); SpyPlus.addXP(SpyPlus.XP.minigame,'미니게임'); S.badges=Object.assign({},S.badges,{office:true}); save(); task.innerHTML=`<div class="got"><div class="label">특별 배지</div><h3 style="font-size:24px;margin:6px 0">교무실 위장 통과</h3><p>시험지 근처에서도 완벽하게 평범했어요. 수사보드 작전 일지에 배지가 붙었어요.</p></div>`; }}); }; };
-    talk(host,who,['어허! 거기 요원! 멈춰!','지금은 시험 문제 출제 기간이라 학생은 들어올 수 없어.','교무실 앞에서 서성이면 수상해 보인단다. 할 일이 있으면… 평범하게, 아주 평범하게 지나가렴.'],menu);
+      opts.querySelector('#o1').onclick=()=>talk(host,who,['(문 너머로) 누구니? 지금은 못 열어 준다.','질문은 쉬는 시간에 복도에서 해. 시험지는 문 안쪽에 꽁꽁 숨겨 놨다.']);
+      opts.querySelector('#o2').onclick=()=>talk(host,who,['…보이는 건 선생님들 등과 산더미 같은 종이뿐.','(아무것도 못 봤다. 진짜로.)','엿보는 요원은 평범하지 않아. 딱 봐도 수상하다고.']);
+      opts.querySelector('#o3').onclick=()=>{ opts.innerHTML=''; mgStop=MG.run(task,'walk',{doneBtn:'위장 훈련 완료',doneLabel:'특별 배지 · 교무실 위장 통과',onDone:()=>{ stopMG(); SpyPlus.addXP(SpyPlus.XP.minigame,'미니게임'); S.badges=Object.assign({},S.badges,{office:true}); save(); task.innerHTML=`<div class="got"><div class="label">특별 배지</div><h3 style="font-size:24px;margin:6px 0">교무실 위장 통과</h3><p>시험지 근처에서도 끝까지 평범했어요. 수사보드 작전 일지에 배지가 붙었어요.</p></div>`; }}); }; };
+    talk(host,who,['어허! 거기 요원! 멈춰!','지금은 시험 문제 출제 기간이라 학생은 들어올 수 없어.','교무실 앞에서 서성이면 수상해 보여. 볼일 없으면 평범하게, 아주 평범하게 지나가라.'],menu);
   });
 }
 
 /* ---------- 안개 복도 (잠입) ---------- */
 const SPIMG={base:'img/ng-base.jpg',agent:'img/neulgom-head.webp',yawn:'img/ng-yawn.jpg',dance:'img/ng-dance.jpg'};
 function openFog(){
-  sheet('안개 복도','3층 복도 끝 · 잠입 구역',`<div id="sneakHost"></div><p class="note">안개구름에게 들키지 않게 문까지 가요. 하루 3판, 5번째 문마다 안전가옥에서 숨을 고르고 보급상자를 받아요.</p>`, b=>{
+  sheet('안개 복도','3층 복도 끝 · 잠입 구역',`<div id="sneakHost"></div><p class="note">안개구름한테 들키지 않고 문까지 가요. 하루 3판. 5번째 문마다 안전가옥에서 숨을 고르고 보급 상자를 받아요.</p>`, b=>{
     mgStop=SpyPlus.mountSneak(b.querySelector('#sneakHost'),{img:SPIMG, avatarSVG:()=>avatarSVG(S.av)});
   });
 }
@@ -1623,7 +1623,7 @@ function openAgent(tab){
     const host=b.querySelector('#agHost');
     const show=t=>{ stopMG(); b.querySelectorAll('[role=tab]').forEach(x=>x.setAttribute('aria-selected',x.dataset.t===t));
       const T=TABS.find(x=>x[0]===t);
-      if(T[2]>S.week){ host.innerHTML=`<div class="card"><h3>${T[1]}</h3><p>${T[2]}주차에 열려요. 지금은 이번 주 작전에 집중!</p></div>`; return; }
+      if(T[2]>S.week){ host.innerHTML=`<div class="card"><h3>${T[1]}</h3><p>${T[2]}주차에 열려요. 지금은 이번 주 작전부터.</p></div>`; return; }
       if(t==='closet') return openCloset();
       if(t==='locker') return drawLocker(host);
       mgStop = t==='card' ? SpyPlus.mountGear(host,{img:SPIMG}) : SpyPlus.mountCode(host); };
@@ -1741,7 +1741,7 @@ function openSky(){
     <div class="card"><div class="label">한 줄 남기기 · 이름 없이</div>
       <div class="skyin"><input id="skyText" maxlength="30" placeholder="오늘 본 하늘, 고마운 일, 응원 한마디" autocomplete="off"><button class="bk green" id="skySend">띄우기</button></div>
       <p class="note" id="skyMsg" style="margin-top:6px">30자까지 쓸 수 있어요. 이름이나 연락처, 친구 이름은 쓰지 않기.</p>
-      <p class="note" style="margin-top:6px">힘든 마음은 하늘보다 사람에게 먼저 털어놓아요. <button class="linkbtn" id="skyHelp">Wee클래스 · 1388 안내</button></p></div>
+      <p class="note" style="margin-top:6px">힘든 얘기는 하늘보다 사람한테 먼저 해요. <button class="linkbtn" id="skyHelp">Wee클래스 · 1388 안내</button></p></div>
     ${(DEMO&&!HQ.on)?`<details class="card review"><summary>선생님 검토 (시연)</summary>
       <p class="note" style="margin:8px 0">실제 운영에서는 구글 시트 '하늘' 탭의 승인 칸을 체크하면 공개돼요. 시연에서는 이 휴대폰 안에서만 승인돼요.</p>
       <div class="skyin"><input id="skyPin" inputmode="numeric" maxlength="4" placeholder="교사 PIN (시연 1234)" autocomplete="off"><button class="bk" id="skyPinGo">열기</button></div>
@@ -1753,7 +1753,7 @@ function openSky(){
       msg.textContent = (DEMO&&S.skyPend.length) ? `검토 대기 중인 내 글 ${S.skyPend.length}개 (시연: 이 휴대폰 안에만 있어요).` : '30자까지 쓸 수 있어요. 이름이나 연락처, 친구 이름은 쓰지 않기.'; };
     pendNote();
     b.querySelector('#skySend').onclick=()=>{ const inp=b.querySelector('#skyText'); const t=inp.value.trim().slice(0,30); if(!t){ msg.textContent='한 줄을 먼저 써 주세요.'; return; }
-      if(SKY_RISK.test(t)){ HQ.add('risk'); inp.value=''; openPhone('방금 쓴 말이 마음에 걸린다. 그 글은 어디에도 보내지 않았다. 혼자 버티지 말고, 아래 번호로 지금 이야기해 보자.'); return; }
+      if(SKY_RISK.test(t)){ HQ.add('risk'); inp.value=''; openPhone('방금 쓴 말이 마음에 걸린다. 그 글은 어디에도 보내지 않았다. 혼자 버티지 마라. 아래 번호로 지금 얘기해 보자.'); return; }
       if(HQ.on){ const btn=b.querySelector('#skySend'); btn.disabled=true; msg.textContent='본부로 보내는 중…';
         HQ.sky(t).then(r=>{ btn.disabled=false;
           if(r&&r.ok){ S.skyPend.push(t); if(S.skyPend.length>5) S.skyPend.shift(); save(); inp.value=''; pendNote(); toast('본부로 보냈어요. 선생님이 확인하면 하늘에 떠요.'); }

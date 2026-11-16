@@ -332,13 +332,13 @@ function build(){
 /* ---------- 상태 ---------- */
 const K={l:false,r:false,j:false,b:false}; let jBuf=0, prevB=false;
 let P, cam, maxX, cp, tNow, playT, running=false, paused=false, bonus=false, bonusNote='', mood='sun';
-let bq=[], parts=[], gusts=[], clouds=[], bubble=null, bubA=1, msg=null, deaths=0, shake=0, freeze=0, chickX=40, chickY=150, warp=null;
+let bq=[], parts=[], gusts=[], clouds=[], bubble=null, bubA=1, msg=null, deaths=0, shake=0, freeze=0, chickX=40, chickY=150, warp=null, stuck=0, lift=null;
 function reset(){
   build();
   P={x:2*T,y:GTOP-22,w:12,h:22,vx:0,vy:0,face:1,ground:true,coy:0,grey:0,inv:0,shield:bonus?1:0,coins:bonus?5:0,pcs:0,
      charge:0,charging:false,full:false,glide:false,jumpHeld:false,boost:false,runT:0,airT:0,coat:false,puffCd:0,bHold:0};
   BGM.rewind();
-  cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; bq=[]; msg=null; deaths=0; shake=0; freeze=0; chickX=P.x+30; chickY=P.y-20; warp=null;
+  cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; bq=[]; msg=null; deaths=0; shake=0; freeze=0; chickX=P.x+30; chickY=P.y-20; warp=null; stuck=0; lift=null;
 }
 
 /* ---------- 조작 ---------- */
@@ -384,7 +384,8 @@ function hurt(dir){
   if(P.grey>0){ respawn(); return; }
   P.grey=4; P.inv=1.4; P.vx=-dir*90; P.vy=-150; P.jumpHeld=false; P.glide=false; shake=.2; freeze=.08; note('안개에 물들었다. 잠깐 느려진다'); SFX.hurt();
 }
-function respawn(){ deaths++; P.x=cp.x; P.y=cp.y; P.vx=P.vy=0; P.grey=0; P.coat=false; P.inv=1.6; P.charge=0; P.charging=false; P.glide=false; cam=Math.max(0,Math.min(LW-W,P.x-W*.36)); note('깃발에서 다시'); SFX.die(); }
+function respawn(){ deaths++; P.x=cp.x; P.y=cp.y; P.vx=P.vy=0; P.grey=0; P.coat=false; P.inv=1.6; P.charge=0; P.charging=false; P.glide=false; cam=Math.max(0,Math.min(LW-W,P.x-W*.36)); note('깃발에서 다시'); SFX.die();
+  if(++stuck>=3&&!room) offerLift(); }
 function bumpTop(c,r){ for(const m of mungs) if(m.alive&&m.sq<=0&&Math.abs(m.y+m.h-r*T)<3&&m.x+m.w>c*T&&m.x<(c+1)*T) popMung(m,true); }
 function headHit(c,r){ const v=at(c,r), key=c+','+r;
   if(v===3){ const b=boxes[key]; bumps[key]=tNow; bumpTop(c,r);
@@ -394,11 +395,18 @@ function headHit(c,r){ const v=at(c,r), key=c+','+r;
   else if(v===6){ set(c,r,0); bumpTop(c,r); SFX.brk(); for(let i=0;i<4;i++) parts.push({deb:true,x:c*T+(i%2)*8,y:r*T+(i>>1)*8,vx:(i%2?1:-1)*(40+Math.random()*30),vy:-150-(i>>1?0:60),t:.8,T0:.8,g:700,sx:(i%2)*8,sy:(i>>1)*8}); }
   else { if(v===4||v===2) bumps[key]=tNow-.08; SFX.bump(); }
 }
+// 장막에 끝까지 모은 숨 바람이 닿았을 때. 보스 장막은 한 겹씩 걷히며 뒤로 물러나고, 보통 장막과 보스의 마지막 겹은 한 번에 걷힌다
+function blow(c){
+  if(c.boss&&c.hp>1){ c.hp--; c.w=14+c.hp*8; c.tx=Math.max(c.x,c.tx)+22*T; c.cd=2.4; shake=.25; freeze=.06; for(let i=0;i<26;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',90,2);
+    for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); note(c.hp===2?'한 겹 걷혔다. 장막이 물러난다':'이제 한 겹 남았다'); SFX.calm(); }
+  else { c.alive=false; for(let i=0;i<34;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',80,2); for(let i=0;i<(c.boss?6:2);i++) popCoin(c.x+6+i*9,GTOP-40,i+2);
+    if(c.boss){ for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); shake=.3; say('「회색 장막」이 걷혔다 삐약. 본부 문이 보인다 삐약.'); } note(c.boss?'「회색 장막」이 걷혔다':'안개 장막이 걷혔다'); SFX.calm(); } }
 function popMung(m,flung){ m.sq=flung?.01:.32; m.vx=0; popCoin(m.x+8,m.y,1); SFX.stomp(); puff(m.x+8,m.y+8,6,'#ffffff',40); }
 function step(dt){
   tNow+=dt; playT+=dt;
   if(freeze>0){ freeze-=dt; return; }
   if(warp){ warpStep(dt); return; }
+  if(lift){ liftStep(dt); return; }
   // 주홍 코트를 입었으면 숨 버튼을 톡 눌러 짧은 바람을 쏜다 (길게 누르면 평소처럼 모은다)
   P.puffCd-=dt; P.bHold=K.b?P.bHold+dt:0;
   if(K.b&&!prevB&&P.coat&&P.puffCd<=0){ gusts.push({x:P.x+6+P.face*8,y:P.y+9,dir:P.face,left:84,pow:.3,puff:true}); P.puffCd=.38; SFX.gust(.3); } prevB=K.b;
@@ -455,7 +463,7 @@ function step(dt){
       if(it.kind==='coat'){ P.coat=true; P.grey=0; freeze=.12; note('주홍 코트를 입었다'); puff(P.x+6,P.y+11,18,'#d9512c',80); say('주홍 코트다 삐약. 숨 버튼을 톡 누르면 바람이 나간다 삐약.'); }
       else { P.shield=1; note('색 방패를 얻었다'); } } }
   // 깃발, 말풍선
-  if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
+  if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; stuck=0; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
   if(!room) for(const s of says) if(!s.done&&P.x>s.x){ s.done=true; say(s.t); }
   // 말풍선은 한 번 뜨면 적어도 1.6초는 그대로 두고, 다음 말은 그 뒤에 한 번에 바꾼다
   if(bubble&&tNow>=bubble.until) bubble=null;
@@ -489,10 +497,7 @@ function step(dt){
     for(const m of mungs) if(m.alive&&m.sq<=0&&hit(gb,m)) popMung(m,true);
     for(const c of curtains) if(c.alive&&g.x+7>c.x&&g.x-7<c.x+c.w){
       if(c.boss&&c.x<c.tx){ g.left=0; }
-      else if(g.pow>=.8&&c.boss&&c.hp>1){ g.left=0; c.hp--; c.w=14+c.hp*8; c.tx=c.x+22*T; c.cd=2.4; shake=.25; freeze=.06; for(let i=0;i<26;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',90,2);
-        for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); note(c.hp===2?'한 겹 걷혔다. 장막이 물러난다':'이제 한 겹 남았다'); SFX.calm(); }
-      else if(g.pow>=.8){ c.alive=false; for(let i=0;i<34;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',80,2); for(let i=0;i<(c.boss?6:2);i++) popCoin(c.x+6+i*9,GTOP-40,i+2);
-        if(c.boss){ for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); shake=.3; say('「회색 장막」이 걷혔다 삐약. 본부 문이 보인다 삐약.'); } note(c.boss?'「회색 장막」이 걷혔다':'안개 장막이 걷혔다'); SFX.calm(); }
+      else if(g.pow>=.8){ if(c.boss&&c.hp>1) g.left=0; blow(c); }
       else { g.left=0; if(!g.puff) say('조금 약하다 삐약. 고리가 다 찰 때까지 들이쉬어라 삐약.'); else if(tNow>c.hint){ c.hint=tNow+6; say('장막은 짧은 바람으로 안 걷힌다 삐약. 숨 버튼을 꾹 눌러 모아라 삐약.'); } } } }
   gusts=gusts.filter(g=>g.left>0);
   tickParts(dt);
@@ -527,6 +532,30 @@ function waxCard(){ if(!window.WAX){ warp.after=()=>{ shutPipe(); note('다시 �
   WAX.open(ov.querySelector('#wx'),ov.querySelector('#wxc'),()=>{ got=true; const b=ov.querySelector('#w1'); b.textContent='색 방울 받고 나가기'; b.classList.add('go'); });
   on('w1',()=>{ closeCard(); const after=()=>{ shutPipe(); if(got){ roomCount(); for(let i=0;i<8;i++) popCoin(P.x+6+(i-3.5)*7,P.y-6,i); note('바삭하게 깨고 나니 손에 힘이 풀린다'); SFX.calm(); } else note('다시 길 위로'); };
     if(warp){ warp.after=after; warpOut(); } else after(); }); }
+/* 병아리의 도움 (막힌 곳 건너뛰기): 같은 깃발로 세 번 돌아오면 병아리가 다음 깃발까지 데려다주겠다고 묻는다.
+   한 곳에서 막혀 그날 판을 못 끝내는 학생이 없게 하려는 것이다. 싫다고 하면 세 번 더 돌아왔을 때 다시 묻는다.
+   보스 장막 앞에서는 건너뛰지 않고 병아리가 숨을 보태 장막 한 겹을 걷어 준다 */
+function offerLift(){ stuck=0; const f=flags.filter(f=>f.x>cp.x+4).sort((a,b)=>a.x-b.x)[0], b=!!bossC&&bossC.alive&&bossC.x>cp.x&&(!f||bossC.x<f.x);   // b: 다음 깃발보다 앞에 보스 장막이 버티고 있다
+  card(`<div class="eyebrow">병아리 요원의 도움</div><h2>같은 자리로 세 번 돌아왔다</h2>
+  <p>${b?'병아리가 숨을 보태서 장막 한 겹을 걷어 줄 수 있다.':f?'병아리가 다음 깃발까지 데려다줄 수 있다.':'병아리가 본부 문 앞까지 데려다줄 수 있다.'} 직접 한 번 더 해 봐도 된다.</p>
+  <div class="row"><button id="l1">${b?'한 겹 걷어 달라고 한다':'데려다 달라고 한다'}</button><button id="l2">한 번 더 해 본다</button></div>
+  <p class="note">도움을 받아도 작전 기록은 똑같이 남는다.</p>`);
+  on('l1',()=>{ closeCard(); if(b&&bossC.alive){ blow(bossC); if(bossC.alive) say('한 겹은 내가 걷었다 삐약. 남은 건 직접 불어라 삐약.'); } else startLift(f); });
+  on('l2',()=>{ closeCard(); say('좋다 삐약. 급할 것 없다. 천천히 다시 해 봐라 삐약.'); }); }
+// 들어 올리기(up) → 병아리가 곰을 들고 다음 깃발까지 날아가기(fly, 지나는 길에 색이 번진다) → 내려놓기(down). 그동안 판은 멈춰 있다.
+// 다음 깃발이 없으면 본부 문 앞에 내려놓는다. 내려놓는 자리는 맨땅이어야 한다 (판을 더할 때 깃발 자리와 문 앞에 상자나 계단을 두지 말 것)
+function startLift(f){ const tx=f?f.x:door.x-24;
+  lift={ph:'up',t:0,tx,x0:P.x,y0:P.y,c0:cam}; P.vx=P.vy=0; P.grey=0; P.inv=0; P.charging=false; P.charge=0; P.glide=false; P.ground=false; P.face=1; gusts=[]; bubble=null; bq=[]; msg=null; SFX.up(); }
+function liftStep(dt){ const L=lift, gy=GTOP-P.h, top=Math.max(camY+36,gy-110), ease=t=>t*t*(3-2*t); L.t+=dt; tickParts(dt);
+  if(L.ph==='up'){ const u=Math.min(1,L.t/.6); P.y=L.y0+(top-L.y0)*ease(u);
+    if(u>=1){ L.ph='fly'; L.t=0; P.x=L.tx; L.c1=camTarget(); P.x=L.x0; L.dur=Math.max(.6,Math.min(2.2,Math.abs(L.tx-L.x0)/520)); } }
+  else if(L.ph==='fly'){ const u=ease(Math.min(1,L.t/L.dur)); P.x=L.x0+(L.tx-L.x0)*u; cam=L.c0+(L.c1-L.c0)*u; P.y=top+Math.sin(L.t*10)*1.5; if(P.x>maxX) maxX=P.x;
+    if(Math.random()<.2){ const t=.35; parts.push({x:P.x+2+Math.random()*8,y:P.y+4+Math.random()*16,vx:-30,vy:(Math.random()-.5)*16,t,T0:t,col:Math.random()<.5?'#f3c744':'#fff8e8',s:1,g:0}); }
+    if(L.t>=L.dur){ L.ph='down'; L.t=0; L.y1=P.y; P.x=L.tx; cam=L.c1; P.glide=true; } }
+  else { const u=Math.min(1,L.t/.7); P.y=L.y1+(gy-L.y1)*(1-(1-u)*(1-u));
+    if(u>=1){ lift=null; P.y=gy; P.ground=true; P.glide=false; P.inv=1.6; jBuf=0; cp={x:L.tx,y:gy}; stuck=0; if(P.x>maxX) maxX=P.x;
+      for(const f of flags) if(f.x<=L.tx+1) f.on=true; for(const q of says) if(q.x<=P.x) q.done=true;   // 지나온 구간의 깃발은 켜고, 지나온 안내 말은 다시 띄우지 않는다
+      dust(P.x+6,P.y+P.h,0); puff(L.tx+8,GTOP-30,14,'#d9512c',60); SFX.flag(); note('병아리가 여기까지 데려다줬다'); say('여기서부터 다시 가 보자 삐약.'); } } }
 /* 통로 타기: 가라앉기(in) → 어두워지기(close) → [mid: 자리 옮기기] → 밝아지기(open) → 올라오기(out) → [after]. 그동안 판은 멈춰 있다 */
 // 마음돌봄 방을 끝낸 것은 판마다 한 번만 센다
 function roomCount(){ const sv=loadSave(); sv.rooms=sv.rooms||{}; if(sv.rooms[stageNo]) return; sv.rooms[stageNo]=true; putSave(sv); hq('add','game',1); }
@@ -636,7 +665,7 @@ function draw(){
   // 숨 바람
   bx.fillStyle='#ffffff'; for(const g of gusts){ const x=Math.round(g.x-cx), y=Math.round(g.y-cy); for(let i=-1;i<=1;i++){ const yy=y+i*7; bx.fillRect(x-(g.dir>0?10:-2),yy,8,1); bx.fillRect(x+(g.dir>0?-2:-2),yy-1,4,1); bx.fillRect(x+(g.dir>0?3:-5),yy-2,2,1); } }
   // 늘곰. 통로를 탈 때는 아래로 가라앉고(올라올 때는 반대로), 통로를 한 번 더 그려서 가라앉은 몸을 가린다
-  { let f; if(P.charging) f=(P.charge<1&&Math.floor(tNow*5)%2)?'idle':'breath'; else if(!P.ground) f=P.glide?'glide':(P.vy<0?'jump':'fall'); else if(Math.abs(P.vx)>8) f='run'+(Math.floor(P.runT*11)%4); else f=Math.floor(tNow*1.6)%2?'idle2':'idle';
+  { let f; if(lift) f=lift.ph==='down'?'glide':'jump'; else if(P.charging) f=(P.charge<1&&Math.floor(tNow*5)%2)?'idle':'breath'; else if(!P.ground) f=P.glide?'glide':(P.vy<0?'jump':'fall'); else if(Math.abs(P.vx)>8) f='run'+(Math.floor(P.runT*11)%4); else f=Math.floor(tNow*1.6)%2?'idle2':'idle';
     const sink=!warp?0:warp.ph==='in'?Math.min(1,warp.t/.5)*26:warp.ph==='out'?(1-Math.min(1,warp.t/.45))*26:26;
     if(sink<26&&!(P.inv>0&&Math.floor(tNow*16)%2)) spr((P.coat?A.BEARR:A.BEAR)[warp?'idle':f],P.x-8-cx,P.y-3-cy+Math.round(sink),!(P.grey>0),P.face<0);
     if(warp) pipes();
@@ -651,7 +680,7 @@ function draw(){
     if(p.pop) bx.drawImage(A.DROP[p.h].c,x,y); else if(p.deb) bx.drawImage(A.BRICK.c,p.sx,p.sy,7,7,x,y,7,7);
     else { const s=p.t<p.T0*.4?Math.max(1,p.s-1):p.s; bx.fillStyle=p.col; bx.fillRect(x,y,s,s); } }
   // 병아리 요원
-  { const kx=P.x+6-P.face*20, ky=P.y-20+Math.sin(tNow*5)*3; chickX+=(kx-chickX)*.08; chickY+=(ky-chickY)*.08;
+  { const kx=P.x+6-P.face*20, ky=P.y-20+Math.sin(tNow*5)*3; if(lift){ const a=lift.ph==='up'?.4:1; chickX+=(P.x+6-chickX)*a; chickY+=(P.y-8-chickY)*a; } else { chickX+=(kx-chickX)*.08; chickY+=(ky-chickY)*.08; }
     spr(A.CHICK[Math.floor(tNow*8)%2],chickX-6-cx,chickY-6-cy,true,P.face<0); }
   // 방에서 나가는 통로 표지 (병아리에 가리지 않게 맨 위에)
   if(room&&!warp){ const e=RE*T-cx; box(e-6,hz-88,44,13,'#fff8e8','#1f1b18'); texts.push({t:'나가는 곳',x:e+16,y:hz-78.3,s:7.5,c:'#1f1b18',a:'center',f:DISP}); if(!over(RE*T)) arrowDn(e+16,hz-72+bob,'#d9512c'); }
@@ -791,7 +820,7 @@ function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music();
   draw(); requestAnimationFrame(frame); }
 reset(); home(); requestAnimationFrame(frame);
 document.addEventListener('visibilitychange',()=>{ last=performance.now(); if(document.hidden) BGM.pause(); });
-window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},get warp(){return warp;},get stageNo(){return stageNo;},get bub(){return bubble&&{t:bubble.t,a:bubA};},
+window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},get warp(){return warp;},get stageNo(){return stageNo;},get lift(){return lift;},get stuck(){return stuck;},get flags(){return flags;},get cp(){return cp;},get cam(){return cam;},get maxX(){return maxX;},get camY(){return camY;},get W(){return W;},get H(){return H;},die(){respawn();},get bub(){return bubble&&{t:bubble.t,a:bubA};},
   go(n){stageNo=n||0;bonus=true;mood='sun';reset();closeCard();running=true;}};
 })();
 </script>

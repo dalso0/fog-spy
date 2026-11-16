@@ -65,6 +65,10 @@ function bear(P){ const F={};
   return F; }
 const bearC=bear(PAL), bearG=bear(GPAL); const BEAR={};
 for(const n in bearC) BEAR[n]={c:bearC[n],g:bearG[n],cf:flip(bearC[n]),gf:flip(bearG[n]),w:28,h:25};
+// 주홍 코트를 입은 늘곰: 모자와 코트만 주홍으로
+const PALR=Object.assign({},PAL,{t:'#d9512c',T:'#a03a1c',H:'#fff8e8',c:'#fff8e8',o:'#f3c744'});
+const bearR=bear(PALR); const BEARR={};
+for(const n in bearR) BEARR[n]={c:bearR[n],g:bearG[n],cf:flip(bearR[n]),gf:flip(bearG[n]),w:28,h:25};
 
 /* ---------- 병아리 요원 ---------- */
 const CHICK=[set([
@@ -127,5 +131,6 @@ const SCHOOL=pair((P)=>{ const c=cvs(120,66),x=c.getContext('2d'); const R=(col,
   for(let r=0;r<3;r++) for(let i=0;i<5;i++){ R(P.S,4+i*8,22+r*14,5,8); R(P.S,78+i*8,22+r*14,5,8); }
   for(let r=0;r<3;r++) for(let i=0;i<3;i++) R(P.S,49+i*8,12+r*14,5,8); R(P.B,54,52,12,14); return c; });
 
-window.ART={PAL,GPAL,BEAR,CHICK,MUNG,MUNG_SQ,BUG,GROUND,DIRT,BRICK,HARD,CRATE,USED,WALLB,WALLF,PAD,DROP,SHIELD,PIECE,BUSH,TREE,CLOUD,DOOR,SCHOOL,grey,cvs};
+const COAT=set(['...kk.kk...','..krrkrrk..','.krrckcrrk.','krrrrcrrrrk','krkrrrrrkrk','kk.krrrk.kk','...kryrk...','...krrrk...','..krrrrrk..','..krrRrrk..','..kkkkkkk..'],'coat');
+window.ART={PAL,GPAL,BEAR,BEARR,COAT,CHICK,MUNG,MUNG_SQ,BUG,GROUND,DIRT,BRICK,HARD,CRATE,USED,WALLB,WALLF,PAD,DROP,SHIELD,PIECE,BUSH,TREE,CLOUD,DOOR,SCHOOL,grey,cvs};
 })();

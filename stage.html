@@ -1,4 +1,4 @@
-<title>회색 안개 작전 시제품</title>
+<title>회색 안개 작전</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gothic+A1:wght@500;700&display=swap">
 <style>
@@ -473,7 +473,7 @@ let last=performance.now(), acc=0;
 function card(html){ ov.innerHTML='<div class="card">'+html+'</div>'; ov.hidden=false; paused=true; K.l=K.r=K.j=K.b=false; const b=ov.querySelector('button'); if(b) try{b.focus({preventScroll:true});}catch(e){} }
 function closeCard(){ ov.hidden=true; ov.innerHTML=''; paused=false; last=performance.now(); }
 function on(id,fn){ ov.querySelector('#'+id).onclick=fn; }
-function startCard(){ card(`<div class="eyebrow">평범한 스파이 · 시제품 1스테이지</div><h1>회색 안개 작전</h1>
+function startCard(){ card(`<div class="eyebrow">평범한 스파이</div><h1>회색 안개 작전</h1>
   <p>안개 낀 등굣길을 지나 본부 문까지 간다. 폰은 가로로 눕혀서 잡아요.</p>
   <p class="note">왼쪽 ◀ ▶ 로 움직이고, 오른쪽 점프와 숨 버튼을 써요. 컴퓨터에서는 방향키, 스페이스(점프), X(숨).</p>
   <div class="row"><button class="go" id="s1">오늘의 작전 시작</button></div>`);
@@ -481,7 +481,7 @@ function startCard(){ card(`<div class="eyebrow">평범한 스파이 · 시제�
 function hqCard(){ const sv=loadSave(), cl=sv.clear||{};
   card(`<div class="eyebrow">본부 · 1주차 하늘빛</div><h2>오늘의 작전을 고른다</h2>
   <div class="days">${DAYS.map((d,i)=>`<button data-d="${i}" ${d.soon?'disabled':''}><small>${d.d}</small><b>${d.soon?'만드는 중':d.name}</b><span>${cl[i]?'「'+d.letter+'」 확보':(d.soon?'':'미완료')}</span></button>`).join('')}</div>
-  <p class="note">모은 색 방울 ${sv.coins||0}개. 시제품이라 날짜와 상관없이 모든 판이 열려 있어요.</p>`);
+  <p class="note">모은 색 방울 ${sv.coins||0}개. 목요일과 금요일 판은 곧 열려요.</p>`);
   ov.firstChild.classList.add('wide');
   ov.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ stageNo=+b.dataset.d; SFX.tick(); reportCard(); }); }
 function reportCard(){ card(`<div class="eyebrow">어제의 지령 보고</div><h2>「${DAYS[stageNo].report[0]}」</h2><p>${DAYS[stageNo].report[1]} 해 봤나?</p>

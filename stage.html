@@ -64,6 +64,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 </div>
 
 <script src="stage-art.js"></script>
+<script src="stage-music.js"></script>
 <script>
 (()=>{
 'use strict';
@@ -170,6 +171,7 @@ function reset(){
   build();
   P={x:2*T,y:GTOP-22,w:12,h:22,vx:0,vy:0,face:1,ground:true,coy:0,grey:0,inv:0,shield:bonus?1:0,coins:bonus?5:0,pcs:0,
      charge:0,charging:false,full:false,glide:false,jumpHeld:false,boost:false,runT:0,airT:0};
+  BGM.rewind();
   cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; msg=null; deaths=0; shake=0; freeze=0; chickX=P.x+30; chickY=P.y-20;
 }
 
@@ -441,12 +443,17 @@ function finish(){ running=false; SFX.clear();
   ov.firstChild.classList.add('wide'); on('f1',()=>startCard()); }
 
 /* ---------- 돌리기 ---------- */
-function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now;
+// 배경 음악: 판이 도는 동안만 튼다. 숨을 모을 때와 가만히 있어야 할 때는 작게, 안개에 물들면 먹먹하게.
+function music(){ const okay=sound&&running&&AC&&AC.state==='running'&&!document.hidden;
+  if(!okay){ BGM.pause(); return; }
+  const calm=P.charging||(P.ground&&Math.abs(P.vx)<8&&swarms.some(s=>s.state==='alert'));
+  BGM.set(paused?.3:(calm?.28:1),P.grey>0); BGM.play(AC); }
+function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music();
   if(running&&!paused){ acc+=d; while(acc>=1/120){ step(1/120); acc-=1/120; if(!running||paused){ acc=0; break; } } }
   draw(); requestAnimationFrame(frame); }
 reset(); startCard(); requestAnimationFrame(frame);
-document.addEventListener('visibilitychange',()=>{ last=performance.now(); });
-window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},
+document.addEventListener('visibilitychange',()=>{ last=performance.now(); if(document.hidden) BGM.pause(); });
+window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get AC(){return AC;},
   go(){bonus=true;mood='sun';reset();closeCard();running=true;}};
 })();
 </script>

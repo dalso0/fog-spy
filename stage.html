@@ -5,7 +5,7 @@
 <title>회색 안개 작전</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="안개 작전">
 <meta name="theme-color" content="#1f1b18">
 <link rel="manifest" href="stage.webmanifest">
@@ -65,6 +65,10 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .days b{font-weight:400;line-height:1.15;text-wrap:balance}
 .days span{font-family:var(--f-body);font-size:11px;color:var(--red-d);min-height:14px}
 .days button:disabled{opacity:.45;box-shadow:none}
+.wx{position:relative;border:3px solid var(--ink);overflow:hidden;touch-action:none}
+.wxagain{position:absolute;right:8px;bottom:8px;font-size:13px;padding:6px 10px}
+.wxrow{align-items:center;justify-content:space-between;flex-wrap:nowrap}
+.wxrow .note{margin:0;text-align:left}
 .card.wide{max-width:640px;gap:9px;padding:13px 18px}
 .card.wide h1{font-size:25px}
 .stat{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -87,6 +91,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 
 <script src="stage-art.js"></script>
 <script src="stage-music.js"></script>
+<script src="stage-wax.js"></script>
 <script>
 (()=>{
 'use strict';
@@ -99,19 +104,32 @@ const buf=document.createElement('canvas'), bx=buf.getContext('2d');
 let W=420, H=190, k=3, dprU=1, camY=WH-190, rot=false;
 
 /* ---------- 화면 맞추기: 게임 점 하나가 화면 점 k개(정수)가 되게 ---------- */
+const safeProbe=document.createElement('div'); safeProbe.style.cssText='position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top,0px)'; document.body.appendChild(safeProbe);
+let laid='';
 function layout(){
-  const w=innerWidth, h=innerHeight; rot=h>w; const sw=rot?h:w, sh=rot?w:h;
-  stage.style.width=sw+'px'; stage.style.height=sh+'px';
+  const w=innerWidth; let h=innerHeight, top=0; rot=h>w;
+  // 세로로 든 폰(홈 화면 앱)은 화면이 상태 막대 밑에서 시작한다. 그 높이만큼 내려서 시계와 겹치지 않게 하고, 화면이 한쪽으로 쏠려 보이지 않게 한다
+  if(rot){ top=parseFloat(getComputedStyle(safeProbe).paddingTop)||0; if(top>h*.2) top=0; h-=top; }
+  const key=[w,h,top,window.devicePixelRatio].join(); if(key===laid) return; laid=key;
+  const sw=rot?h:w, sh=rot?w:h;
+  stage.style.top=top+'px'; stage.style.width=sw+'px'; stage.style.height=sh+'px';
   stage.style.transform=rot?'rotate(90deg) translate(0,-100%)':'none';
   dprU=Math.min(3,window.devicePixelRatio||1); const dh=Math.round(sh*dprU), dw=Math.round(sw*dprU);
   k=Math.max(1,Math.floor(dh/176)); H=Math.ceil(dh/k); W=Math.ceil(dw/k);
   cv.width=W*k; cv.height=H*k; buf.width=W; buf.height=H; camY=WH-H;
 }
 addEventListener('resize',layout); layout();
+addEventListener('orientationchange',()=>setTimeout(layout,300)); addEventListener('pageshow',layout);
+if(window.visualViewport) visualViewport.addEventListener('resize',layout);
+setTimeout(layout,400); setTimeout(layout,1500);
 
 /* ---------- 소리 ---------- */
 let AC=null, sound=true;
-function ac(){ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); }catch(e){} return AC; }
+// 아이폰 사파리는 무음 스위치가 켜져 있으면 웹 게임 소리(WebAudio)를 끈다. 소리 종류를 '재생'으로 알려 두면 영상처럼 음량 버튼만 따른다 (iOS 17부터)
+function ac(){ if(!sound) return null; try{ if(!AC){ try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){} AC=new (window.AudioContext||window.webkitAudioContext)(); }
+  if(AC.state!=='running') AC.resume(); }catch(e){} return AC; }
+// 다른 앱에 다녀오거나 전화가 오면 소리가 멈춘다. 아이폰은 손가락을 뗄 때나 누를 때만 다시 켤 수 있다
+['touchend','pointerup','click','keydown'].forEach(n=>addEventListener(n,()=>{ if(AC&&AC.state!=='running') ac(); },true));
 function tone(f,d,type='square',v=.04,slide=0,delay=0){ if(!sound||!ac()) return; try{ const t0=AC.currentTime+delay, o=AC.createOscillator(), g=AC.createGain();
   o.type=type; o.frequency.setValueAtTime(f,t0); if(slide) o.frequency.linearRampToValueAtTime(Math.max(30,f+slide),t0+d);
   g.gain.setValueAtTime(v,t0); g.gain.linearRampToValueAtTime(0,t0+d); o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0+d+.02);}catch(e){} }
@@ -192,7 +210,7 @@ const LEVELS=[
   coin(32,5); coin(34,6); coin(36,7);
   ground(38,75); flag(39); curtain(46); mung(50,58); brick(60,63,R1); crate(61,R2,'coins'); mung(60,64,R1); swarm(68);
   coin(76,7); coin(77,6); coin(78,6); coin(79,7);
-  ground(80,118); flag(81); pad(84); hard(87,90,6); piece(89,4); wall(96); mung(100,108); mung(104,112); crate(110,R1,'shield'); nook(116,'mochi');
+  ground(80,118); flag(81); pad(84); hard(87,90,6); piece(89,4); wall(96); mung(100,108); mung(104,112); crate(110,R1,'shield'); nook(116,'wax');
   hard(121,123,10); coinRow(121,123,8); hard(126,128,9); coinRow(126,128,7);
   ground(131,170); flag(132); curtain(138); swarm(146); brick(152,154,R1); piece(153,5); mung(156,164); stairs(166,4);
   coin(172,5); coin(174,6); coin(176,7);
@@ -249,12 +267,12 @@ function build(){
   const say=(c,t)=>says.push({x:c*T,t,done:false});
   const stairs=(c,n)=>{ for(let i=0;i<n;i++) for(let h=0;h<=i;h++) set(c+i,11-h,2); };
   LEVELS[stageNo]({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door:c=>{ door={x:c*T,y:GTOP-40,w:32,h:40}; },
-    nook:(c,kind)=>{ nook={x:c*T,kind,t:0,used:false,hint:false}; },
+    nook:(c,kind)=>{ nook={x:c*T,kind,t:0,used:false,hint:false}; if(kind==='wax') WAX.preload(); },
     boss:(c)=>{ bossC={x:c*T,w:38,alive:true,hint:0,boss:true,hp:3,tx:c*T,cd:2.2}; curtains.push(bossC); }});
   for(let r=0;r<ROWS;r++) set(LC,r,2);
   // 비밀 통로 방: 판 오른쪽 바깥의 작은 방. 문으로 들어가면 여기로 옮겨 온다
   if(nook){ ground(RX,RX+29); for(let r=0;r<GY;r++){ set(RX,r,2); set(RX+29,r,2); }
-    if(nook.kind==='sky'){ stairs(RX+8,4); hard(RX+12,RX+16,8); coinRow(RX+19,RX+22,10); }
+    if(nook.kind==='wax'){} else if(nook.kind==='sky'){ stairs(RX+8,4); hard(RX+12,RX+16,8); coinRow(RX+19,RX+22,10); }
     else if(nook.kind==='mochi'){ pad(RX+13); pad(RX+14); pad(RX+15); }
     else coinRow(RX+20,RX+23,10); }
   for(let c=6;c<LC-4;c+=23){ if(at(c,GY)===1&&at(c,GY-1)===0&&Math.abs(c*T-door.x)>40) decor.push({x:c*T-7,kind:'tree'}); const b=c+11; if(at(b,GY)===1&&at(b,GY-1)===0&&Math.abs(b*T-door.x)>40) decor.push({x:b*T-7,kind:'bush'}); }
@@ -263,13 +281,13 @@ function build(){
 /* ---------- 상태 ---------- */
 const K={l:false,r:false,j:false,b:false}; let jBuf=0, prevB=false;
 let P, cam, maxX, cp, tNow, playT, running=false, paused=false, bonus=false, mood='sun';
-let parts=[], gusts=[], clouds=[], bubble=null, msg=null, deaths=0, shake=0, freeze=0, chickX=40, chickY=150;
+let bq=[], parts=[], gusts=[], clouds=[], bubble=null, msg=null, deaths=0, shake=0, freeze=0, chickX=40, chickY=150;
 function reset(){
   build();
   P={x:2*T,y:GTOP-22,w:12,h:22,vx:0,vy:0,face:1,ground:true,coy:0,grey:0,inv:0,shield:bonus?1:0,coins:bonus?5:0,pcs:0,
      charge:0,charging:false,full:false,glide:false,jumpHeld:false,boost:false,runT:0,airT:0,coat:false,puffCd:0,bHold:0};
   BGM.rewind();
-  cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; msg=null; deaths=0; shake=0; freeze=0; chickX=P.x+30; chickY=P.y-20;
+  cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; bq=[]; msg=null; deaths=0; shake=0; freeze=0; chickX=P.x+30; chickY=P.y-20;
 }
 
 /* ---------- 조작 ---------- */
@@ -294,7 +312,9 @@ document.addEventListener('contextmenu',e=>e.preventDefault());
 ['gesturestart','gesturechange','gestureend','dblclick'].forEach(n=>document.addEventListener(n,e=>e.preventDefault(),{passive:false}));
 document.addEventListener('touchmove',e=>{ if(e.touches.length>1) e.preventDefault(); },{passive:false});
 { let lastEnd=0; document.addEventListener('touchend',e=>{ const now=performance.now(); if(now-lastEnd<350&&!e.target.closest('button')) e.preventDefault(); lastEnd=now; },{passive:false}); }
-document.getElementById('bs').onclick=()=>{ sound=!sound; document.getElementById('bs').textContent=sound?'♪':'×'; };
+{ const bs=document.getElementById('bs'); sound=!loadSave().mute; bs.textContent=sound?'♪':'×';   // 소리를 꺼 두면 다음에 열 때도 꺼져 있다
+  bs.onclick=()=>{ sound=!sound; bs.textContent=sound?'♪':'×'; const sv=loadSave(); sv.mute=!sound; putSave(sv);
+    if(sound){ ac(); SFX.tick(); } else if(AC){ try{ AC.suspend(); }catch(e){} } }; }
 document.getElementById('bh').onclick=()=>helpCard();
 
 /* ---------- 물리 ---------- */
@@ -303,7 +323,7 @@ const hit=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 function dynSolids(){ const a=[]; for(const c of curtains) if(c.alive) a.push({x:c.x,y:-300,w:c.w,h:GTOP+300,cur:c}); for(const w of walls) if(w.alive) a.push({x:w.x,y:-300,w:w.w,h:GTOP+300,wall:w}); return a; }
 function puff(x,y,n,col,sp=45,s=2){ for(let i=0;i<n;i++){ const a=Math.random()*6.28, v=sp*(.4+Math.random()); const t=.3+Math.random()*.3; parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-20,t,T0:t,col,s,g:120}); } }
 function dust(x,y,dir){ for(let i=0;i<3;i++){ const t=.25+Math.random()*.15; parts.push({x:x+(Math.random()-.5)*6,y:y-1,vx:-dir*(10+Math.random()*25),vy:-8-Math.random()*14,t,T0:t,col:'#efe6d2',s:2,g:20}); } }
-function say(t,dur=4.6){ bubble={t,until:tNow+dur}; }
+function say(t,dur=4.6){ if(bubble&&bubble.t===t){ bubble.until=tNow+dur; return; } bq=bq.filter(q=>q.t!==t); bq.push({t,dur}); if(bq.length>2) bq.shift(); }
 function note(t){ msg={t,until:tNow+1.7}; }
 function popCoin(x,y,h){ P.coins++; parts.push({pop:true,x:x-4,y:y-10,vx:0,vy:-175,t:.42,T0:.42,h:(h||0)%4,g:520}); SFX.coin(); }
 function hurt(dir){
@@ -385,6 +405,9 @@ function step(dt){
   // 깃발, 말풍선
   if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
   if(!room) for(const s of says) if(!s.done&&P.x>s.x){ s.done=true; say(s.t); }
+  // 말풍선은 한 번 뜨면 적어도 1.6초는 그대로 두고, 다음 말은 그 뒤에 한 번에 바꾼다
+  if(bubble&&tNow>=bubble.until) bubble=null;
+  if(bq.length&&(!bubble||tNow-bubble.t0>=1.6)){ const n=bq.shift(); bubble={t:n.t,t0:tNow,until:tNow+n.dur}; }
   // 뭉치
   if(bossC&&bossC.alive){ const b=bossC;
     if(b.x<b.tx) b.x=Math.min(b.tx,b.x+120*dt);
@@ -427,7 +450,7 @@ function step(dt){
   // 비밀 통로 방: 문 앞에 1초 서 있으면 들어간다. 안에서는 실패가 없고, 오른쪽 문으로 나온다
   if(nook&&!nook.used&&!room){
     if(!nook.hint&&P.x>nook.x-70){ nook.hint=true; say('벽에 작은 문이 있다 삐약. 앞에 1초만 가만히 서 있으면 열린다 삐약. 그냥 지나가도 된다 삐약.',5.5); }
-    if(still&&!P.charging&&P.x+P.w>nook.x+2&&P.x<nook.x+14){ nook.t+=dt; if(nook.t>=1) enterRoom(); } else nook.t=0; }
+    if(still&&!P.charging&&P.x+P.w>nook.x+2&&P.x<nook.x+14){ nook.t+=dt; if(nook.t>=1){ if(nook.kind==='wax') waxCard(); else enterRoom(); } } else nook.t=0; }
   else if(room){ const hands=!K.l&&!K.r&&!K.j&&!K.b; room.t+=dt;
     if(!room.done){
       if(room.kind==='sky'){ if(still&&hands&&P.y+P.h<=8*T+1) room.p+=dt/7; }
@@ -443,6 +466,11 @@ function camTarget(){ const lo=room?room.x0:0, hi=(room?room.x1:LW)-W; return hi
 function enterRoom(){ nook.used=true; room={kind:nook.kind,x0:RX*T,x1:(RX+30)*T,ret:nook.x+2,t:0,p:0,n:0,done:false};
   P.x=(RX+2)*T; P.y=GTOP-P.h; P.vx=P.vy=0; P.face=1; gusts=[]; cam=camTarget(); chickX=P.x; chickY=P.y-20; SFX.item();
   say({sky:'하늘 방이다 삐약. 계단 꼭대기에 올라가서 먼 하늘을 가만히 봐라 삐약.',still:'가만히 방이다 삐약. 손을 떼고 아무것도 하지 마라 삐약. 불이 하나씩 켜진다 삐약.',mochi:'찹쌀떡 방이다 삐약. 찹쌀떡 위로 뛰어올라 봐라 삐약.'}[room.kind],6); }
+function waxCard(){ nook.used=true; nook.t=0; const sh=rot?innerWidth:innerHeight, h=Math.max(150,Math.min(250,sh-132));
+  card(`<div class="eyebrow">말랑이 방 · 왁뿌볼</div><div id="wx" class="wx" style="height:${h}px"></div><div class="row wxrow"><p class="note" id="wxc"></p><button id="w1">나가기</button></div>`);
+  ov.firstChild.classList.add('wide'); let got=false;
+  WAX.open(ov.querySelector('#wx'),ov.querySelector('#wxc'),()=>{ got=true; const b=ov.querySelector('#w1'); b.textContent='색 방울 받고 나가기'; b.classList.add('go'); });
+  on('w1',()=>{ closeCard(); if(got){ for(let i=0;i<8;i++) popCoin(P.x+6+(i-3.5)*7,P.y-6,i); note('바삭하게 깨고 나니 손에 힘이 풀린다'); SFX.calm(); } else note('다시 길 위로'); }); }
 function leaveRoom(){ P.x=room.ret; P.y=GTOP-P.h; P.vx=P.vy=0; room=null; cam=camTarget(); chickX=P.x; chickY=P.y-20; SFX.item(); note('다시 길 위로'); }
 
 /* ---------- 그리기 (작은 화면에 찍고 정수 배로 키운다) ---------- */
@@ -547,16 +575,14 @@ function draw(){
   for(const p of parts){ const x=Math.round(p.x-cx), y=Math.round(p.y-cy);
     if(p.pop) bx.drawImage(A.DROP[p.h].c,x,y); else if(p.deb) bx.drawImage(A.BRICK.c,p.sx,p.sy,7,7,x,y,7,7);
     else { const s=p.t<p.T0*.4?Math.max(1,p.s-1):p.s; bx.fillStyle=p.col; bx.fillRect(x,y,s,s); } }
-  // 병아리 요원. 말풍선은 지나온 쪽 빈 하늘(상자 줄 사이)에 띄운다
-  { const talk=bubble&&tNow<bubble.until, px=Math.round(P.x-cx), side=talk?(px-14>=96?-1:1):-P.face;
-    const kx=P.x+6+side*20, ky=P.y-20+Math.sin(tNow*5)*3; chickX+=(kx-chickX)*.08; chickY+=(ky-chickY)*.08;
-    if(talk){ const fs=Math.round(8*k); ctx.font='700 '+fs+'px '+BODY; const room=side<0?px-14:W-px-30; const lines=wrapText(bubble.t,Math.max(70,Math.min(150,room-10))*k);
-      const bw=Math.ceil(Math.max(...lines.map(l=>ctx.measureText(l).width))/k)+10, bh=lines.length*11+6;
-      let bX=side<0?px-8-bw:px+22, bY=Math.max(23,7*T+14-cy-bh); bX=Math.max(4,Math.min(W-bw-4,bX));
-      box(bX,bY,bw,bh,'#fff8e8','#1f1b18');
-      if(chickY-cy>bY+bh+4){ const tx=Math.max(bX+4,Math.min(bX+bw-8,Math.round(chickX-cx)-2)); bx.fillStyle='#1f1b18'; bx.fillRect(tx,bY+bh,4,1); bx.fillRect(tx+1,bY+bh+1,2,1); bx.fillStyle='#fff8e8'; bx.fillRect(tx+1,bY+bh-1,2,2); }
-      lines.forEach((l,i)=>texts.push({t:l,x:bX+5,y:bY+11+i*11,s:8,c:'#1f1b18',w:'700',f:BODY})); }
-    spr(A.CHICK[Math.floor(tNow*8)%2],chickX-6-cx,chickY-6-cy,true,P.face<0); }
+  // 병아리 요원. 말은 화면 아래 가운데의 고정된 칸에 띄운다 (칸 크기와 자리는 변하지 않는다)
+  { const kx=P.x+6-P.face*20, ky=P.y-20+Math.sin(tNow*5)*3; chickX+=(kx-chickX)*.08; chickY+=(ky-chickY)*.08;
+    spr(A.CHICK[Math.floor(tNow*8)%2],chickX-6-cx,chickY-6-cy,true,P.face<0);
+    if(bubble){ const res=Math.ceil(156*dprU/k), bw=Math.max(140,Math.min(250,W-2*res)), bh=31, bX=Math.round((W-bw)/2), bY=H-bh-1;
+      if(bubble.k!==k||bubble.bw!==bw){ bubble.k=k; bubble.bw=bw; bubble.fs=8; ctx.font='700 '+Math.round(8*k)+'px '+BODY; bubble.lines=wrapText(bubble.t,(bw-24)*k);
+        if(bubble.lines.length>2){ bubble.fs=7; ctx.font='700 '+Math.round(7*k)+'px '+BODY; bubble.lines=wrapText(bubble.t,(bw-24)*k); } }
+      box(bX,bY,bw,bh,'#fff8e8','#1f1b18'); spr(A.CHICK[Math.floor(tNow*4)%2],bX+4,bY+Math.round(bh/2)-6,true);
+      const n=bubble.lines.length, lh=bubble.fs+2, y0=bY+Math.round((bh-n*lh)/2)+bubble.fs; bubble.lines.forEach((l,i)=>texts.push({t:l,x:bX+19,y:y0+i*lh,s:bubble.fs,c:'#1f1b18',w:'700',f:BODY})); } }
   // 비
   if(mood==='rain'||mood==='storm'){ bx.fillStyle='#e6eef3'; for(let i=0;i<34;i++){ const x=((i*41-Math.floor(tNow*30))%W+W)%W, y=(i*53+Math.floor(tNow*260))%H; bx.fillRect(x,y,1,3); } }
   // 위쪽 표시
@@ -629,7 +655,7 @@ function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music();
   draw(); requestAnimationFrame(frame); }
 reset(); startCard(); requestAnimationFrame(frame);
 document.addEventListener('visibilitychange',()=>{ last=performance.now(); if(document.hidden) BGM.pause(); });
-window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},
+window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},
   go(n){stageNo=n||0;bonus=true;mood='sun';reset();closeCard();running=true;}};
 })();
 </script>

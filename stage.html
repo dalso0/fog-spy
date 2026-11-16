@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="ko">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>회색 안개 작전</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gothic+A1:wght@500;700&display=swap">
 <style>
 html,body{margin:0}
+html,body,#stage,#stage *{touch-action:manipulation;-webkit-text-size-adjust:100%}
 [hidden]{display:none!important}
 /* 배치: 화면 전체가 픽셀 게임. 세로로 든 폰에서는 무대를 90도 돌려 가로로 눕혀서 하게 한다. 모집 포스터 색(주홍·크림·먹색·황토) 한 가지 모습. */
 :root{
@@ -282,6 +283,10 @@ hold(document.getElementById('bj'),'j'); hold(document.getElementById('bb'),'b')
   el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); el.addEventListener('lostpointercapture',end);
 })();
 document.addEventListener('contextmenu',e=>e.preventDefault());
+// 화면 배율 고정: 두 번 누르기 확대, 두 손가락 확대를 막는다 (아이폰 사파리는 viewport 설정만으로는 안 막힌다)
+['gesturestart','gesturechange','gestureend','dblclick'].forEach(n=>document.addEventListener(n,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{ if(e.touches.length>1) e.preventDefault(); },{passive:false});
+{ let lastEnd=0; document.addEventListener('touchend',e=>{ const now=performance.now(); if(now-lastEnd<350&&!e.target.closest('button')) e.preventDefault(); lastEnd=now; },{passive:false}); }
 document.getElementById('bs').onclick=()=>{ sound=!sound; document.getElementById('bs').textContent=sound?'♪':'×'; };
 document.getElementById('bh').onclick=()=>helpCard();
 

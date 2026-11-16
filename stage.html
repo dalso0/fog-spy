@@ -83,7 +83,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 (()=>{
 'use strict';
 const A=window.ART;
-const T=16, ROWS=14, GY=12, COLS=282, WORLD=COLS*T, WH=ROWS*T, GTOP=GY*T, R1=8, R2=4;
+const T=16, ROWS=14, GY=12, COLS=314, LC=282, LW=LC*T, RX=284, WORLD=COLS*T, WH=ROWS*T, GTOP=GY*T, R1=8, R2=4;
 const MAXV=104, ACC_G=540, ACC_A=400, FRIC=760, JUMP=-326, G_UP=700, G_REL=1800, G_FALL=1250, VY_MAX=380, GLIDE_VY=84, PADV=-420;
 const DISP='"Do Hyeon","Apple SD Gothic Neo","Malgun Gothic",sans-serif', BODY='"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
 const stage=document.getElementById('stage'), cv=document.getElementById('cv'), ctx=cv.getContext('2d'), ov=document.getElementById('ov');
@@ -123,10 +123,10 @@ const SFX={
 const grid=new Uint8Array(COLS*ROWS); let boxes={}, bumps={}, padT={};
 const at=(c,r)=>(c<0||c>=COLS)?2:(r<0||r>=ROWS)?0:grid[r*COLS+c];
 const set=(c,r,v)=>{ if(c>=0&&c<COLS&&r>=0&&r<ROWS) grid[r*COLS+c]=v; };
-let coins,pieces,mungs,swarms,curtains,walls,flags,says,items,door,decor;
+let coins,pieces,mungs,swarms,curtains,walls,flags,says,items,door,decor,nook,room,bossC;
 const LEVELS=[
 // 월: 등굣길
-({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door})=>{
+(L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
   // 1구간: 익히기
   ground(0,48); say(2,'오른쪽으로 가라 삐약. 점프는 길게 누를수록 높이 뛴다 삐약.');
   coinRow(8,11,10); say(11,'머리 위 상자는 아래에서 머리로 쳐라 삐약.');
@@ -136,7 +136,7 @@ const LEVELS=[
   hard(44,45,11); hard(44,45,10); hard(44,45,9);
   coin(47,6); coin(48,5); coin(49,5); coin(50,5); coin(51,6);
   // 2구간: 발판과 벽돌
-  ground(52,82); hard(55,56,R1); crate(57,R1,'coat'); hard(58,59,R1); hard(61,63,R2); piece(62,3);
+  ground(52,82); nook(53,'sky'); hard(55,56,R1); crate(57,R1,'coat'); hard(58,59,R1); hard(61,63,R2); piece(62,3);
   say(63,'벽돌 위의 뭉치는 아래에서 벽돌을 쳐서 날려라 삐약.'); brick(66,70,R1); mung(66,71,R1);
   mung(73,81); coin(83,7); coin(84,6); coin(85,7);
   // 3구간: 숨 바람
@@ -161,7 +161,7 @@ const LEVELS=[
   door(271);
 },
 // 화: 운동장
-({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door})=>{
+(L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
   ground(0,40); say(2,'오늘은 운동장을 가로지른다 삐약. 띵띵이가 많으니 서두르지 마라 삐약.');
   coinRow(6,9,10); crate(12,R1,'coin'); brick(13,14,R1); mung(16,24);
   pad(27); hard(30,33,6); coinRow(30,31,4); piece(32,4); mung(34,40);
@@ -169,7 +169,7 @@ const LEVELS=[
   ground(44,80); flag(45); swarm(52); crate(58,R1,'coat'); brick(59,60,R1); mung(62,70); mung(66,74);
   stairs(76,4); coin(81,5); coin(82,4); coin(83,5);
   ground(85,125); flag(86); curtain(92); brick(96,100,R1); mung(96,101,R1); crate(98,R2,'coins');
-  mung(104,112); wall(116); coinRow(120,123,10);
+  mung(104,112); wall(116); coinRow(119,122,10); nook(124,'still');
   hard(128,129,10); coinRow(128,129,8);
   ground(132,175); flag(133); swarm(140); crate(146,R1,'shield'); mung(150,158); curtain(162); mung(165,173);
   coin(176,7); coin(177,6); coin(178,7);
@@ -178,33 +178,53 @@ const LEVELS=[
   ground(219,281); flag(220); mung(222,230); swarm(236); mung(242,250); crate(246,R1,'coin'); door(262);
 },
 // 수: 뒷산 길
-({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door})=>{
+(L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
   ground(0,30); say(2,'뒷산 길은 낭떠러지가 넓다 삐약. 높은 데서 뛰어 코트를 펴라 삐약.');
   coinRow(5,8,10); crate(11,R1,'coat'); mung(14,22); stairs(27,4);
   coin(32,5); coin(34,6); coin(36,7);
   ground(38,75); flag(39); curtain(46); mung(50,58); brick(60,63,R1); crate(61,R2,'coins'); mung(60,64,R1); swarm(68);
   coin(76,7); coin(77,6); coin(78,6); coin(79,7);
-  ground(80,118); flag(81); pad(84); hard(87,90,6); piece(89,4); wall(96); mung(100,108); mung(104,112); crate(110,R1,'shield');
+  ground(80,118); flag(81); pad(84); hard(87,90,6); piece(89,4); wall(96); mung(100,108); mung(104,112); crate(110,R1,'shield'); nook(116,'mochi');
   hard(121,123,10); coinRow(121,123,8); hard(126,128,9); coinRow(126,128,7);
   ground(131,170); flag(132); curtain(138); swarm(146); brick(152,154,R1); piece(153,5); mung(156,164); stairs(166,4);
   coin(172,5); coin(174,6); coin(176,7);
   ground(178,220); flag(179); mung(182,190); crate(186,R1,'coat'); pad(194); hard(197,199,5); piece(198,3); mung(202,210); mung(206,214);
   coin(221,7); coin(222,6); coin(223,7);
   ground(224,281); flag(225); swarm(231); mung(238,246); brick(250,250,R1); crate(251,R1,'coins'); brick(252,252,R1); door(264);
+},
+// 목: 주간 보스 「회색 장막」. 세 겹 장막을 숨 바람으로 한 겹씩 걷는다. 겹 사이에 띵띵이(가만히)와 걱정 벽돌(이름 붙이기)이 있다
+(L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
+  ground(0,130); say(2,'주간 보스 「회색 장막」이다 삐약. 세 겹이라 숨을 끝까지 모아 세 번 불어야 한다 삐약.');
+  coinRow(6,9,10); crate(12,R1,'shield'); brick(13,14,R1); crate(15,R1,'coat'); mung(19,27); piece(23,6);
+  flag(31); say(33,'장막이 뭉치를 내보낸다 삐약. 너무 붙지 말고 떨어져서 숨을 모아라 삐약.'); boss(46);
+  flag(49); swarm(57); piece(60,7); flag(71); wall(79); piece(84,7);
+  coinRow(93,99,10); coinRow(94,98,8); door(104);
+},
+// 금: 쉬어 가는 판. 빌런은 조금, 색 방울은 많이
+(L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
+  ground(0,61); say(2,'오늘은 쉬어 가는 판이다 삐약. 급할 것 없다. 색 방울이나 넉넉히 모아라 삐약.');
+  coinRow(6,12,10); crate(15,R1,'coins'); crate(17,R1,'coat'); coinRow(20,26,10); pad(30); hard(33,37,6); coinRow(33,37,4); piece(35,3);
+  mung(42,52); coinRow(44,50,10); stairs(56,4); coin(62,5); coin(63,5); coin(64,6); coin(65,7);
+  ground(66,120); flag(68); nook(74,'sky'); crate(80,R1,'coins'); brick(81,82,R1); crate(83,R1,'shield'); coinRow(88,94,10); curtain(98);
+  pad(104); hard(107,111,5); coinRow(107,111,3); piece(109,3); mung(113,119);
+  hard(123,125,10); coinRow(123,125,8); hard(128,130,9); coinRow(128,130,7); hard(133,135,10); coinRow(133,135,8);
+  ground(138,192); flag(139); coinRow(142,150,10); brick(153,157,R1); crate(155,R2,'coins'); mung(160,170);
+  pad(174); hard(177,180,6); piece(178,4); coinRow(177,180,4); stairs(185,4); coin(193,6); coin(194,5); coin(195,6);
+  ground(196,281); flag(198); coinRow(202,212,10); crate(216,R1,'coat'); mung(220,230); coinRow(234,240,10); door(248);
 } ];
 // 1주차 하루치 정보. report = 어제의 지령(보고), next = 판을 깨면 알려 주는 내일의 지령
 const DAYS=[
   {d:'11.23 월',name:'등굣길',letter:'하',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.'],next:['낯선 계단','평소와 다른 계단이나 복도로 한 번 걸어 보기.'],worry:'내일 발표, 망하면 어떡하지'},
   {d:'11.24 화',name:'운동장',letter:'늘',report:['낯선 계단','평소와 다른 계단이나 복도로 한 번 걸어 보기.'],next:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기. 아무도 눈치채지 못하게.'],worry:'체육 시간에 나만 못하면 어떡하지'},
   {d:'11.25 수',name:'뒷산 길',letter:'빛',report:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기.'],next:['조용한 인사','친구 한 명에게 "좋은 아침" 한마디. 평범하게, 자연스럽게.'],worry:'애들이 내 얘기를 하는 것 같아'},
-  {d:'11.26 목',name:'주간 보스 「회색 장막」',soon:true},
-  {d:'11.27 금',name:'쉬어 가는 판',soon:true} ];
+  {d:'11.26 목 · 보스',name:'회색 장막',boss:true,done:'1주차 암호 「하늘빛」 완성',report:['조용한 인사','친구 한 명에게 "좋은 아침" 한마디.'],next:['발바닥 수사','신발 끈을 다시 묶으며 발바닥이 땅에 닿는 느낌 확인하기.'],worry:'나만 뒤처지는 것 같아'},
+  {d:'11.27 금',name:'쉬어 가는 판',rest:true,done:'쉬어 가는 판 완료',report:['발바닥 수사','신발 끈을 다시 묶으며 발바닥이 땅에 닿는 느낌 확인하기.'],next:['소리 세기','쉬는 시간 1분, 눈을 감고 들리는 소리를 세어 보기.'],nl:'월요일의 지령',worry:''} ];
 let stageNo=0;
 function loadSave(){ try{ return JSON.parse(localStorage.getItem('fogspy2')||'{}')||{}; }catch(e){ return {}; } }
 function putSave(v){ try{ localStorage.setItem('fogspy2',JSON.stringify(v)); }catch(e){} }
 function build(){
   grid.fill(0); boxes={}; bumps={}; padT={};
-  coins=[];pieces=[];mungs=[];swarms=[];curtains=[];walls=[];flags=[];says=[];items=[];decor=[];
+  coins=[];pieces=[];mungs=[];swarms=[];curtains=[];walls=[];flags=[];says=[];items=[];decor=[]; nook=null; room=null; bossC=null;
   const ground=(a,b)=>{ for(let c=a;c<=b;c++) for(let r=GY;r<ROWS;r++) set(c,r,1); };
   const hard=(a,b,r)=>{ for(let c=a;c<=b;c++) set(c,r,2); };
   const brick=(a,b,r)=>{ for(let c=a;c<=b;c++) set(c,r,6); };
@@ -220,8 +240,16 @@ function build(){
   const flag=(c)=>flags.push({x:c*T,on:false});
   const say=(c,t)=>says.push({x:c*T,t,done:false});
   const stairs=(c,n)=>{ for(let i=0;i<n;i++) for(let h=0;h<=i;h++) set(c+i,11-h,2); };
-  LEVELS[stageNo]({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door:c=>{ door={x:c*T,y:GTOP-40,w:32,h:40}; }});
-  for(let c=6;c<COLS-4;c+=23){ if(at(c,GY)===1&&at(c,GY-1)===0&&Math.abs(c*T-door.x)>40) decor.push({x:c*T-7,kind:'tree'}); const b=c+11; if(at(b,GY)===1&&at(b,GY-1)===0&&Math.abs(b*T-door.x)>40) decor.push({x:b*T-7,kind:'bush'}); }
+  LEVELS[stageNo]({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door:c=>{ door={x:c*T,y:GTOP-40,w:32,h:40}; },
+    nook:(c,kind)=>{ nook={x:c*T,kind,t:0,used:false,hint:false}; },
+    boss:(c)=>{ bossC={x:c*T,w:38,alive:true,hint:0,boss:true,hp:3,tx:c*T,cd:2.2}; curtains.push(bossC); }});
+  for(let r=0;r<ROWS;r++) set(LC,r,2);
+  // 비밀 통로 방: 판 오른쪽 바깥의 작은 방. 문으로 들어가면 여기로 옮겨 온다
+  if(nook){ ground(RX,RX+29); for(let r=0;r<GY;r++){ set(RX,r,2); set(RX+29,r,2); }
+    if(nook.kind==='sky'){ stairs(RX+8,4); hard(RX+12,RX+16,8); coinRow(RX+19,RX+22,10); }
+    else if(nook.kind==='mochi'){ pad(RX+13); pad(RX+14); pad(RX+15); }
+    else coinRow(RX+20,RX+23,10); }
+  for(let c=6;c<LC-4;c+=23){ if(at(c,GY)===1&&at(c,GY-1)===0&&Math.abs(c*T-door.x)>40) decor.push({x:c*T-7,kind:'tree'}); const b=c+11; if(at(b,GY)===1&&at(b,GY-1)===0&&Math.abs(b*T-door.x)>40) decor.push({x:b*T-7,kind:'bush'}); }
 }
 
 /* ---------- 상태 ---------- */
@@ -273,7 +301,7 @@ function hurt(dir){
   if(P.grey>0){ respawn(); return; }
   P.grey=4; P.inv=1.4; P.vx=-dir*90; P.vy=-150; P.jumpHeld=false; P.glide=false; shake=.2; freeze=.08; note('안개에 물들었다. 잠깐 느려진다'); SFX.hurt();
 }
-function respawn(){ deaths++; P.x=cp.x; P.y=cp.y; P.vx=P.vy=0; P.grey=0; P.coat=false; P.inv=1.6; P.charge=0; P.charging=false; P.glide=false; cam=Math.max(0,Math.min(WORLD-W,P.x-W*.36)); note('깃발에서 다시'); SFX.die(); }
+function respawn(){ deaths++; P.x=cp.x; P.y=cp.y; P.vx=P.vy=0; P.grey=0; P.coat=false; P.inv=1.6; P.charge=0; P.charging=false; P.glide=false; cam=Math.max(0,Math.min(LW-W,P.x-W*.36)); note('깃발에서 다시'); SFX.die(); }
 function bumpTop(c,r){ for(const m of mungs) if(m.alive&&m.sq<=0&&Math.abs(m.y+m.h-r*T)<3&&m.x+m.w>c*T&&m.x<(c+1)*T) popMung(m,true); }
 function headHit(c,r){ const v=at(c,r), key=c+','+r;
   if(v===3){ const b=boxes[key]; bumps[key]=tNow; bumpTop(c,r);
@@ -320,7 +348,7 @@ function step(dt){
   const wasG=P.ground, vy0=P.vy; P.ground=false; P.y+=P.vy*dt;
   { const c0=Math.floor(P.x/T), c1=Math.floor((P.x+P.w-.01)/T);
     if(P.vy>=0){ const r=Math.floor((P.y+P.h)/T); let land=false, padC=-1; for(let c=c0;c<=c1;c++){ const v=at(c,r); if(solidT(v)&&P.y+P.h-P.vy*dt<=r*T+1.5){ land=true; if(v===5) padC=c; } }
-      if(land){ P.y=r*T-P.h; if(padC>=0){ P.vy=PADV; P.boost=true; P.jumpHeld=false; padT[padC]=tNow; SFX.pad(); puff(P.x+6,P.y+P.h,6,'#f7c9a8',40); }
+      if(land){ P.y=r*T-P.h; if(padC>=0){ P.vy=PADV; P.boost=true; P.jumpHeld=false; padT[padC]=tNow; SFX.pad(); puff(P.x+6,P.y+P.h,6,'#f7c9a8',40); if(room&&room.kind==='mochi'&&!room.done){ room.n++; popCoin(P.x+6,P.y-4,room.n); } }
         else { if(!wasG&&vy0>150) dust(P.x+6,P.y+P.h,0); P.vy=0; P.ground=true; } } }
     else { const r=Math.floor(P.y/T); const sol=[]; for(let c=c0;c<=c1;c++) if(solidT(at(c,r))) sol.push(c);
       if(sol.length){ let nudged=false;
@@ -330,7 +358,7 @@ function step(dt){
   if(P.ground){ P.coy=.1; P.glide=false; P.airT=0; if(Math.abs(P.vx)>8) P.runT+=dt*Math.abs(P.vx)/MAXV; } else P.airT+=dt;
   if(P.y>WH+40){ respawn(); return; }
   P.grey=Math.max(0,P.grey-dt); P.inv=Math.max(0,P.inv-dt);
-  if(P.x>maxX) maxX=P.x;
+  if(P.x>maxX&&!room) maxX=P.x;
   const still=P.ground&&Math.abs(P.vx)<8;
   // 모으기
   for(const c of coins) if(!c.got&&Math.abs(c.x-P.x-6)<10&&Math.abs(c.y-P.y-11)<14){ c.got=true; P.coins++; SFX.coin(); puff(c.x,c.y,4,'#ffffff',30,1); }
@@ -343,14 +371,19 @@ function step(dt){
       if(it.kind==='coat'){ P.coat=true; P.grey=0; freeze=.12; note('주홍 코트를 입었다'); puff(P.x+6,P.y+11,18,'#d9512c',80); say('주홍 코트다 삐약. 숨 버튼을 톡 누르면 바람이 나간다 삐약.'); }
       else { P.shield=1; note('색 방패를 얻었다'); } } }
   // 깃발, 말풍선
-  for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
-  for(const s of says) if(!s.done&&P.x>s.x){ s.done=true; say(s.t); }
+  if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
+  if(!room) for(const s of says) if(!s.done&&P.x>s.x){ s.done=true; say(s.t); }
   // 뭉치
+  if(bossC&&bossC.alive){ const b=bossC;
+    if(b.x<b.tx) b.x=Math.min(b.tx,b.x+120*dt);
+    else if(b.x>P.x&&b.x-P.x<236&&!room){ b.cd-=dt;
+      if(b.cd<=0&&mungs.filter(m=>m.tmp&&m.alive).length<3){ b.cd=[0,1.7,2.1,2.7][b.hp]; let a=b.x-236; for(const w of walls) if(w.alive&&w.x<b.x) a=Math.max(a,w.x+w.w);
+        mungs.push({x:b.x-17,y:GTOP-14,w:16,h:14,a,b:b.x,vx:-[0,62,54,46][b.hp],vy:0,alive:true,sq:0,tmp:true}); puff(b.x-6,GTOP-8,6,'#c9cfd5',40); } } }
   for(const m of mungs){ if(!m.alive) continue;
     if(m.sq>0){ m.sq-=dt; if(m.sq<=0){ m.alive=false; clouds.push({x:m.x+8,y:m.y+6,a:0}); } continue; }
     const mc=Math.floor((m.x+8)/T), mr=Math.floor((m.y+m.h+1)/T);
     if(!solidT(at(mc,mr))){ m.vy+=620*dt; m.y+=m.vy*dt; if(m.y>WH+30) m.alive=false; }
-    else { m.vy=0; m.x+=m.vx*dt; if(m.x<m.a){m.x=m.a;m.vx=Math.abs(m.vx);} if(m.x+m.w>m.b){m.x=m.b-m.w;m.vx=-Math.abs(m.vx);} }
+    else { m.vy=0; m.x+=m.vx*dt; if(m.x<m.a){ if(m.tmp){ m.alive=false; clouds.push({x:m.x+8,y:m.y+6,a:0}); } m.x=m.a;m.vx=Math.abs(m.vx);} if(m.x+m.w>m.b){m.x=m.b-m.w;m.vx=-Math.abs(m.vx);} }
     if(hit(P,m)){ if(vy0>40&&P.y+P.h-m.y<10){ popMung(m); P.vy=K.j?-300:-190; P.jumpHeld=K.j; P.boost=false; freeze=.05; } else hurt(Math.sign(m.x+8-(P.x+6))||1); } }
   // 띵띵이
   for(const s of swarms){ if(s.state==='gone') continue;
@@ -367,16 +400,38 @@ function step(dt){
   for(const g of gusts){ const d=220*dt; g.x+=g.dir*d; g.left-=d; if(Math.random()<.5){ const t=.3; parts.push({x:g.x,y:g.y+(Math.random()-.5)*18,vx:g.dir*30,vy:(Math.random()-.5)*20,t,T0:t,col:'#ffffff',s:1+Math.round(g.pow),g:0}); }
     const gb={x:g.x-7,y:g.y-14,w:14,h:28};
     for(const m of mungs) if(m.alive&&m.sq<=0&&hit(gb,m)) popMung(m,true);
-    for(const c of curtains) if(c.alive&&g.x+7>c.x&&g.x-7<c.x+c.w){ if(g.pow>=.8){ c.alive=false; for(let i=0;i<34;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',80,2); for(let i=0;i<2;i++) popCoin(c.x+6+i*9,GTOP-40,i+2); note('안개 장막이 걷혔다'); SFX.calm(); }
-        else { g.left=0; if(!g.puff) say('조금 약하다 삐약. 고리가 다 찰 때까지 들이쉬어라 삐약.'); else if(tNow>c.hint){ c.hint=tNow+6; say('장막은 짧은 바람으로 안 걷힌다 삐약. 숨 버튼을 꾹 눌러 모아라 삐약.'); } } } }
+    for(const c of curtains) if(c.alive&&g.x+7>c.x&&g.x-7<c.x+c.w){
+      if(c.boss&&c.x<c.tx){ g.left=0; }
+      else if(g.pow>=.8&&c.boss&&c.hp>1){ g.left=0; c.hp--; c.w=14+c.hp*8; c.tx=c.x+22*T; c.cd=2.4; shake=.25; freeze=.06; for(let i=0;i<26;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',90,2);
+        for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); note(c.hp===2?'한 겹 걷혔다. 장막이 물러난다':'이제 한 겹 남았다'); SFX.calm(); }
+      else if(g.pow>=.8){ c.alive=false; for(let i=0;i<34;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',80,2); for(let i=0;i<(c.boss?6:2);i++) popCoin(c.x+6+i*9,GTOP-40,i+2);
+        if(c.boss){ for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); shake=.3; say('「회색 장막」이 걷혔다 삐약. 본부 문이 보인다 삐약.'); } note(c.boss?'「회색 장막」이 걷혔다':'안개 장막이 걷혔다'); SFX.calm(); }
+      else { g.left=0; if(!g.puff) say('조금 약하다 삐약. 고리가 다 찰 때까지 들이쉬어라 삐약.'); else if(tNow>c.hint){ c.hint=tNow+6; say('장막은 짧은 바람으로 안 걷힌다 삐약. 숨 버튼을 꾹 눌러 모아라 삐약.'); } } } }
   gusts=gusts.filter(g=>g.left>0);
   for(const p of parts){ p.t-=dt; p.vy+=(p.g||0)*dt; p.x+=(p.vx||0)*dt; p.y+=p.vy*dt; if(p.pop&&p.t<=0) puff(p.x+4,p.y+5,5,'#fff3c4',35,1); }
   parts=parts.filter(p=>p.t>0);
   for(const c of clouds){ c.y-=14*dt; c.x+=5*dt; c.a+=dt; } clouds=clouds.filter(c=>c.y>-30);
   shake=Math.max(0,shake-dt);
-  if(P.ground&&P.x+P.w>door.x+10&&P.x<door.x+door.w-6) finish();
-  const tx=Math.max(0,Math.min(WORLD-W,P.x-W*.36+P.face*12)); cam+=(tx-cam)*Math.min(1,dt*6);
+  // 비밀 통로 방: 문 앞에 1초 서 있으면 들어간다. 안에서는 실패가 없고, 오른쪽 문으로 나온다
+  if(nook&&!nook.used&&!room){
+    if(!nook.hint&&P.x>nook.x-70){ nook.hint=true; say('벽에 작은 문이 있다 삐약. 앞에 1초만 가만히 서 있으면 열린다 삐약. 그냥 지나가도 된다 삐약.',5.5); }
+    if(still&&!P.charging&&P.x+P.w>nook.x+2&&P.x<nook.x+14){ nook.t+=dt; if(nook.t>=1) enterRoom(); } else nook.t=0; }
+  else if(room){ const hands=!K.l&&!K.r&&!K.j&&!K.b; room.t+=dt;
+    if(!room.done){
+      if(room.kind==='sky'){ if(still&&hands&&P.y+P.h<=8*T+1) room.p+=dt/7; }
+      else if(room.kind==='still'){ if(still&&hands) room.p+=dt/8; }
+      else room.p=room.n/8;
+      if(room.p>=1){ room.p=1; room.done=true; for(let i=0;i<5;i++) popCoin(P.x+6+(i-2)*9,P.y-6,i); SFX.calm();
+        note({sky:'먼 데를 보니 눈과 머리가 쉰다',still:'아무것도 안 해도 불은 켜진다',mochi:'말랑한 걸 만지면 힘이 풀린다'}[room.kind]); say('잘했다 삐약. 오른쪽 문으로 나가면 된다 삐약.'); } }
+    if(P.ground&&P.x+P.w>(RX+26)*T+4&&P.x<(RX+27)*T-2) leaveRoom(); }
+  if(P.ground&&!room&&P.x+P.w>door.x+10&&P.x<door.x+door.w-6) finish();
+  cam+=(camTarget()-cam)*Math.min(1,dt*6);
 }
+function camTarget(){ const lo=room?room.x0:0, hi=(room?room.x1:LW)-W; return hi<lo?(lo+hi)/2:Math.max(lo,Math.min(hi,P.x-W*.36+P.face*12)); }
+function enterRoom(){ nook.used=true; room={kind:nook.kind,x0:RX*T,x1:(RX+30)*T,ret:nook.x+2,t:0,p:0,n:0,done:false};
+  P.x=(RX+2)*T; P.y=GTOP-P.h; P.vx=P.vy=0; P.face=1; gusts=[]; cam=camTarget(); chickX=P.x; chickY=P.y-20; SFX.item();
+  say({sky:'하늘 방이다 삐약. 계단 꼭대기에 올라가서 먼 하늘을 가만히 봐라 삐약.',still:'가만히 방이다 삐약. 손을 떼고 아무것도 하지 마라 삐약. 불이 하나씩 켜진다 삐약.',mochi:'찹쌀떡 방이다 삐약. 찹쌀떡 위로 뛰어올라 봐라 삐약.'}[room.kind],6); }
+function leaveRoom(){ P.x=room.ret; P.y=GTOP-P.h; P.vx=P.vy=0; room=null; cam=camTarget(); chickX=P.x; chickY=P.y-20; SFX.item(); note('다시 길 위로'); }
 
 /* ---------- 그리기 (작은 화면에 찍고 정수 배로 키운다) ---------- */
 const hex=c=>{ const n=parseInt(c.slice(1),16); return [(n>>16)&255,(n>>8)&255,n&255]; };
@@ -390,10 +445,24 @@ function spr(s,x,y,col,fl){ bx.drawImage(col?(fl?s.cf:s.c):(fl?s.gf:s.g),Math.ro
 function box(x,y,w,h,fill,line){ bx.fillStyle=line; bx.fillRect(x+1,y,w-2,h); bx.fillRect(x,y+1,w,h-2); bx.fillStyle=fill; bx.fillRect(x+1,y+1,w-2,h-2); }
 function ring(cx,cy,frac,on,off){ for(let i=0;i<12;i++){ const a=-Math.PI/2+i/12*6.283; bx.fillStyle=i<Math.round(frac*12)?on:off; bx.fillRect(Math.round(cx+Math.cos(a)*7)-1,Math.round(cy+Math.sin(a)*7)-1,2,2); } }
 function wrapText(t,maxW){ const out=[]; let line=''; for(const w of t.split(' ')){ const n=line?line+' '+w:w; if(ctx.measureText(n).width>maxW&&line){ out.push(line); line=w; } else line=n; } if(line) out.push(line); return out; }
+function nookDoor(x,hz,open,t){ bx.fillStyle='#1f1b18'; bx.fillRect(x+2,hz-24,12,24); bx.fillRect(x,hz-21,16,21); bx.fillRect(x+1,hz-23,14,3);
+  bx.fillStyle=open?'#3b2f27':'#c9993f'; bx.fillRect(x+3,hz-22,10,22); bx.fillRect(x+2,hz-20,12,20);
+  if(open){ bx.fillStyle='#57463a'; bx.fillRect(x+3,hz-4,10,4); bx.fillStyle=(Math.floor(tNow*3)%2||t>0)?'#f3c744':'#d9512c'; bx.fillRect(x+7,hz-28,2,2); bx.fillRect(x+6,hz-27,4,1); }
+  else { bx.fillStyle='#1f1b18'; bx.fillRect(x+7,hz-20,1,20); bx.fillRect(x+10,hz-11,2,2); } }
+function roomBg(hz){ const kd=room.kind;
+  if(kd==='sky'){ const sk=SKY.sun, bands=[0,.38,.62,.82,1]; for(let i=0;i<4;i++){ bx.fillStyle=sk[i]; const y0=Math.round(hz*bands[i]), y1=Math.round(hz*bands[i+1]); bx.fillRect(0,y0,W,y1-y0); }
+    const sx=W-44, sy=22; bx.fillStyle='#f3c744'; bx.fillRect(sx-5,sy-7,10,14); bx.fillRect(sx-7,sy-5,14,10); bx.fillStyle='#fff3c4'; bx.fillRect(sx-4,sy-4,4,3);
+    const rays=Math.round(room.p*8); bx.fillStyle='#f3c744'; for(let i=0;i<rays;i++){ const a=i/8*6.283+tNow*.3; bx.fillRect(Math.round(sx+Math.cos(a)*13)-1,Math.round(sy+Math.sin(a)*13)-1,2,2); bx.fillRect(Math.round(sx+Math.cos(a)*17),Math.round(sy+Math.sin(a)*17),1,1); }
+    for(let i=0;i<6;i++){ const span=W+90, x=((i*83+tNow*(5+i%3*3))%span+span)%span-60, y=Math.round(hz*(.1+((i*37)%55)/100)); bx.drawImage(A.CLOUD,Math.round(x),y); }
+    bx.fillStyle='#9ec7a4'; for(let x=0;x<W;x+=2){ const h=Math.round(14+Math.sin(x*.03+1)*6+Math.sin(x*.07)*3); bx.fillRect(x,hz-h,2,h); } }
+  else if(kd==='still'){ bx.fillStyle=room.done?'#f3e2c0':'#20242f'; bx.fillRect(0,0,W,H);
+    const n=Math.round(room.p*14); for(let i=0;i<n;i++){ const x=(i*71+23)%(W-20)+10, y=(i*47+17)%(hz-40)+12+Math.round(Math.sin(tNow*1.5+i)*2); bx.fillStyle=room.done?'#c9993f':'#f3c744'; bx.fillRect(x,y,2,2); if(Math.floor(tNow*2+i)%3){ bx.fillStyle=room.done?'#e2c999':'#8a7a3a'; bx.fillRect(x-1,y,1,2); bx.fillRect(x+2,y,1,2); bx.fillRect(x,y-1,2,1); bx.fillRect(x,y+2,2,1); } } }
+  else { bx.fillStyle='#f3e2c0'; bx.fillRect(0,0,W,H); bx.fillStyle='#e2c999'; bx.fillRect(0,hz-44,W,44); bx.fillStyle='#c9993f'; bx.fillRect(0,hz-45,W,1); for(let x=-((Math.floor(cam))%32);x<W;x+=32) bx.fillRect(x,hz-44,1,44); } }
 function draw(){
   texts.length=0;
-  const edge=maxX+150, prog=Math.min(1,maxX/door.x), cx=Math.floor(cam)+(shake>0?Math.round((Math.random()-.5)*4):0), cy=camY;
+  const edge=room?1e9:maxX+150, prog=Math.min(1,maxX/door.x), cx=Math.floor(cam)+(shake>0?Math.round((Math.random()-.5)*4):0), cy=camY;
   const hz=GTOP-cy; // 화면에서 땅 높이
+  if(room) roomBg(hz); else {
   // 하늘
   const sk=SKY[mood], bands=[0,.38,.62,.82,1];
   for(let i=0;i<4;i++){ bx.fillStyle=mix(GSKY[i],sk[i],prog); const y0=Math.round(hz*bands[i]), y1=Math.round(hz*bands[i+1]); bx.fillRect(0,y0,W,y1-y0); }
@@ -410,14 +479,18 @@ function draw(){
   bx.fillStyle='#ffffff'; for(const c of clouds){ const x=Math.round(c.x-cx), y=Math.round(c.y-cy); bx.fillRect(x-6,y,12,4); bx.fillRect(x-3,y-3,7,3); bx.fillRect(x-8,y+1,2,2); bx.fillRect(x+6,y+1,2,2); }
   // 아직 걷히지 않은 앞쪽 안개 (배경만 덮고, 발판과 캐릭터는 또렷하게 둔다)
   { const fx=Math.round(edge-24-cx); if(fx<W){ if(!fogPat) fogPat=FOGP.map(c=>bx.createPattern(c,'repeat')); const o=((cx%4)+4)%4; bx.save(); bx.translate(-o,0); bx.fillStyle=fogPat[0]; bx.fillRect(fx+o,0,40,H); bx.fillStyle=fogPat[1]; bx.fillRect(fx+40+o,0,W-fx,H); bx.restore(); } }
+  }
   // 타일
   const c0=Math.max(0,Math.floor(cx/T)), c1=Math.min(COLS-1,Math.floor((cx+W)/T));
-  for(let c=c0;c<=c1;c++){ const col=c*T<edge; for(let r=0;r<ROWS;r++){ const v=grid[r*COLS+c]; if(!v) continue; const sx=c*T-cx; let sy=r*T-cy, s;
+  for(let c=c0;c<=c1;c++){ const col=c*T<edge&&!(room&&room.kind==='still'&&!room.done); for(let r=0;r<ROWS;r++){ const v=grid[r*COLS+c]; if(!v) continue; const sx=c*T-cx; let sy=r*T-cy, s;
       if(v===1||v===5){ const up=at(c,r-1); s=(up===1||up===5)?A.DIRT:A.GROUND; }
       else { const key=c+','+r, b=bumps[key]; if(b!==undefined){ const e=(tNow-b)/.16; if(e<1) sy-=Math.round(Math.sin(e*Math.PI)*5); else delete bumps[key]; }
         s=v===2?A.HARD:v===3?A.CRATE[[0,0,0,0,1,2,1,0][Math.floor(tNow*9+c)%8]]:v===4?A.USED:A.BRICK; }
       bx.drawImage(col?s.c:s.g,sx,sy); } }
-  for(let c=c0;c<=c1;c++) if(grid[GY*COLS+c]===5){ const sq=padT[c]!==undefined&&tNow-padT[c]<.16; spr(A.PAD[sq?1:0],c*T-cx,GTOP-8-cy,true); }
+  for(let c=c0;c<=c1;c++) if(grid[GY*COLS+c]===5&&c<LC){ const sq=padT[c]!==undefined&&tNow-padT[c]<.16; spr(A.PAD[sq?1:0],c*T-cx,GTOP-8-cy,true); }
+  // 비밀 통로 문
+  if(nook&&!room){ const x=nook.x-cx; if(x>-20&&x<W) nookDoor(x,hz,!nook.used,nook.t); }
+  if(room) nookDoor((RX+26)*T-cx,hz,true,0);
   // 깃발
   for(const f of flags){ const x=f.x-cx, y=hz; if(x<-20||x>W) continue; bx.fillStyle='#1f1b18'; bx.fillRect(x+3,y-34,2,34); bx.fillRect(x+2,y-36,4,3);
     const wv=Math.floor(tNow*6)%2; for(let i=0;i<9;i++){ const w=i<5?3+i*2:19-i*2; bx.fillStyle='#1f1b18'; bx.fillRect(x+5,y-33+i,w+1,1); bx.fillStyle=f.on?'#d9512c':'#9aa2ab'; bx.fillRect(x+5,y-33+i,w-(wv&&i%2?1:0),1); } }
@@ -433,7 +506,11 @@ function draw(){
   // 안개 장막
   for(const c of curtains) if(c.alive){ const x=c.x-cx; if(x<-30||x>W+10) continue; const sc=Math.floor(tNow*14);
     for(let y=0;y<hz;y++){ const wy=y+cy, off=Math.round(Math.sin(wy*.09+tNow*2)*2); bx.fillStyle=((wy+sc)%14<4)?'#c9cfd5':((wy+sc)%14<6?'#858d96':'#9aa2ab'); bx.fillRect(x+off,y,c.w,1);
-      if((wy&1)===0){ bx.fillStyle='#c9cfd5'; bx.fillRect(x+off-2,y,2,1); bx.fillRect(x+off+c.w,y,2,1); } } }
+      if((wy&1)===0){ bx.fillStyle='#c9cfd5'; bx.fillRect(x+off-2,y,2,1); bx.fillRect(x+off+c.w,y,2,1); } }
+    if(c.boss){ const m=Math.round(x+c.w/2), ey=hz-78+Math.round(Math.sin(tNow*2)*2), look=P.x<c.x?-1:1;
+      for(const d of [-7,3]){ bx.fillStyle='#1f1b18'; bx.fillRect(m+d,ey,5,7); bx.fillRect(m+d+(d<0?0:-1),ey-3,6,2); bx.fillStyle='#fff8e8'; bx.fillRect(m+d+1+look,ey+2,2,3); }
+      bx.fillStyle='#1f1b18'; bx.fillRect(m-4,ey+13,9,2); bx.fillRect(m-6,ey+15,2,2); bx.fillRect(m+5,ey+15,2,2);
+      for(let i=0;i<3;i++){ bx.fillStyle='#1f1b18'; bx.fillRect(m-11+i*8,hz-104,7,7); bx.fillStyle=i<c.hp?'#5c6269':'#fff8e8'; bx.fillRect(m-10+i*8,hz-103,5,5); } } }
   // 뭉치, 띵띵이
   for(const m of mungs) if(m.alive){ const x=m.x-cx; if(x<-20||x>W+4) continue; if(m.sq>0) spr(A.MUNG_SQ,x,m.y+8-cy,true); else spr(A.MUNG[Math.floor(tNow*5+m.a)%2],x,m.y-cy,true,m.vx>0); }
   for(const s of swarms) if(s.state!=='gone') for(const b of s.bugs) spr(A.BUG[Math.floor(tNow*12+b.ph)%2],b.x-5-cx+(s.state==='alert'?Math.round(Math.sin(tNow*40+b.ph)):0),b.y-5-cy,true);
@@ -445,7 +522,15 @@ function draw(){
     const px=Math.round(P.x+6-cx), py=Math.round(P.y-cy);
     if(P.shield) for(let i=0;i<8;i++){ const a=i/8*6.283+tNow*2.5; bx.fillStyle=i%2?'#69b4e6':'#ffffff'; bx.fillRect(Math.round(px+Math.cos(a)*12),Math.round(py+10+Math.sin(a)*15),1,1); }
     if(P.charging){ ring(px,py-12,P.charge,P.charge>=.8?'#d9512c':'#ffffff','#5c6269'); texts.push({t:P.charge>=1?'후—':'스읍',x:px,y:py-23,s:8,c:'#1f1b18',a:'center',f:DISP}); }
-    for(const s of swarms) if(s.state==='alert'&&s.calm>0) ring(px,py-12,s.calm/2.1,'#69b4e6','#5c6269'); }
+    for(const s of swarms) if(s.state==='alert'&&s.calm>0) ring(px,py-12,s.calm/2.1,'#69b4e6','#5c6269');
+    if(nook&&!room&&!nook.used&&nook.t>0) ring(px,py-12,nook.t,'#d9512c','#5c6269');
+    if(room&&!room.done&&room.p>0&&room.kind!=='mochi') ring(px,py-12,room.p,'#d9512c','#5c6269');
+    if(room&&room.kind==='mochi'){ let sq=false; for(let c=RX+13;c<=RX+15;c++) if(padT[c]!==undefined&&tNow-padT[c]<.2) sq=true;
+      const w=sq?62:54, h=sq?13:21, x=Math.round((RX+14.5)*T-cx-w/2), y=hz-h;
+      bx.fillStyle='#1f1b18'; bx.fillRect(x+6,y-1,w-12,1); bx.fillRect(x+3,y,w-6,2); bx.fillRect(x+1,y+2,w-2,3); bx.fillRect(x,y+5,w,h-5);
+      bx.fillStyle='#fffaf0'; bx.fillRect(x+6,y,w-12,2); bx.fillRect(x+3,y+2,w-6,3); bx.fillRect(x+1,y+5,w-2,h-6);
+      bx.fillStyle='#eadfcf'; bx.fillRect(x+1,y+h-5,w-2,4); bx.fillRect(x+w-9,y+5,8,h-9); bx.fillStyle='#ffffff'; bx.fillRect(x+8,y+3,10,2); bx.fillRect(x+6,y+6,3,2);
+      if(!room.done) texts.push({t:room.n+'/8',x:x+w/2,y:y-6,s:8,c:'#1f1b18',a:'center',f:DISP}); } }
   // 조각들
   for(const p of parts){ const x=Math.round(p.x-cx), y=Math.round(p.y-cy);
     if(p.pop) bx.drawImage(A.DROP[p.h].c,x,y); else if(p.deb) bx.drawImage(A.BRICK.c,p.sx,p.sy,7,7,x,y,7,7);
@@ -466,7 +551,7 @@ function draw(){
   box(4,4,96,16,'#fff8e8','#1f1b18'); bx.drawImage(A.DROP[3].c,8,7); texts.push({t:String(P.coins),x:19,y:16.5,s:10,c:'#1f1b18',f:DISP});
   for(let i=0;i<3;i++){ const x=50+i*11, on=i<P.pcs; bx.fillStyle=on?'#1f1b18':'#cdbf9f'; bx.fillRect(x+2,8,3,1); bx.fillRect(x+1,9,5,1); bx.fillRect(x,10,7,3); bx.fillRect(x+1,13,5,1); bx.fillRect(x+2,14,3,1); if(on){ bx.fillStyle='#d9512c'; bx.fillRect(x+2,9,3,1); bx.fillRect(x+1,10,5,3); bx.fillRect(x+2,13,3,1); } }
   if(P.shield){ bx.fillStyle='#1f1b18'; bx.fillRect(86,7,9,7); bx.fillRect(87,14,7,2); bx.fillRect(89,16,3,1); bx.fillStyle='#69b4e6'; bx.fillRect(87,8,7,6); bx.fillRect(88,14,5,1); bx.fillRect(89,15,3,1); }
-  { const x0=108, x1=W-Math.ceil(92*dprU/k)-4; if(x1>x0+30){ bx.fillStyle='#1f1b18'; bx.fillRect(x0,11,x1-x0,3); bx.fillStyle='#8b9198'; bx.fillRect(x0,12,x1-x0,1); bx.fillStyle='#d9512c'; bx.fillRect(x0,12,Math.round((x1-x0)*Math.min(1,P.x/door.x)),1);
+  { const x0=108, x1=W-Math.ceil(92*dprU/k)-4; if(x1>x0+30){ bx.fillStyle='#1f1b18'; bx.fillRect(x0,11,x1-x0,3); bx.fillStyle='#8b9198'; bx.fillRect(x0,12,x1-x0,1); bx.fillStyle='#d9512c'; bx.fillRect(x0,12,Math.round((x1-x0)*Math.min(1,(room?room.ret:P.x)/door.x)),1);
       for(const f of flags){ bx.fillStyle=f.on?'#d9512c':'#1f1b18'; bx.fillRect(Math.round(x0+(x1-x0)*f.x/door.x),9,1,7); } } }
   if(msg&&tNow<msg.until){ ctx.font=Math.round(9*k)+'px '+DISP; const w=Math.ceil(ctx.measureText(msg.t).width/k)+12, x=Math.round(W/2-w/2); box(x,26,w,15,'#1f1b18','#1f1b18'); texts.push({t:msg.t,x:W/2,y:37,s:9,c:'#fff8e8',a:'center',f:DISP}); }
   // 키워서 화면에
@@ -484,10 +569,10 @@ function startCard(){ card(`<div class="eyebrow">평범한 스파이</div><h1>�
   <p class="note">왼쪽 ◀ ▶ 로 움직이고, 오른쪽 점프와 숨 버튼을 써요. 컴퓨터에서는 방향키, 스페이스(점프), X(숨).</p>
   <div class="row"><button class="go" id="s1">오늘의 작전 시작</button></div>`);
   on('s1',()=>{ ac(); SFX.tick(); hqCard(); }); }
-function hqCard(){ const sv=loadSave(), cl=sv.clear||{};
+function hqCard(){ const sv=loadSave(), cl=sv.clear||{}, open=(cl[0]&&cl[1]&&cl[2])||location.hash==='#all';
   card(`<div class="eyebrow">본부 · 1주차 하늘빛</div><h2>오늘의 작전을 고른다</h2>
-  <div class="days">${DAYS.map((d,i)=>`<button data-d="${i}" ${d.soon?'disabled':''}><small>${d.d}</small><b>${d.soon?'만드는 중':d.name}</b><span>${cl[i]?'「'+d.letter+'」 확보':(d.soon?'':'미완료')}</span></button>`).join('')}</div>
-  <p class="note">모은 색 방울 ${sv.coins||0}개. 목요일과 금요일 판은 곧 열려요.</p>`);
+  <div class="days">${DAYS.map((d,i)=>`<button data-d="${i}" ${d.boss&&!open?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):(d.boss&&!open?'조각 3개 필요':'미완료')}</span></button>`).join('')}</div>
+  <p class="note">모은 색 방울 ${sv.coins||0}개. 목요일 보스는 글자 조각 「하」「늘」「빛」을 다 모으면 열려요.</p>`);
   ov.firstChild.classList.add('wide');
   ov.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ stageNo=+b.dataset.d; SFX.tick(); reportCard(); }); }
 function reportCard(){ card(`<div class="eyebrow">어제의 지령 보고</div><h2>「${DAYS[stageNo].report[0]}」</h2><p>${DAYS[stageNo].report[1]} 해 봤나?</p>
@@ -509,9 +594,9 @@ function helpCard(){ const was=running; card(`<div class="eyebrow">도움전화 
   on('h1',()=>{ if(was) closeCard(); else startCard(); }); }
 function finish(){ running=false; SFX.clear();
   const s=Math.round(playT), mm=Math.floor(s/60), ss=String(s%60).padStart(2,'0');
-  card(`<div class="eyebrow">작전 완료 · 본부 도착</div><h1>글자 조각 「${DAYS[stageNo].letter}」 확보</h1>
+  card(`<div class="eyebrow">작전 완료 · 본부 도착</div><h1>${DAYS[stageNo].done||'글자 조각 「'+DAYS[stageNo].letter+'」 확보'}</h1>
   <div class="stat"><div><b>${P.coins}</b>색 방울</div><div><b>${P.pcs}/3</b>숨은 색 조각</div><div><b>${mm}:${ss}</b>걸린 시간</div><div><b>${deaths}</b>깃발에서 다시</div></div>
-  <div class="order"><div class="eyebrow">내일의 지령</div><p><b>「${DAYS[stageNo].next[0]}」</b> ${DAYS[stageNo].next[1]}</p></div>
+  <div class="order"><div class="eyebrow">${DAYS[stageNo].nl||'내일의 지령'}</div><p><b>「${DAYS[stageNo].next[0]}」</b> ${DAYS[stageNo].next[1]}</p></div>
   <div class="row"><button class="go" id="f1">본부로</button></div>`);
   { const sv=loadSave(); sv.clear=sv.clear||{}; sv.clear[stageNo]=true; sv.coins=(sv.coins||0)+P.coins; putSave(sv); }
   ov.firstChild.classList.add('wide'); on('f1',()=>hqCard()); }
@@ -520,14 +605,14 @@ function finish(){ running=false; SFX.clear();
 // 배경 음악: 판이 도는 동안만 튼다. 숨을 모을 때와 가만히 있어야 할 때는 작게, 안개에 물들면 먹먹하게.
 function music(){ const okay=sound&&running&&AC&&AC.state==='running'&&!document.hidden;
   if(!okay){ BGM.pause(); return; }
-  const calm=P.charging||(P.ground&&Math.abs(P.vx)<8&&swarms.some(s=>s.state==='alert'));
+  const calm=room||P.charging||(P.ground&&Math.abs(P.vx)<8&&swarms.some(s=>s.state==='alert'));
   BGM.set(paused?.3:(calm?.28:1),P.grey>0); BGM.play(AC); }
 function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music();
   if(running&&!paused){ acc+=d; while(acc>=1/120){ step(1/120); acc-=1/120; if(!running||paused){ acc=0; break; } } }
   draw(); requestAnimationFrame(frame); }
 reset(); startCard(); requestAnimationFrame(frame);
 document.addEventListener('visibilitychange',()=>{ last=performance.now(); if(document.hidden) BGM.pause(); });
-window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get AC(){return AC;},
+window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},
   go(n){stageNo=n||0;bonus=true;mood='sun';reset();closeCard();running=true;}};
 })();
 </script>

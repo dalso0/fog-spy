@@ -60,6 +60,13 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .ov button.go{background:var(--red);color:#fff8e8;font-size:22px;padding:12px 18px}
 .ov button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .note{font-size:12.5px;color:#5c5348}
+.hqtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+@media (max-width:720px){ .hqtop{padding-right:34px} }   /* 좁은 화면에서는 오른쪽 위 ☎ 버튼이 카드 모서리에 걸친다 */
+.raid{display:flex;align-items:center;gap:6px;font-size:12px;color:#5c5348;font-variant-numeric:tabular-nums}
+.raid i{display:block;width:84px;height:9px;border:2px solid var(--ink);background:#fff}
+.raid b{display:block;height:100%;width:0;background:var(--red)}
+.card p.ntc{font-size:13px;line-height:1.35;border-left:4px solid var(--ocher);padding-left:8px}
+.song{display:inline-block}   /* 추천곡 한 줄은 낱말 가운데서 끊기지 않고 통째로 다음 줄로 넘어간다 */
 .days{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
 .days button{display:flex;flex-direction:column;gap:3px;align-items:center;padding:9px 4px;font-size:15px}
 .days small{font-family:var(--f-body);font-size:11px;color:#5c5348}
@@ -72,6 +79,8 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .wxrow .note{margin:0;text-align:left}
 .card.wide{max-width:640px;gap:9px;padding:13px 18px}
 .card.wide h1{font-size:25px}
+/* 키가 낮은 화면(가로로 눕힌 작은 폰, 주소창이 보이는 사파리)에서는 넓은 카드를 조금 조여 「본부로」 버튼까지 한 화면에 들어오게 한다 */
+@media (max-height:380px){ .card.wide{padding:10px 16px;gap:7px} .card.wide .order{padding:6px 12px} .card.wide .stat div{padding:4px 6px} .ov .card.wide button.go{padding:9px 18px} }
 .stat{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .stat div{border:3px solid var(--ink);border-radius:4px;padding:6px 6px;text-align:center;background:var(--paper);font-size:12px}
 .stat b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;font-variant-numeric:tabular-nums}
@@ -94,10 +103,16 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 <script src="stage-art.js"></script>
 <script src="stage-music.js"></script>
 <script src="stage-wax.js"></script>
+<!-- 본부 서버(운영 시트) 연결. 선생님 승인을 받으면 아래 주석을 풀어 켠다. 꺼져 있는 동안은 아무것도 보내지 않는다
+<script src="config.js"></script>
+<script src="hq.js"></script>
+-->
 <script>
 (()=>{
 'use strict';
 const A=window.ART;
+// 본부 서버(운영 시트)와 잇는 다리. hq.js를 불러오지 않았거나 주소가 비어 있으면 아무것도 보내지 않고 각자 폰 안에서만 돈다
+const HQ=window.HQ||{on:false,once(){},add(){},mood(){},state(){return Promise.resolve(null);},cached(){return null;}};
 const T=16, ROWS=14, GY=12, COLS=314, LC=282, LW=LC*T, RX=284, RA=RX+6, RE=RX+21, WORLD=COLS*T, WH=ROWS*T, GTOP=GY*T, R1=8, R2=4;
 const MAXV=104, ACC_G=540, ACC_A=400, FRIC=760, JUMP=-326, G_UP=700, G_REL=1800, G_FALL=1250, VY_MAX=380, GLIDE_VY=84, PADV=-420;
 const DISP='"Do Hyeon","Apple SD Gothic Neo","Malgun Gothic",sans-serif', BODY='"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
@@ -253,13 +268,14 @@ const LEVELS=[
   flag(78); say(80,'띵띵이 떼다 삐약. 쫓아오면 손을 떼고 가만히 있어라 삐약.'); swarm(90);
   coinRow(96,100,10); piece(98,8); say(101,'훈련은 여기까지다 삐약. 문으로 들어가라 삐약.'); door(106);
 } ];
-// 1주차 하루치 정보. report = 어제의 지령(보고), next = 판을 깨면 알려 주는 내일의 지령
+// 1주차 하루치 정보. next = 판을 깨면 받는 지령, report = 앞 판에서 받아 이 판을 시작할 때 보고하는 지령 (그래서 첫 판에는 report가 없다)
+// 지령 순서와 문구는 기존 앱의 것이다. "바람 세 번"은 선생님 답을 기다리는 중이라 건너뛰었다
 const DAYS=[
-  {d:'11.23 월',date:'2026-11-23',name:'등굣길',letter:'하',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.'],next:['낯선 계단','평소와 다른 계단이나 복도로 한 번 걸어 보기.'],worry:'내일 발표, 망하면 어떡하지'},
-  {d:'11.24 화',date:'2026-11-24',name:'운동장',letter:'늘',report:['낯선 계단','평소와 다른 계단이나 복도로 한 번 걸어 보기.'],next:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기. 아무도 눈치채지 못하게.'],worry:'체육 시간에 나만 못하면 어떡하지'},
-  {d:'11.25 수',date:'2026-11-25',name:'뒷산 길',letter:'빛',report:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기.'],next:['조용한 인사','친구 한 명에게 "좋은 아침" 한마디. 평범하게, 자연스럽게.'],worry:'애들이 내 얘기를 하는 것 같아'},
-  {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,done:'1주차 암호 「하늘빛」 완성',report:['조용한 인사','친구 한 명에게 "좋은 아침" 한마디.'],next:['발바닥 수사','신발 끈을 다시 묶으며 발바닥이 땅에 닿는 느낌 확인하기.'],worry:'나만 뒤처지는 것 같아'},
-  {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,done:'쉬어 가는 판 완료',report:['발바닥 수사','신발 끈을 다시 묶으며 발바닥이 땅에 닿는 느낌 확인하기.'],next:['소리 세기','쉬는 시간 1분, 눈을 감고 들리는 소리를 세어 보기.'],nl:'월요일의 지령',worry:''},
+  {d:'11.23 월',date:'2026-11-23',name:'등굣길',letter:'하',next:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기. 사진은 찍지 않기.'],worry:'내일 발표, 망하면 어떡하지'},
+  {d:'11.24 화',date:'2026-11-24',name:'운동장',letter:'늘',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.'],next:['다른 길','평소와 다른 길로 한번 걸어 보기.'],worry:'체육 시간에 나만 못하면 어떡하지'},
+  {d:'11.25 수',date:'2026-11-25',name:'뒷산 길',letter:'빛',report:['다른 길','평소와 다른 길로 한번 걸어 보기.'],next:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기. 아무도 눈치채지 못하게.'],worry:'애들이 내 얘기를 하는 것 같아'},
+  {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,done:'1주차 암호 「하늘빛」 완성',report:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기.'],next:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디. 평범하게, 티 안 나게.'],worry:'나만 뒤처지는 것 같아'},
+  {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,done:'쉬어 가는 판 완료',report:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.'],nl:'월요일의 지령',worry:''},
   {d:'언제든',name:'훈련장',train:true,worry:''} ];
 let stageNo=0;
 /* ---------- 날짜 잠금과 소등 ----------
@@ -274,8 +290,11 @@ const free=()=>teacher()||Date.now()<LIVE;
 const isOpen=i=>free()||Date.now()>=openAt(i);
 const lightsOut=()=>{ const h=kst().getUTCHours(); return !free()&&(h>=22||h<6); };
 const hasPieces=cl=>!!(cl[0]&&cl[1]&&cl[2]);
+const today=()=>kst().toISOString().slice(0,10);   // 한국 날짜 (2026-11-23 꼴)
+// 서버에는 이름 없는 합계 숫자만 보낸다. 선생님 모드에서 해 본 것은 세지 않는다
+const hq=(fn,...a)=>{ if(HQ.on&&!teacher()) try{ HQ[fn](...a); }catch(e){} };
 // 오늘 열린 판 가운데 아직 안 깬 판. 없으면 -1
-function todayNo(){ const cl=loadSave().clear||{}, ymd=kst().toISOString().slice(0,10);
+function todayNo(){ const cl=loadSave().clear||{}, ymd=today();
   for(let i=0;i<TRAIN;i++) if(DAYS[i].date===ymd&&Date.now()>=openAt(i)&&!cl[i]&&(!DAYS[i].boss||hasPieces(cl))) return i;
   return -1; }
 function loadSave(){ try{ return JSON.parse(localStorage.getItem('fogspy2')||'{}')||{}; }catch(e){ return {}; } }
@@ -312,7 +331,7 @@ function build(){
 
 /* ---------- 상태 ---------- */
 const K={l:false,r:false,j:false,b:false}; let jBuf=0, prevB=false;
-let P, cam, maxX, cp, tNow, playT, running=false, paused=false, bonus=false, mood='sun';
+let P, cam, maxX, cp, tNow, playT, running=false, paused=false, bonus=false, bonusNote='', mood='sun';
 let bq=[], parts=[], gusts=[], clouds=[], bubble=null, bubA=1, msg=null, deaths=0, shake=0, freeze=0, chickX=40, chickY=150, warp=null;
 function reset(){
   build();
@@ -489,7 +508,7 @@ function step(dt){
     if(!room.done){
       if(room.kind==='sky'){ if(still&&hands&&P.y+P.h<=8*T+1) room.p+=dt/7; }
       else if(still&&hands) room.p+=dt/8;
-      if(room.p>=1){ room.p=1; room.done=true; for(let i=0;i<5;i++) popCoin(P.x+6+(i-2)*9,P.y-6,i); SFX.calm();
+      if(room.p>=1){ room.p=1; room.done=true; roomCount(); for(let i=0;i<5;i++) popCoin(P.x+6+(i-2)*9,P.y-6,i); SFX.calm();
         note({sky:'먼 데를 보니 눈과 머리가 쉰다',still:'아무것도 안 해도 불은 켜진다'}[room.kind]); say('잘했다 삐약. 오른쪽 통로 위에 서 있으면 밖으로 나간다 삐약.'); } }
     if(still&&!P.charging&&onPipe(ex)){ room.et+=dt; if(room.et>=1) warpIn(ex+10,()=>{ leaveRoom(); warpOut(); },()=>{ shutPipe(); note('다시 길 위로'); }); } else room.et=0; }
   if(P.ground&&!room&&P.x+P.w>door.x+10&&P.x<door.x+door.w-6) finish();
@@ -506,9 +525,11 @@ function waxCard(){ if(!window.WAX){ warp.after=()=>{ shutPipe(); note('다시 �
   card(`<div class="eyebrow">말랑이 방 · 왁뿌볼</div><div id="wx" class="wx" style="height:${h}px"></div><div class="row wxrow"><p class="note" id="wxc"></p><button id="w1">나가기</button></div>`);
   ov.firstChild.classList.add('wide'); let got=false;
   WAX.open(ov.querySelector('#wx'),ov.querySelector('#wxc'),()=>{ got=true; const b=ov.querySelector('#w1'); b.textContent='색 방울 받고 나가기'; b.classList.add('go'); });
-  on('w1',()=>{ closeCard(); const after=()=>{ shutPipe(); if(got){ for(let i=0;i<8;i++) popCoin(P.x+6+(i-3.5)*7,P.y-6,i); note('바삭하게 깨고 나니 손에 힘이 풀린다'); SFX.calm(); } else note('다시 길 위로'); };
+  on('w1',()=>{ closeCard(); const after=()=>{ shutPipe(); if(got){ roomCount(); for(let i=0;i<8;i++) popCoin(P.x+6+(i-3.5)*7,P.y-6,i); note('바삭하게 깨고 나니 손에 힘이 풀린다'); SFX.calm(); } else note('다시 길 위로'); };
     if(warp){ warp.after=after; warpOut(); } else after(); }); }
 /* 통로 타기: 가라앉기(in) → 어두워지기(close) → [mid: 자리 옮기기] → 밝아지기(open) → 올라오기(out) → [after]. 그동안 판은 멈춰 있다 */
+// 마음돌봄 방을 끝낸 것은 판마다 한 번만 센다
+function roomCount(){ const sv=loadSave(); sv.rooms=sv.rooms||{}; if(sv.rooms[stageNo]) return; sv.rooms[stageNo]=true; putSave(sv); hq('add','game',1); }
 function shutPipe(){ nook.shut=true; puff(nook.x+16,GTOP-30,8,'#e7c57a',36); }
 function tickParts(dt){ for(const p of parts){ p.t-=dt; p.vy+=(p.g||0)*dt; p.x+=(p.vx||0)*dt; p.y+=p.vy*dt; if(p.pop&&p.t<=0) puff(p.x+4,p.y+5,5,'#fff3c4',35,1); } parts=parts.filter(p=>p.t>0); }
 function warpIn(px,mid,after){ warp={ph:'in',t:0,px,x0:P.x,mid,after}; P.vx=P.vy=0; P.inv=0; P.charging=false; P.charge=0; P.glide=false; gusts=[]; SFX.down(); puff(px+6,GTOP-32,6,'#e7c57a',30); }
@@ -675,7 +696,7 @@ function startCard(){ card(`<div class="eyebrow">평범한 스파이</div><h1>�
   ${teacher()?'<p class="note">선생님 모드: 날짜와 소등에 상관없이 모든 판이 열려 있어요. '+(location.hash==='#all'?'주소 끝의 #all을 지우면 꺼져요.':'위의 「평범한 스파이」 글자를 빠르게 일곱 번 누르면 꺼져요.')+'</p>':''}
   <div class="row"><button class="go" id="s1">오늘의 작전 시작</button>${todayNo()>=0?'<button id="s2">본부에서 고르기</button>':''}</div>`);
   secret();
-  on('s1',()=>{ ac(); SFX.tick(); goFull(); if(lightsOut()) return sleepCard(); const t=todayNo(); if(t>=0){ stageNo=t; reportCard(); } else hqCard(); });
+  on('s1',()=>{ ac(); SFX.tick(); goFull(); if(lightsOut()) return sleepCard(); const t=todayNo(); if(t>=0){ stageNo=t; briefing(); } else hqCard(); });
   if(ov.querySelector('#s2')) on('s2',()=>{ ac(); SFX.tick(); goFull(); hqCard(); }); }
 // 처음 화면. 소등 시간이면 소등 화면이 먼저 나온다
 function home(){ if(lightsOut()) sleepCard(); else startCard(); }
@@ -693,20 +714,36 @@ function hqCard(){ if(lightsOut()) return sleepCard();
   const sv=loadSave(), cl=sv.clear||{}, bossOk=hasPieces(cl)||teacher();
   const st=DAYS.slice(0,TRAIN).map((d,i)=>!isOpen(i)?'lock':(d.boss&&!bossOk)?'need':'open'), any=st.includes('open');
   const why=teacher()?' 선생님 모드라 모든 판이 열려 있어요.':Date.now()<LIVE?' 지금은 정식 시작 전이라 모든 판이 열려 있어요. 11.22부터는 그날 판이 오후 5시에 열려요.':' 새 판은 날마다 오후 5시에 열리고, 지난 판은 언제든 다시 할 수 있어요.';
-  card(`<div class="eyebrow">본부 · 1주차 하늘빛</div><h2>${st[0]==='lock'?'본 작전은 11.23 월요일 오후 5시에 시작한다':'오늘의 작전을 고른다'}</h2>
+  card(`<div class="hqtop"><div class="eyebrow">본부 · 1주차 하늘빛</div><div class="raid" id="raid" hidden><span>전교 정화</span><i><b></b></i><span id="raidn"></span></div></div>
+  <h2>${st[0]==='lock'?'본 작전은 11.23 월요일 오후 5시에 시작한다':'오늘의 작전을 고른다'}</h2><p class="ntc" id="ntc" hidden></p>
   <div class="days">${DAYS.slice(0,TRAIN).map((d,i)=>`<button data-d="${i}" ${st[i]!=='open'?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):st[i]==='lock'?'오후 5시에 열림':st[i]==='need'?'조각 3개 필요':'미완료'}</span></button>`).join('')}</div>
   <div class="row"><button data-d="${TRAIN}"${any?'':' class="go"'}>훈련장 · 조작 연습 1분</button></div>
-  <p class="note">모은 색 방울 ${sv.coins||0}개. 목요일 보스는 글자 조각 「하」「늘」「빛」을 다 모으면 열려요.${why}</p>`);
-  ov.firstChild.classList.add('wide');
+  <p class="note">모은 색 방울 ${sv.coins||0}개. 목요일 보스는 글자 조각 「하」「늘」「빛」을 다 모으면 열려요.${why}<span id="hs"></span></p>`);
+  ov.firstChild.classList.add('wide'); hqInfo();
   ov.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ stageNo=+b.dataset.d; SFX.tick();
-    if(DAYS[stageNo].train){ bonus=false; mood='sun'; reset(); closeCard(); running=true; } else reportCard(); }); }
-function reportCard(){ card(`<div class="eyebrow">어제의 지령 보고</div><h2>「${DAYS[stageNo].report[0]}」</h2><p>${DAYS[stageNo].report[1]} 해 봤나?</p>
+    if(DAYS[stageNo].train){ bonus=false; mood='sun'; reset(); closeCard(); running=true; } else briefing(); }); }
+// 본부 서버에서 받은 소식: 전교 정화 합계, 공지 한 줄, 오늘의 추천곡. 연결이 없으면 아무것도 보이지 않는다
+function hqInfo(){ const put=s=>{ const r=ov.querySelector('#raid'); if(!r||!s||!s.ok) return;
+    if(s.raid&&s.raid.goal>0){ r.querySelector('b').style.width=Math.min(100,Math.round(s.raid.total/s.raid.goal*100))+'%'; ov.querySelector('#raidn').textContent=s.raid.total+' / '+s.raid.goal; r.hidden=false; }
+    const n=ov.querySelector('#ntc'); if(s.notice){ n.textContent='공지 · '+s.notice; n.hidden=false; } const h=ov.querySelector('#hs'), sg=songEl(); h.textContent=''; if(sg) h.append(' ',sg); };
+  put(HQ.cached()); HQ.state().then(put).catch(()=>{}); }
+/* 판에 들어가는 순서: 지령 보고(보고할 지령이 있을 때만) → 마음 날씨 → 판.
+   지령은 앞 판을 끝낼 때 받는다. 그래서 첫 판에는 보고가 없고, 앞 판을 안 깼거나 오늘 막 깬 요원에게도 묻지 않는다 (받은 적이 없거나 해 볼 틈이 없던 지령은 묻지 않는다).
+   보고는 판마다 한 번만 받고, 했다고 보고한 판은 다시 할 때도 색 방패를 들고 시작한다. 첫 판은 보고 대신 본부가 색 방패를 챙겨 준다.
+   미리 해 보는 기간과 선생님 모드에서는 앞 판만 깼으면 매번 묻는다 (카드를 언제든 확인할 수 있게) */
+function briefing(){ const sv=loadSave(), cl=sv.clear||{}, rp=(sv.rep||{})[stageNo];
+  if(stageNo>0&&cl[stageNo-1]&&(free()||(!rp&&!cl[stageNo]&&(sv.day||{})[stageNo-1]!==today()))) return reportCard();
+  bonus=stageNo===0||(!!rp&&rp!=='no'); bonusNote=stageNo===0?'첫 작전 지원. 색 방패 1개와 색 방울 5개':'보고 완료. 색 방패 1개와 색 방울 5개'; moodCard(); }
+function reportCard(){ const o=DAYS[stageNo].report, yest=new Date(kst()-864e5).toISOString().slice(0,10);
+  card(`<div class="eyebrow">${(loadSave().day||{})[stageNo-1]===yest?'어제의':'지난'} 지령 보고</div><h2>「${o[0]}」</h2><p>${o[1]} 해 봤나?</p>
   <div class="row"><button id="r1">했다</button><button id="r2">비슷하게 했다</button><button id="r3">못 했다</button></div>
   <p class="note">못 했어도 작전은 그대로 나간다.</p>`);
-  on('r1',()=>{bonus=true;moodCard();}); on('r2',()=>{bonus=true;moodCard();}); on('r3',()=>{bonus=false;moodCard();}); }
+  // 서버에는 그 판의 첫 보고만 센다
+  const pick=k=>{ const sv=loadSave(); sv.rep=sv.rep||{}; if(!sv.rep[stageNo]){ sv.rep[stageNo]=k; putSave(sv); hq('add','ord_'+k,1); } bonus=k!=='no'; bonusNote='보고 완료. 색 방패 1개와 색 방울 5개'; moodCard(); };
+  on('r1',()=>pick('done')); on('r2',()=>pick('alt')); on('r3',()=>pick('no')); }
 function moodCard(){ card(`<div class="eyebrow">마음 날씨</div><h2>지금 기분은 어떤 날씨인가</h2><p class="note">고른 날씨가 오늘 판의 하늘이 돼요.</p>
   <div class="row"><button data-m="sun">맑음</button><button data-m="cloud">구름</button><button data-m="fog">안개</button><button data-m="rain">비</button><button data-m="storm">번개</button></div>`);
-  ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mood=b.dataset.m; reset(); closeCard(); running=true; if(bonus) note('보고 완료. 색 방패 1개와 색 방울 5개'); }); }
+  ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mood=b.dataset.m; hq('mood',mood); reset(); closeCard(); running=true; if(bonus) note(bonusNote); }); }
 function worry(w){ card(`<div class="eyebrow">걱정 벽돌</div><h2>"${DAYS[stageNo].worry}"</h2><p>이 벽돌에 붙일 기분의 이름을 고른다. 정답은 없다.</p>
   <div class="row"><button data-e="불안">불안하다</button><button data-e="부담">부담스럽다</button><button data-e="귀찮음">귀찮다</button><button data-e="모름">잘 모르겠다</button></div>`);
   ov.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{ w.alive=false; closeCard(); SFX.brk();
@@ -714,7 +751,7 @@ function worry(w){ card(`<div class="eyebrow">걱정 벽돌</div><h2>"${DAYS[sta
     for(let i=0;i<3;i++) popCoin(w.x+8+i*8,GTOP-50,i);
     note(b.dataset.e==='모름'?'모르겠다는 것도 이름이다. 벽이 무너진다':'「'+b.dataset.e+'」 이름을 붙이니 벽이 무너진다'); }); }
 // 도움전화는 어느 화면에서든 그 위에 겹쳐 열린다. 밑에 있던 카드나 게임은 그대로 두고, 닫으면 하던 데로 돌아간다
-function helpCard(){ if(!hv.hidden) return; const under=!ov.hidden, was=running&&!under;
+function helpCard(){ if(!hv.hidden) return; hq('once','phone'); const under=!ov.hidden, was=running&&!under;
   hv.innerHTML=`<div class="card"><div class="eyebrow">도움전화${was?' · 게임은 멈춰 있어요':''}</div><h2>혼자 버티지 않아도 된다</h2>
   <div class="tel"><b>Wee클래스</b><span>학교 3층. 쉬는 시간이나 점심시간에 와도 돼요.</span><b>1388</b><span>청소년상담전화. 24시간, 문자는 #1388</span><b>109</b><span>자살예방 상담전화. 24시간</span><b>117</b><span>학교폭력 신고·상담. 24시간</span></div>
   <div class="row"><button id="h1">${was?'게임으로 돌아가기':'닫기'}</button></div></div>`;
@@ -732,9 +769,16 @@ function finish(){ running=false; SFX.clear();
   card(`<div class="eyebrow">작전 완료 · 본부 도착</div><h1>${DAYS[stageNo].done||'글자 조각 「'+DAYS[stageNo].letter+'」 확보'}</h1>
   <div class="stat"><div><b>${P.coins}</b>색 방울</div><div><b>${P.pcs}/3</b>숨은 색 조각</div><div><b>${mm}:${ss}</b>걸린 시간</div><div><b>${deaths}</b>깃발에서 다시</div></div>
   <div class="order"><div class="eyebrow">${DAYS[stageNo].nl||'내일의 지령'}</div><p><b>「${DAYS[stageNo].next[0]}」</b> ${DAYS[stageNo].next[1]}</p></div>
+  <p class="note" id="fr" hidden></p>
   <div class="row"><button class="go" id="f1">본부로</button></div>`);
-  { const sv=loadSave(); sv.clear=sv.clear||{}; sv.clear[stageNo]=true; sv.coins=(sv.coins||0)+P.coins; putSave(sv); }
+  // 처음 깬 판만 센다: 전교 정화 +1, 글자 조각, 보스 통과, 그리고 그날 판을 그날 깼으면 '오늘 판 통과'
+  { const sv=loadSave(), d=DAYS[stageNo]; sv.clear=sv.clear||{}; const first=!sv.clear[stageNo]; sv.clear[stageNo]=true; sv.coins=(sv.coins||0)+P.coins;
+    if(first){ sv.day=sv.day||{}; sv.day[stageNo]=today(); } putSave(sv);   // 깬 날짜: 다음 판에서 지령 보고를 물을지 정할 때 쓴다
+    if(first){ hq('add','raid',1); if(d.letter) hq('add','piece',1); if(d.boss) hq('once','decode'); if(d.date===today()) hq('once','brief'); }
+    const n=ov.querySelector('#fr'), cnt=first&&HQ.on&&!teacher(), sg=songEl(); if(cnt) n.append('전교 정화 합계에 1을 보탰어요.'); if(cnt&&sg) n.append(' '); if(sg) n.append(sg); n.hidden=!(cnt||sg); }
   ov.firstChild.classList.add('wide'); on('f1',()=>hqCard()); }
+// 본부 라디오의 오늘 추천곡 한 줄 (관리 시트의 음악 탭에 그날 곡이 있을 때만)
+function songEl(){ const st=HQ.cached(); if(!(st&&st.song&&st.song.t)) return null; const e=document.createElement('span'); e.className='song'; e.textContent='본부 라디오 오늘의 곡: '+st.song.t+(st.song.a?' · '+st.song.a:''); return e; }
 
 /* ---------- 돌리기 ---------- */
 // 배경 음악: 판이 도는 동안만 튼다. 숨을 모을 때와 가만히 있어야 할 때는 작게, 안개에 물들면 먹먹하게.

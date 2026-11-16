@@ -45,6 +45,12 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .ov button.go{background:var(--red);color:#fff8e8;font-size:22px;padding:12px 18px}
 .ov button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .note{font-size:12.5px;color:#5c5348}
+.days{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.days button{display:flex;flex-direction:column;gap:3px;align-items:center;padding:9px 4px;font-size:15px}
+.days small{font-family:var(--f-body);font-size:11px;color:#5c5348}
+.days b{font-weight:400;line-height:1.15;text-wrap:balance}
+.days span{font-family:var(--f-body);font-size:11px;color:var(--red-d);min-height:14px}
+.days button:disabled{opacity:.45;box-shadow:none}
 .card.wide{max-width:640px;gap:9px;padding:13px 18px}
 .card.wide h1{font-size:25px}
 .stat{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -112,23 +118,9 @@ const grid=new Uint8Array(COLS*ROWS); let boxes={}, bumps={}, padT={};
 const at=(c,r)=>(c<0||c>=COLS)?2:(r<0||r>=ROWS)?0:grid[r*COLS+c];
 const set=(c,r,v)=>{ if(c>=0&&c<COLS&&r>=0&&r<ROWS) grid[r*COLS+c]=v; };
 let coins,pieces,mungs,swarms,curtains,walls,flags,says,items,door,decor;
-function build(){
-  grid.fill(0); boxes={}; bumps={}; padT={};
-  coins=[];pieces=[];mungs=[];swarms=[];curtains=[];walls=[];flags=[];says=[];items=[];decor=[];
-  const ground=(a,b)=>{ for(let c=a;c<=b;c++) for(let r=GY;r<ROWS;r++) set(c,r,1); };
-  const hard=(a,b,r)=>{ for(let c=a;c<=b;c++) set(c,r,2); };
-  const brick=(a,b,r)=>{ for(let c=a;c<=b;c++) set(c,r,6); };
-  const crate=(c,r,what)=>{ set(c,r,3); boxes[c+','+r]={what,n:what==='coins'?5:1}; };
-  const pad=(c)=>set(c,GY,5);
-  const coin=(c,r)=>coins.push({x:c*T+8,y:r*T+8,got:false,h:(c+r)%4});
-  const coinRow=(a,b,r)=>{ for(let c=a;c<=b;c++) coin(c,r); };
-  const piece=(c,r)=>pieces.push({x:c*T+8,y:r*T+8,got:false});
-  const mung=(a,b,row=GY)=>mungs.push({x:b*T-16,y:row*T-14,w:16,h:14,a:a*T,b:b*T,vx:-22,vy:0,alive:true,sq:0});
-  const swarm=(c)=>{ const s={hx:c*T,hy:GTOP-50,state:'idle',calm:0,bugs:[]}; for(let i=0;i<5;i++) s.bugs.push({x:s.hx+i*10-20,y:s.hy+(i%2)*12,ph:i*1.26}); swarms.push(s); };
-  const curtain=(c)=>curtains.push({x:c*T,w:20,alive:true,hint:0});
-  const wall=(c)=>walls.push({x:c*T,w:32,alive:true});
-  const flag=(c)=>flags.push({x:c*T,on:false});
-  const say=(c,t)=>says.push({x:c*T,t,done:false});
+const LEVELS=[
+// 월: 등굣길
+({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door})=>{
   // 1구간: 익히기
   ground(0,48); say(2,'오른쪽으로 가라 삐약. 점프는 길게 누를수록 높이 뛴다 삐약.');
   coinRow(8,11,10); say(11,'머리 위 상자는 아래에서 머리로 쳐라 삐약.');
@@ -160,9 +152,70 @@ function build(){
   ground(216,246); flag(217); curtain(221); swarm(229); mung(233,239);
   pad(240); hard(244,246,5); piece(245,4);
   ground(250,281); mung(253,260); mung(257,265); brick(261,261,R1); crate(262,R1,'coins'); brick(263,263,R1);
-  door={x:271*T,y:GTOP-40,w:32,h:40};
-  for(const c of [6,31,70,108,140,165,201,226,255,277]) if(at(c,GY)===1&&at(c,GY-1)===0) decor.push({x:c*T-7,kind:'tree'});
-  for(const c of [12,33,58,78,92,116,146,190,219,252,266]) if(at(c,GY)===1&&at(c,GY-1)===0) decor.push({x:c*T-7,kind:'bush'});
+  door(271);
+},
+// 화: 운동장
+({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door})=>{
+  ground(0,40); say(2,'오늘은 운동장을 가로지른다 삐약. 띵띵이가 많으니 서두르지 마라 삐약.');
+  coinRow(6,9,10); crate(12,R1,'coin'); brick(13,14,R1); mung(16,24);
+  pad(27); hard(30,33,6); coinRow(30,31,4); piece(32,4); mung(34,40);
+  coin(41,7); coin(42,6); coin(43,7);
+  ground(44,80); flag(45); swarm(52); crate(58,R1,'coat'); brick(59,60,R1); mung(62,70); mung(66,74);
+  stairs(76,4); coin(81,5); coin(82,4); coin(83,5);
+  ground(85,125); flag(86); curtain(92); brick(96,100,R1); mung(96,101,R1); crate(98,R2,'coins');
+  mung(104,112); wall(116); coinRow(120,123,10);
+  hard(128,129,10); coinRow(128,129,8);
+  ground(132,175); flag(133); swarm(140); crate(146,R1,'shield'); mung(150,158); curtain(162); mung(165,173);
+  coin(176,7); coin(177,6); coin(178,7);
+  ground(179,215); flag(180); hard(183,184,R1); crate(185,R1,'coins'); brick(188,190,R1); mung(188,191,R1); piece(189,5);
+  mung(193,200); pad(206); hard(209,212,5); piece(210,3); coinRow(209,212,3);
+  ground(219,281); flag(220); mung(222,230); swarm(236); mung(242,250); crate(246,R1,'coin'); door(262);
+},
+// 수: 뒷산 길
+({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door})=>{
+  ground(0,30); say(2,'뒷산 길은 낭떠러지가 넓다 삐약. 높은 데서 뛰어 코트를 펴라 삐약.');
+  coinRow(5,8,10); crate(11,R1,'coat'); mung(14,22); stairs(27,4);
+  coin(32,5); coin(34,6); coin(36,7);
+  ground(38,75); flag(39); curtain(46); mung(50,58); brick(60,63,R1); crate(61,R2,'coins'); mung(60,64,R1); swarm(68);
+  coin(76,7); coin(77,6); coin(78,6); coin(79,7);
+  ground(80,118); flag(81); pad(84); hard(87,90,6); piece(89,4); wall(96); mung(100,108); mung(104,112); crate(110,R1,'shield');
+  hard(121,123,10); coinRow(121,123,8); hard(126,128,9); coinRow(126,128,7);
+  ground(131,170); flag(132); curtain(138); swarm(146); brick(152,154,R1); piece(153,5); mung(156,164); stairs(166,4);
+  coin(172,5); coin(174,6); coin(176,7);
+  ground(178,220); flag(179); mung(182,190); crate(186,R1,'coat'); pad(194); hard(197,199,5); piece(198,3); mung(202,210); mung(206,214);
+  coin(221,7); coin(222,6); coin(223,7);
+  ground(224,281); flag(225); swarm(231); mung(238,246); brick(250,250,R1); crate(251,R1,'coins'); brick(252,252,R1); door(264);
+} ];
+// 1주차 하루치 정보. report = 어제의 지령(보고), next = 판을 깨면 알려 주는 내일의 지령
+const DAYS=[
+  {d:'11.23 월',name:'등굣길',letter:'하',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.'],next:['낯선 계단','평소와 다른 계단이나 복도로 한 번 걸어 보기.'],worry:'내일 발표, 망하면 어떡하지'},
+  {d:'11.24 화',name:'운동장',letter:'늘',report:['낯선 계단','평소와 다른 계단이나 복도로 한 번 걸어 보기.'],next:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기. 아무도 눈치채지 못하게.'],worry:'체육 시간에 나만 못하면 어떡하지'},
+  {d:'11.25 수',name:'뒷산 길',letter:'빛',report:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기.'],next:['조용한 인사','친구 한 명에게 "좋은 아침" 한마디. 평범하게, 자연스럽게.'],worry:'애들이 내 얘기를 하는 것 같아'},
+  {d:'11.26 목',name:'주간 보스 「회색 장막」',soon:true},
+  {d:'11.27 금',name:'쉬어 가는 판',soon:true} ];
+let stageNo=0;
+function loadSave(){ try{ return JSON.parse(localStorage.getItem('fogspy2')||'{}')||{}; }catch(e){ return {}; } }
+function putSave(v){ try{ localStorage.setItem('fogspy2',JSON.stringify(v)); }catch(e){} }
+function build(){
+  grid.fill(0); boxes={}; bumps={}; padT={};
+  coins=[];pieces=[];mungs=[];swarms=[];curtains=[];walls=[];flags=[];says=[];items=[];decor=[];
+  const ground=(a,b)=>{ for(let c=a;c<=b;c++) for(let r=GY;r<ROWS;r++) set(c,r,1); };
+  const hard=(a,b,r)=>{ for(let c=a;c<=b;c++) set(c,r,2); };
+  const brick=(a,b,r)=>{ for(let c=a;c<=b;c++) set(c,r,6); };
+  const crate=(c,r,what)=>{ set(c,r,3); boxes[c+','+r]={what,n:what==='coins'?5:1}; };
+  const pad=(c)=>set(c,GY,5);
+  const coin=(c,r)=>coins.push({x:c*T+8,y:r*T+8,got:false,h:(c+r)%4});
+  const coinRow=(a,b,r)=>{ for(let c=a;c<=b;c++) coin(c,r); };
+  const piece=(c,r)=>pieces.push({x:c*T+8,y:r*T+8,got:false});
+  const mung=(a,b,row=GY)=>mungs.push({x:b*T-16,y:row*T-14,w:16,h:14,a:a*T,b:b*T,vx:-22,vy:0,alive:true,sq:0});
+  const swarm=(c)=>{ const s={hx:c*T,hy:GTOP-50,state:'idle',calm:0,bugs:[]}; for(let i=0;i<5;i++) s.bugs.push({x:s.hx+i*10-20,y:s.hy+(i%2)*12,ph:i*1.26}); swarms.push(s); };
+  const curtain=(c)=>curtains.push({x:c*T,w:20,alive:true,hint:0});
+  const wall=(c)=>walls.push({x:c*T,w:32,alive:true});
+  const flag=(c)=>flags.push({x:c*T,on:false});
+  const say=(c,t)=>says.push({x:c*T,t,done:false});
+  const stairs=(c,n)=>{ for(let i=0;i<n;i++) for(let h=0;h<=i;h++) set(c+i,11-h,2); };
+  LEVELS[stageNo]({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door:c=>{ door={x:c*T,y:GTOP-40,w:32,h:40}; }});
+  for(let c=6;c<COLS-4;c+=23){ if(at(c,GY)===1&&at(c,GY-1)===0&&Math.abs(c*T-door.x)>40) decor.push({x:c*T-7,kind:'tree'}); const b=c+11; if(at(b,GY)===1&&at(b,GY-1)===0&&Math.abs(b*T-door.x)>40) decor.push({x:b*T-7,kind:'bush'}); }
 }
 
 /* ---------- 상태 ---------- */
@@ -424,15 +477,21 @@ function startCard(){ card(`<div class="eyebrow">평범한 스파이 · 시제�
   <p>안개 낀 등굣길을 지나 본부 문까지 간다. 폰은 가로로 눕혀서 잡아요.</p>
   <p class="note">왼쪽 ◀ ▶ 로 움직이고, 오른쪽 점프와 숨 버튼을 써요. 컴퓨터에서는 방향키, 스페이스(점프), X(숨).</p>
   <div class="row"><button class="go" id="s1">오늘의 작전 시작</button></div>`);
-  on('s1',()=>{ ac(); SFX.tick(); reportCard(); }); }
-function reportCard(){ card(`<div class="eyebrow">어제의 지령 보고</div><h2>「낯선 계단」</h2><p>평소와 다른 계단이나 복도로 한 번 걸어 보기. 해 봤나?</p>
+  on('s1',()=>{ ac(); SFX.tick(); hqCard(); }); }
+function hqCard(){ const sv=loadSave(), cl=sv.clear||{};
+  card(`<div class="eyebrow">본부 · 1주차 하늘빛</div><h2>오늘의 작전을 고른다</h2>
+  <div class="days">${DAYS.map((d,i)=>`<button data-d="${i}" ${d.soon?'disabled':''}><small>${d.d}</small><b>${d.soon?'만드는 중':d.name}</b><span>${cl[i]?'「'+d.letter+'」 확보':(d.soon?'':'미완료')}</span></button>`).join('')}</div>
+  <p class="note">모은 색 방울 ${sv.coins||0}개. 시제품이라 날짜와 상관없이 모든 판이 열려 있어요.</p>`);
+  ov.firstChild.classList.add('wide');
+  ov.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ stageNo=+b.dataset.d; SFX.tick(); reportCard(); }); }
+function reportCard(){ card(`<div class="eyebrow">어제의 지령 보고</div><h2>「${DAYS[stageNo].report[0]}」</h2><p>${DAYS[stageNo].report[1]} 해 봤나?</p>
   <div class="row"><button id="r1">했다</button><button id="r2">비슷하게 했다</button><button id="r3">못 했다</button></div>
   <p class="note">못 했어도 작전은 그대로 나간다.</p>`);
   on('r1',()=>{bonus=true;moodCard();}); on('r2',()=>{bonus=true;moodCard();}); on('r3',()=>{bonus=false;moodCard();}); }
 function moodCard(){ card(`<div class="eyebrow">마음 날씨</div><h2>지금 기분은 어떤 날씨인가</h2><p class="note">고른 날씨가 오늘 판의 하늘이 돼요.</p>
   <div class="row"><button data-m="sun">맑음</button><button data-m="cloud">구름</button><button data-m="fog">안개</button><button data-m="rain">비</button><button data-m="storm">번개</button></div>`);
   ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mood=b.dataset.m; reset(); closeCard(); running=true; if(bonus) note('보고 완료. 색 방패 1개와 색 방울 5개'); }); }
-function worry(w){ card(`<div class="eyebrow">걱정 벽돌</div><h2>"내일 발표, 망하면 어떡하지"</h2><p>이 벽돌에 붙일 기분의 이름을 고른다. 정답은 없다.</p>
+function worry(w){ card(`<div class="eyebrow">걱정 벽돌</div><h2>"${DAYS[stageNo].worry}"</h2><p>이 벽돌에 붙일 기분의 이름을 고른다. 정답은 없다.</p>
   <div class="row"><button data-e="불안">불안하다</button><button data-e="부담">부담스럽다</button><button data-e="귀찮음">귀찮다</button><button data-e="모름">잘 모르겠다</button></div>`);
   ov.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{ w.alive=false; closeCard(); SFX.brk();
     for(let r=0;r<GY;r++) for(let i=0;i<2;i++) parts.push({deb:true,x:w.x+i*16+4,y:r*T+4,vx:(i?1:-1)*(20+Math.random()*50),vy:-60-Math.random()*90,t:.9,T0:.9,g:600,sx:0,sy:0});
@@ -444,11 +503,12 @@ function helpCard(){ const was=running; card(`<div class="eyebrow">도움전화 
   on('h1',()=>{ if(was) closeCard(); else startCard(); }); }
 function finish(){ running=false; SFX.clear();
   const s=Math.round(playT), mm=Math.floor(s/60), ss=String(s%60).padStart(2,'0');
-  card(`<div class="eyebrow">작전 완료 · 본부 도착 (시제품은 여기까지)</div><h1>글자 조각 「하」 확보</h1>
+  card(`<div class="eyebrow">작전 완료 · 본부 도착</div><h1>글자 조각 「${DAYS[stageNo].letter}」 확보</h1>
   <div class="stat"><div><b>${P.coins}</b>색 방울</div><div><b>${P.pcs}/3</b>숨은 색 조각</div><div><b>${mm}:${ss}</b>걸린 시간</div><div><b>${deaths}</b>깃발에서 다시</div></div>
-  <div class="order"><div class="eyebrow">내일의 지령</div><p><b>「하늘 10초」</b> 쉬는 시간에 창밖 하늘을 10초 동안 올려다보기. 사진은 찍지 않기.</p></div>
-  <div class="row"><button class="go" id="f1">다시 하기</button></div>`);
-  ov.firstChild.classList.add('wide'); on('f1',()=>startCard()); }
+  <div class="order"><div class="eyebrow">내일의 지령</div><p><b>「${DAYS[stageNo].next[0]}」</b> ${DAYS[stageNo].next[1]}</p></div>
+  <div class="row"><button class="go" id="f1">본부로</button></div>`);
+  { const sv=loadSave(); sv.clear=sv.clear||{}; sv.clear[stageNo]=true; sv.coins=(sv.coins||0)+P.coins; putSave(sv); }
+  ov.firstChild.classList.add('wide'); on('f1',()=>hqCard()); }
 
 /* ---------- 돌리기 ---------- */
 // 배경 음악: 판이 도는 동안만 튼다. 숨을 모을 때와 가만히 있어야 할 때는 작게, 안개에 물들면 먹먹하게.
@@ -462,6 +522,6 @@ function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music();
 reset(); startCard(); requestAnimationFrame(frame);
 document.addEventListener('visibilitychange',()=>{ last=performance.now(); if(document.hidden) BGM.pause(); });
 window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get AC(){return AC;},
-  go(){bonus=true;mood='sun';reset();closeCard();running=true;}};
+  go(n){stageNo=n||0;bonus=true;mood='sun';reset();closeCard();running=true;}};
 })();
 </script>

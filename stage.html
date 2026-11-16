@@ -3,6 +3,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>회색 안개 작전</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="안개 작전">
+<meta name="theme-color" content="#1f1b18">
+<link rel="manifest" href="stage.webmanifest">
+<link rel="apple-touch-icon" href="img/stage-icon-180.png">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gothic+A1:wght@500;700&display=swap">
 <style>
@@ -569,11 +576,16 @@ let last=performance.now(), acc=0;
 function card(html){ ov.innerHTML='<div class="card">'+html+'</div>'; ov.hidden=false; paused=true; K.l=K.r=K.j=K.b=false; const b=ov.querySelector('button'); if(b) try{b.focus({preventScroll:true});}catch(e){} }
 function closeCard(){ ov.hidden=true; ov.innerHTML=''; paused=false; last=performance.now(); }
 function on(id,fn){ ov.querySelector('#'+id).onclick=fn; }
+const IOS_TAB=/iP(hone|ad|od)/.test(navigator.userAgent)&&!navigator.standalone;
 function startCard(){ card(`<div class="eyebrow">평범한 스파이</div><h1>회색 안개 작전</h1>
   <p>안개 낀 등굣길을 지나 본부 문까지 간다. 폰은 가로로 눕혀서 잡아요.</p>
   <p class="note">왼쪽 ◀ ▶ 로 움직이고, 오른쪽 점프와 숨 버튼을 써요. 컴퓨터에서는 방향키, 스페이스(점프), X(숨).</p>
+  ${IOS_TAB?'<p class="note">아이폰은 공유 버튼에서 「홈 화면에 추가」를 누르고 홈 화면의 곰 아이콘으로 열면 주소창 없이 화면이 꽉 차요.</p>':''}
   <div class="row"><button class="go" id="s1">오늘의 작전 시작</button></div>`);
-  on('s1',()=>{ ac(); SFX.tick(); hqCard(); }); }
+  on('s1',()=>{ ac(); SFX.tick(); goFull(); hqCard(); }); }
+// 폰에서 전체 화면(주소창 숨김)과 가로 고정. 안드로이드 크롬에서만 된다. 아이폰은 홈 화면에 추가해서 연다
+function goFull(){ try{ const el=document.documentElement; if(!el.requestFullscreen||document.fullscreenElement||!matchMedia('(pointer:coarse)').matches) return;
+  el.requestFullscreen({navigationUI:'hide'}).then(()=>{ try{ screen.orientation.lock('landscape').catch(()=>{}); }catch(e){} }).catch(()=>{}); }catch(e){} }
 function hqCard(){ const sv=loadSave(), cl=sv.clear||{}, open=(cl[0]&&cl[1]&&cl[2])||location.hash==='#all';
   card(`<div class="eyebrow">본부 · 1주차 하늘빛</div><h2>오늘의 작전을 고른다</h2>
   <div class="days">${DAYS.map((d,i)=>`<button data-d="${i}" ${d.boss&&!open?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):(d.boss&&!open?'조각 3개 필요':'미완료')}</span></button>`).join('')}</div>

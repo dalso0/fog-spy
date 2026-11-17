@@ -46,6 +46,8 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 #bh{right:max(10px,env(safe-area-inset-right,0px));z-index:6}
 #hv{z-index:7}
 #bs{right:calc(max(10px,env(safe-area-inset-right,0px)) + 42px)}
+#bq{right:calc(max(10px,env(safe-area-inset-right,0px)) + 84px)}
+#bq svg{display:block;pointer-events:none}
 .btn:focus-visible,.ov button:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
 .ov{position:absolute;inset:0;background:rgba(31,27,24,.62);display:flex;align-items:center;justify-content:center;padding:14px;z-index:5}
 .card{background:var(--panel);border:4px solid var(--ink);border-radius:6px;box-shadow:0 6px 0 var(--ink);
@@ -77,6 +79,12 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .wxagain{position:absolute;right:8px;bottom:8px;font-size:13px;padding:6px 10px}
 .wxrow{align-items:center;justify-content:space-between;flex-wrap:nowrap}
 .wxrow .note{margin:0;text-align:left}
+.tpick{display:flex;gap:6px;flex:0 0 auto}
+.ov .tpick button{flex:0 0 auto;font-size:15px;padding:5px 10px;box-shadow:0 3px 0 var(--ink)}
+.ov .tpick button.on{background:var(--ink);color:var(--panel)}
+.ov .tpick button.off{border-style:dashed;color:#7d7264}
+.ov .tpick button.on.off{color:var(--panel)}
+.tlock{position:absolute;left:50%;top:50%;height:78%;max-width:70%;object-fit:contain;transform:translate(-50%,-50%);filter:brightness(0);opacity:.16;pointer-events:none}
 .card.wide{max-width:640px;gap:9px;padding:13px 18px}
 .card.wide h1{font-size:25px}
 /* 키가 낮은 화면(가로로 눕힌 작은 폰, 주소창이 보이는 사파리)에서는 넓은 카드를 조금 조여 「본부로」 버튼까지 한 화면에 들어오게 한다 */
@@ -94,6 +102,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
   <div id="pad" class="btn" role="group" aria-label="왼쪽 오른쪽"><span id="pl">◀</span><span id="pr">▶</span></div>
   <button id="bb" class="btn" aria-label="숨">숨</button>
   <button id="bj" class="btn" aria-label="점프">점프</button>
+  <button id="bq" class="btn top" aria-label="본부로 (판 고르기)"><svg viewBox="0 0 9 8" width="18" height="16" aria-hidden="true" shape-rendering="crispEdges"><path fill="#1f1b18" d="M4 0h1v1h1v1h1v1h1v1h1v1H8v3H5V5H4v3H1V5H0V4h1V3h1V2h1V1h1z"/></svg></button>
   <button id="bs" class="btn top" aria-label="소리 켜고 끄기">♪</button>
   <button id="bh" class="btn top" aria-label="도움전화">☎</button>
   <div id="ov" class="ov" hidden></div>
@@ -118,7 +127,7 @@ const MAXV=104, ACC_G=540, ACC_A=400, FRIC=760, JUMP=-326, G_UP=700, G_REL=1800,
 const DISP='"Do Hyeon","Apple SD Gothic Neo","Malgun Gothic",sans-serif', BODY='"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
 const stage=document.getElementById('stage'), cv=document.getElementById('cv'), ctx=cv.getContext('2d'), ov=document.getElementById('ov'), hv=document.getElementById('hv');
 const buf=document.createElement('canvas'), bx=buf.getContext('2d');
-let W=420, H=190, k=3, dprU=1, camY=WH-190, rot=false;
+let W=420, H=190, k=3, dprU=1, camY=WH-190, rot=false, topR=50;
 
 /* ---------- 화면 맞추기: 게임 점 하나가 화면 점 k개(정수)가 되게 ---------- */
 const safeProbe=document.createElement('div'); safeProbe.style.cssText='position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top,0px)'; document.body.appendChild(safeProbe);
@@ -127,14 +136,17 @@ function layout(){
   const w=innerWidth; let h=innerHeight, top=0; rot=h>w;
   // 세로로 든 폰(홈 화면 앱)은 화면이 상태 막대 밑에서 시작한다. 그 높이만큼 내려서 시계와 겹치지 않게 하고, 화면이 한쪽으로 쏠려 보이지 않게 한다
   if(rot){ top=parseFloat(getComputedStyle(safeProbe).paddingTop)||0; if(top>h*.2) top=0; h-=top; }
-  const key=[w,h,top,window.devicePixelRatio].join(); if(key===laid) return; laid=key;
+  const key=[w,h,top,window.devicePixelRatio].join(); if(key===laid){ topFit(rot?h:w); return; } laid=key;   // 크기는 그대로여도 폰을 반대로 돌리면 안전 여백이 옮겨 가서 위쪽 버튼 자리가 바뀐다
   const sw=rot?h:w, sh=rot?w:h;
   stage.style.top=top+'px'; stage.style.width=sw+'px'; stage.style.height=sh+'px';
   stage.style.transform=rot?'rotate(90deg) translate(0,-100%)':'none';
   dprU=Math.min(3,window.devicePixelRatio||1); const dh=Math.round(sh*dprU), dw=Math.round(sw*dprU);
   k=Math.max(1,Math.floor(dh/176)); H=Math.ceil(dh/k); W=Math.ceil(dw/k);
   cv.width=W*k; cv.height=H*k; buf.width=W; buf.height=H; camY=WH-H;
+  topFit(sw);
 }
+// 위쪽 버튼(⌂ ♪ ☎)이 차지하는 오른쪽 폭 (게임 점)
+function topFit(sw){ topR=Math.ceil((sw-document.getElementById('bq').offsetLeft)*dprU/k)+4; }
 addEventListener('resize',layout); layout();
 addEventListener('orientationchange',()=>setTimeout(layout,300)); addEventListener('pageshow',layout);
 if(window.visualViewport) visualViewport.addEventListener('resize',layout);
@@ -145,6 +157,7 @@ let AC=null, sound=true;
 // 아이폰 사파리는 무음 스위치가 켜져 있으면 웹 게임 소리(WebAudio)를 끈다. 소리 종류를 '재생'으로 알려 두면 영상처럼 음량 버튼만 따른다 (iOS 17부터)
 function ac(){ if(!sound) return null; try{ if(!AC){ try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){} AC=new (window.AudioContext||window.webkitAudioContext)(); }
   if(AC.state!=='running') AC.resume(); }catch(e){} return AC; }
+window.gameAudio=()=>sound?ac():null;   // 말랑이(stage-wax.js)도 이 소리 통로를 쓴다. 소리를 꺼 두면 말랑이도 조용하다
 // 다른 앱에 다녀오거나 전화가 오면 소리가 멈춘다. 아이폰은 손가락을 뗄 때나 누를 때만 다시 켤 수 있다
 ['touchend','pointerup','click','keydown'].forEach(n=>addEventListener(n,()=>{ if(AC&&AC.state!=='running') ac(); },true));
 function tone(f,d,type='square',v=.04,slide=0,delay=0){ if(!sound||!ac()) return; try{ const t0=AC.currentTime+delay, o=AC.createOscillator(), g=AC.createGain();
@@ -268,14 +281,14 @@ const LEVELS=[
   flag(78); say(80,'띵띵이 떼다 삐약. 쫓아오면 손을 떼고 가만히 있어라 삐약.'); swarm(90);
   coinRow(96,100,10); piece(98,8); say(101,'훈련은 여기까지다 삐약. 문으로 들어가라 삐약.'); door(106);
 } ];
-// 1주차 하루치 정보. next = 판을 깨면 받는 지령, report = 앞 판에서 받아 이 판을 시작할 때 보고하는 지령 (그래서 첫 판에는 report가 없다)
+// 1주차 하루치 정보. next = 판을 깨면 받는 지령, report = 앞 판에서 받아 이 판을 시작할 때 보고하는 지령 (그래서 첫 판에는 report가 없다), toy = 판을 끝내면 받는 말랑이
 // 지령 순서와 문구는 기존 앱의 것이다. "바람 세 번"은 선생님 답을 기다리는 중이라 건너뛰었다
 const DAYS=[
   {d:'11.23 월',date:'2026-11-23',name:'등굣길',letter:'하',next:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기. 사진은 찍지 않기.'],worry:'내일 발표, 망하면 어떡하지'},
   {d:'11.24 화',date:'2026-11-24',name:'운동장',letter:'늘',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.'],next:['다른 길','평소와 다른 길로 한번 걸어 보기.'],worry:'체육 시간에 나만 못하면 어떡하지'},
   {d:'11.25 수',date:'2026-11-25',name:'뒷산 길',letter:'빛',report:['다른 길','평소와 다른 길로 한번 걸어 보기.'],next:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기. 아무도 눈치채지 못하게.'],worry:'애들이 내 얘기를 하는 것 같아'},
-  {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,done:'1주차 암호 「하늘빛」 완성',report:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기.'],next:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디. 평범하게, 티 안 나게.'],worry:'나만 뒤처지는 것 같아'},
-  {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,done:'쉬어 가는 판 완료',report:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.'],nl:'월요일의 지령',worry:''},
+  {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,toy:'apple',done:'1주차 암호 「하늘빛」 완성',report:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기.'],next:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디. 평범하게, 티 안 나게.'],worry:'나만 뒤처지는 것 같아'},
+  {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,toy:'mandarin',done:'쉬어 가는 판 완료',report:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.'],nl:'월요일의 지령',worry:''},
   {d:'언제든',name:'훈련장',train:true,worry:''} ];
 let stageNo=0;
 /* ---------- 날짜 잠금과 소등 ----------
@@ -299,6 +312,14 @@ function todayNo(){ const cl=loadSave().clear||{}, ymd=today();
   return -1; }
 function loadSave(){ try{ return JSON.parse(localStorage.getItem('fogspy2')||'{}')||{}; }catch(e){ return {}; } }
 function putSave(v){ try{ localStorage.setItem('fogspy2',JSON.stringify(v)); }catch(e){} }
+/* 본부 말랑이 상자: 수요일 판의 통로 방에서 왁뿌볼을 깨면, 목요일 보스를 넘기면, 금요일 판을 끝내면 하나씩 들어온다 (기획안: 보스를 넘기거나 금요일 판을 끝내면 하나씩).
+   기록은 폰 안(fogspy2.toys)에만 두고 서버에는 보내지 않는다. 2주차의 버터 슬랑이·복숭아, 최종 보스의 찹쌀떡은 stage-wax.js에 이미 들어 있다 */
+const TOYS=[['wax','수요일 판의 통로 방에서 하나 깨면 들어온다'],['apple','목요일 보스를 넘기면 들어온다'],['mandarin','금요일 쉬어 가는 판을 끝내면 들어온다']];
+function toysOf(sv){ const t=Array.isArray(sv.toys)?sv.toys.filter(k=>typeof k==='string'):[], cl=sv.clear||{};
+  if(sv.rooms&&sv.rooms[2]&&!t.includes('wax')) t.push('wax');   // 상자가 생기기 전에 수요일 방에서 왁뿌볼을 깬 기록도 센다
+  DAYS.forEach((d,i)=>{ if(d.toy&&cl[i]&&!t.includes(d.toy)) t.push(d.toy); });   // 상자가 생기기 전에 목·금 판을 끝낸 기록도 센다
+  return t; }
+function addToy(k){ const sv=loadSave(), t=toysOf(sv); if(t.includes(k)) return false; t.push(k); sv.toys=t; putSave(sv); return true; }
 function build(){
   grid.fill(0); boxes={}; bumps={}; padT={};
   coins=[];pieces=[];mungs=[];swarms=[];curtains=[];walls=[];flags=[];says=[];items=[];decor=[]; nook=null; room=null; bossC=null;
@@ -338,7 +359,7 @@ function reset(){
   P={x:2*T,y:GTOP-22,w:12,h:22,vx:0,vy:0,face:1,ground:true,coy:0,grey:0,inv:0,shield:bonus?1:0,coins:bonus?5:0,pcs:0,
      charge:0,charging:false,full:false,glide:false,jumpHeld:false,boost:false,runT:0,airT:0,coat:false,puffCd:0,bHold:0};
   BGM.rewind();
-  cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; bq=[]; msg=null; deaths=0; shake=0; freeze=0; chickX=P.x+30; chickY=P.y-20; warp=null; stuck=0; lift=null;
+  held=-1; cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; bq=[]; msg=null; deaths=0; shake=0; freeze=0; chickX=P.x+30; chickY=P.y-20; warp=null; stuck=0; lift=null;
 }
 
 /* ---------- 조작 ---------- */
@@ -367,6 +388,45 @@ document.addEventListener('touchmove',e=>{ if(e.touches.length>1) e.preventDefau
   bs.onclick=()=>{ sound=!sound; bs.textContent=sound?'♪':'×'; const sv=loadSave(); sv.mute=!sound; putSave(sv);
     if(sound){ ac(); SFX.tick(); } else if(AC){ try{ AC.suspend(); }catch(e){} } }; }
 document.getElementById('bh').onclick=()=>helpCard();
+/* 본부로 나가기: 판을 하다가 위쪽 집 버튼(⌂), 폰의 뒤로 가기, 컴퓨터의 Esc를 누르면 판 고르기(본부)로 나간다.
+   하던 판은 그 자리에 멈춰 두고(held), 본부에서 그 판을 다시 누르면 이어 한다. 다른 판을 고르면 멈춰 둔 판은 버린다 */
+let held=-1, lastHref=location.href;
+// 판 안의 카드는 정리하고 판을 그 자리에 멈춰 둔다. 왁뿌볼 방은 「나가기」를 누른 것처럼 통로를 타고 올라오게 해 둔다 (깬 왁뿌볼은 이때 상자에 들어간다)
+function park(){ if(!ov.hidden){ const w=ov.querySelector('#w1'); if(w) w.click(); else closeCard(); } held=stageNo; running=false; }
+function toHQ(){ if(!running||!ov.hidden||!hv.hidden) return false; SFX.tick(); park(); hqCard(); return true; }
+document.getElementById('bq').onclick=()=>toHQ();
+addEventListener('keydown',e=>{ if(e.code==='Escape'&&toHQ()) e.preventDefault(); });
+// 안드로이드에서 전체 화면일 때 뒤로 가기를 누르면 전체 화면부터 풀린다. 판을 하다가 전체 화면이 풀리면 그것도 본부로 나가는 것으로 본다
+document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement) toHQ(); });
+/* 폰의 뒤로 가기는 한 단계씩 올라간다: 판 → 본부(판 고르기) → 첫 화면 → (한 번 더 누르면) 페이지를 나간다.
+   방문 기록에 단계를 적어 둔다: 0 = 첫 화면, 1 = 본부, 2 = 판과 그 앞뒤 카드(지령 보고, 마음 날씨, 작전 완료, 말랑이 상자).
+   기록은 손가락으로 누를 때만 쌓는다. 누르지 않았는데 쌓은 기록은 크롬이 뒤로 가기에서 건너뛰어서 페이지를 나가 버린다 */
+const lvOf=s=>(s&&s.fogspy)||0;
+function goLevel(n){ try{ for(let c=lvOf(history.state)+1;c<=n;c++) history.pushState({fogspy:c},''); }catch(e){} }
+// 버튼으로 본부나 첫 화면에 올라왔을 때는 기록도 그 단계로 돌려 둔다. 그래야 다음 뒤로 가기가 헛돌지 않는다.
+// 도움전화를 열 때 쌓은 기록도 한 칸으로 센다. 기록을 옮기는 중(goT)에는 또 옮기지 않는다
+let goT=0;
+function syncLevel(n){ if(goT) return; const s=history.state, c=lvOf(s)+(s&&s.help?1:0); if(c>n) try{ history.go(n-c); goT=setTimeout(()=>{ goT=0; },700); }catch(e){} }
+// 지금 화면의 단계
+function scrLv(){ if(running) return 2; if(ov.querySelector('.days')) return 1; if(ov.querySelector('#s1,#z1')) return 0; return 2; }
+addEventListener('popstate',e=>{
+  const st=e.state, moved=location.href!==lastHref; lastHref=location.href; clearTimeout(goT); goT=0;
+  if(moved&&!st) return;   // 주소 끝을 새로 바꾼 것(선생님이 #all을 붙이는 것 등)은 뒤로 가기가 아니다
+  // 도움전화가 떠 있을 때의 뒤로 가기(또는 닫기 버튼)는 도움전화만 닫는다. 밑에 있던 화면은 그대로 둔다
+  if(!hv.hidden&&!(st&&st.help)){ closeHelp(); const s0=scrLv(); if(lvOf(st)>s0) syncLevel(s0); return; }
+  const lv=lvOf(st), sl=scrLv();
+  // 화면보다 위 단계의 기록에 왔으면(앞으로 가기, 주소를 바꾸기 전의 기록, 이미 닫힌 도움전화 기록) 화면 단계까지 건너뛴다. 화면은 위로만 올라간다
+  if(lv>sl||(lv===sl&&st&&st.help&&hv.hidden)){ syncLevel(sl); return; }
+  if(lv===sl) return;
+  if(running) park();
+  if(lv>=1) hqCard(); else home(); });
+// 주소 끝이 바뀌면(선생님 모드 #all을 붙이거나 지우면) 첫 화면(소등 화면)과 본부를 다시 그려서 열린 판과 안내 글을 맞춘다.
+// 도움전화가 떠 있으면 닫을 때 다시 그린다
+let hashLate=false;
+function redraw(){ if(running||ov.hidden||!hv.hidden) return; if(ov.querySelector('#s1,#z1')) home(); else if(ov.querySelector('.days')) hqCard(); }
+addEventListener('hashchange',()=>{ lastHref=location.href; if(!hv.hidden) hashLate=true; else redraw(); });
+// 판을 시작하거나 이어 할 때
+function play(){ closeCard(); running=true; goLevel(2); }
 
 /* ---------- 물리 ---------- */
 const solidT=v=>v>=1;
@@ -530,7 +590,9 @@ function waxCard(){ if(!window.WAX){ warp.after=()=>{ shutPipe(); note('다시 �
   card(`<div class="eyebrow">말랑이 방 · 왁뿌볼</div><div id="wx" class="wx" style="height:${h}px"></div><div class="row wxrow"><p class="note" id="wxc"></p><button id="w1">나가기</button></div>`);
   ov.firstChild.classList.add('wide'); let got=false;
   WAX.open(ov.querySelector('#wx'),ov.querySelector('#wxc'),()=>{ got=true; const b=ov.querySelector('#w1'); b.textContent='색 방울 받고 나가기'; b.classList.add('go'); });
-  on('w1',()=>{ closeCard(); const after=()=>{ shutPipe(); if(got){ roomCount(); for(let i=0;i<8;i++) popCoin(P.x+6+(i-3.5)*7,P.y-6,i); note('바삭하게 깨고 나니 손에 힘이 풀린다'); SFX.calm(); } else note('다시 길 위로'); };
+  on('w1',()=>{ closeCard(); const fresh=got&&addToy('wax')&&!!(window.WAX&&WAX.toy); if(got) roomCount();
+    const after=()=>{ shutPipe(); if(got){ for(let i=0;i<8;i++) popCoin(P.x+6+(i-3.5)*7,P.y-6,i); note('바삭하게 깨고 나니 손에 힘이 풀린다'); SFX.calm();
+      if(fresh) say('왁뿌볼은 본부 말랑이 상자에 넣어 뒀다 삐약. 생각날 때 또 깨라 삐약.',5); } else note('다시 길 위로'); };
     if(warp){ warp.after=after; warpOut(); } else after(); }); }
 /* 병아리의 도움 (막힌 곳 건너뛰기): 같은 깃발로 세 번 돌아오면 병아리가 다음 깃발까지 데려다주겠다고 묻는다.
    한 곳에서 막혀 그날 판을 못 끝내는 학생이 없게 하려는 것이다. 싫다고 하면 세 번 더 돌아왔을 때 다시 묻는다.
@@ -694,18 +756,20 @@ function draw(){
   box(4,4,96,16,'#fff8e8','#1f1b18'); bx.drawImage(A.DROP[3].c,8,7); texts.push({t:String(P.coins),x:19,y:16.5,s:10,c:'#1f1b18',f:DISP});
   for(let i=0;i<3;i++){ const x=50+i*11, on=i<P.pcs; bx.fillStyle=on?'#1f1b18':'#cdbf9f'; bx.fillRect(x+2,8,3,1); bx.fillRect(x+1,9,5,1); bx.fillRect(x,10,7,3); bx.fillRect(x+1,13,5,1); bx.fillRect(x+2,14,3,1); if(on){ bx.fillStyle='#d9512c'; bx.fillRect(x+2,9,3,1); bx.fillRect(x+1,10,5,3); bx.fillRect(x+2,13,3,1); } }
   if(P.shield){ bx.fillStyle='#1f1b18'; bx.fillRect(86,7,9,7); bx.fillRect(87,14,7,2); bx.fillRect(89,16,3,1); bx.fillStyle='#69b4e6'; bx.fillRect(87,8,7,6); bx.fillRect(88,14,5,1); bx.fillRect(89,15,3,1); }
-  { const x0=108, x1=W-Math.ceil(92*dprU/k)-4; if(x1>x0+30){ bx.fillStyle='#1f1b18'; bx.fillRect(x0,11,x1-x0,3); bx.fillStyle='#8b9198'; bx.fillRect(x0,12,x1-x0,1); bx.fillStyle='#d9512c'; bx.fillRect(x0,12,Math.round((x1-x0)*Math.min(1,(room?room.ret:P.x)/door.x)),1);
+  { const x0=108, x1=W-topR; if(x1>x0+30){ bx.fillStyle='#1f1b18'; bx.fillRect(x0,11,x1-x0,3); bx.fillStyle='#8b9198'; bx.fillRect(x0,12,x1-x0,1); bx.fillStyle='#d9512c'; bx.fillRect(x0,12,Math.round((x1-x0)*Math.min(1,(room?room.ret:P.x)/door.x)),1);
       for(const f of flags){ bx.fillStyle=f.on?'#d9512c':'#1f1b18'; bx.fillRect(Math.round(x0+(x1-x0)*f.x/door.x),9,1,7); } } }
   // 병아리 말 칸. 위쪽 표시 줄의 정해진 자리에 뜬다 (크기와 자리는 변하지 않는다). 아래쪽에 두면 땅을 덮어 낭떠러지가 안 보인다
   // 곰이 높이 올라가 칸 뒤로 들어가면 칸이 비쳐 보이게 옅어진다
-  if(bubble){ const x1=W-Math.ceil(92*dprU/k)-4, bw=Math.max(140,x1-104), bh=31, bX=Math.max(4,x1-bw), bY=4;
-    if(bubble.k!==k||bubble.bw!==bw){ bubble.k=k; bubble.bw=bw; bubble.fs=8; ctx.font='700 '+Math.round(8*k)+'px '+BODY; bubble.lines=wrapText(bubble.t,(bw-24)*k);
-      if(bubble.lines.length>2){ bubble.fs=7; ctx.font='700 '+Math.round(7*k)+'px '+BODY; bubble.lines=wrapText(bubble.t,(bw-24)*k); } }
+  // 화면이 좁아(세로로 든 작은 아이폰 등) 칸이 140보다 좁아지면, 왼쪽 표시(색 방울·조각·방패)를 덮지 않게 칸을 좁고 높게 만든다. 그 화면에서는 늘 같은 크기다
+  let bubB=35;
+  if(bubble){ const x1=W-topR, nar=x1-104<140&&x1-104>=84, bw=nar?x1-104:Math.max(140,x1-104), bh=nar?40:31, bX=Math.max(4,x1-bw), bY=4; bubB=bY+bh;
+    if(bubble.k!==k||bubble.bw!==bw){ bubble.k=k; bubble.bw=bw; const fit=(fs,max)=>{ bubble.fs=fs; ctx.font='700 '+Math.round(fs*k)+'px '+BODY; bubble.lines=wrapText(bubble.t,(bw-24)*k); return bubble.lines.length<=max; };
+      if(nar) fit(7,4)||fit(6,5); else fit(8,2)||fit(7,3); }
     const px=P.x-cx, py=P.y-cy, behind=!warp&&py-3<bY+bh-6&&py+P.h>bY&&px+20>bX&&px-8<bX+bw; bubA+=((behind?.3:1)-bubA)*.22;
     const al=(1-dark)*bubA; bx.globalAlpha=al; box(bX,bY,bw,bh,'#fff8e8','#1f1b18'); spr(A.CHICK[Math.floor(tNow*4)%2],bX+4,bY+Math.round(bh/2)-6,true); bx.globalAlpha=1;
-    const n=bubble.lines.length, lh=bubble.fs+2, y0=bY+Math.round((bh-n*lh)/2)+bubble.fs, tal=(1-dark)*(.3+bubA*.7); bubble.lines.forEach((l,i)=>texts.push({t:l,x:bX+19,y:y0+i*lh,s:bubble.fs,c:'#1f1b18',w:'700',f:BODY,al:tal})); }
+    const n=bubble.lines.length, lh=bubble.fs+(n>4?1:2), y0=bY+Math.round((bh-n*lh)/2)+bubble.fs, tal=(1-dark)*(.3+bubA*.7); bubble.lines.forEach((l,i)=>texts.push({t:l,x:bX+19,y:y0+i*lh,s:bubble.fs,c:'#1f1b18',w:'700',f:BODY,al:tal})); }
   else bubA=1;
-  if(msg&&tNow<msg.until){ ctx.font=Math.round(9*k)+'px '+DISP; const w=Math.ceil(ctx.measureText(msg.t).width/k)+12, x=Math.round(W/2-w/2), y=bubble?38:26; box(x,y,w,15,'#1f1b18','#1f1b18'); texts.push({t:msg.t,x:W/2,y:y+11,s:9,c:'#fff8e8',a:'center',f:DISP}); }
+  if(msg&&tNow<msg.until){ ctx.font=Math.round(9*k)+'px '+DISP; const w=Math.ceil(ctx.measureText(msg.t).width/k)+12, x=Math.round(W/2-w/2), y=bubble?bubB+3:26; box(x,y,w,15,'#1f1b18','#1f1b18'); texts.push({t:msg.t,x:W/2,y:y+11,s:9,c:'#fff8e8',a:'center',f:DISP}); }
   // 키워서 화면에
   ctx.imageSmoothingEnabled=false; ctx.drawImage(buf,0,0,W*k,H*k);
   for(const t of texts){ if(t.al===0) continue; ctx.globalAlpha=t.al===undefined?1:t.al; ctx.font=(t.w||'400')+' '+Math.round(t.s*k)+'px '+t.f; ctx.fillStyle=t.c; ctx.textAlign=t.a||'left'; ctx.fillText(t.t,t.x*k,t.y*k); }
@@ -714,24 +778,28 @@ function draw(){
 
 /* ---------- 화면 위 카드 ---------- */
 let last=performance.now(), acc=0;
-function card(html){ ov.innerHTML='<div class="card">'+html+'</div>'; ov.hidden=false; paused=true; K.l=K.r=K.j=K.b=false; const b=ov.querySelector('button'); if(b) try{b.focus({preventScroll:true});}catch(e){} }
+// 카드의 첫 버튼에 초점을 둔다. 본부에서는 멈춰 둔 판 버튼에 둬서, 컴퓨터에서 스페이스나 엔터를 누르면 그 판을 이어 한다
+function focusCard(){ const b=(held>=0&&ov.querySelector('[data-d="'+held+'"]:not(:disabled)'))||ov.querySelector('button:not(:disabled)'); if(b) try{ b.focus({preventScroll:true}); }catch(e){} }
+function card(html){ ov.innerHTML='<div class="card">'+html+'</div>'; ov.hidden=false; paused=true; K.l=K.r=K.j=K.b=false; focusCard(); }
 function closeCard(){ ov.hidden=true; ov.innerHTML=''; paused=false; last=performance.now(); }
 function on(id,fn){ ov.querySelector('#'+id).onclick=fn; }
 const IOS_TAB=/iP(hone|ad|od)/.test(navigator.userAgent)&&!navigator.standalone;
-function startCard(){ card(`<div class="eyebrow">평범한 스파이</div><h1>회색 안개 작전</h1>
+function startCard(){ syncLevel(0); card(`<div class="eyebrow">평범한 스파이</div><h1>회색 안개 작전</h1>
   <p>안개 낀 등굣길을 지나 본부 문까지 간다. 폰은 가로로 눕혀서 잡아요.</p>
   <p class="note">왼쪽 ◀ ▶ 로 움직이고, 오른쪽 점프와 숨 버튼을 써요. 컴퓨터에서는 방향키, 스페이스(점프), X(숨).</p>
   ${IOS_TAB?'<p class="note">아이폰은 공유 버튼에서 「홈 화면에 추가」를 누르고 홈 화면의 곰 아이콘으로 열면 주소창 없이 화면이 꽉 차요.</p>':''}
   ${teacher()?'<p class="note">선생님 모드: 날짜와 소등에 상관없이 모든 판이 열려 있어요. '+(location.hash==='#all'?'주소 끝의 #all을 지우면 꺼져요.':'위의 「평범한 스파이」 글자를 빠르게 일곱 번 누르면 꺼져요.')+'</p>':''}
   <div class="row"><button class="go" id="s1">오늘의 작전 시작</button>${todayNo()>=0?'<button id="s2">본부에서 고르기</button>':''}</div>`);
   secret();
-  on('s1',()=>{ ac(); SFX.tick(); goFull(); if(lightsOut()) return sleepCard(); const t=todayNo(); if(t>=0){ stageNo=t; briefing(); } else hqCard(); });
-  if(ov.querySelector('#s2')) on('s2',()=>{ ac(); SFX.tick(); goFull(); hqCard(); }); }
+  on('s1',()=>{ ac(); SFX.tick(); goFull(); if(lightsOut()) return sleepCard(); const t=todayNo();
+    if(t<0){ goLevel(1); return hqCard(); }
+    goLevel(2); stageNo=t; if(t===held){ held=-1; play(); } else briefing(); });   // 오늘 판으로 바로 들어가도 뒤로 가기는 본부를 거친다. 멈춰 둔 오늘 판은 그 자리에서 이어 한다
+  if(ov.querySelector('#s2')) on('s2',()=>{ ac(); SFX.tick(); goFull(); goLevel(1); hqCard(); }); }
 // 처음 화면. 소등 시간이면 소등 화면이 먼저 나온다
 function home(){ if(lightsOut()) sleepCard(); else startCard(); }
 // 선생님 모드: 카드 맨 위 「평범한 스파이」 글자를 4초 안에 일곱 번 누르면 켜지고 꺼진다. 홈 화면 앱에서는 주소에 #all을 붙일 수 없어서 둔 길이다
 function secret(){ const el=ov.querySelector('.eyebrow'); let n=0, t0=0; if(el) el.onclick=()=>{ const now=Date.now(); if(now-t0>4000){ n=0; t0=now; } if(++n<7) return; const sv=loadSave(); sv.teacher=!sv.teacher; putSave(sv); SFX.tick(); home(); }; }
-function sleepCard(){ running=false; card(`<div class="eyebrow">평범한 스파이</div><h1>본부 소등</h1>
+function sleepCard(){ running=false; syncLevel(0); card(`<div class="eyebrow">평범한 스파이</div><h1>본부 소등</h1>
   <p>밤 10시부터 아침 6시까지 본부는 불을 끈다. 늘곰도 잔다. 요원도 폰을 내려놓고 쉰다.</p>
   <p class="note">오늘 판은 내일도 그대로 열려 있어요. 지금 힘든 일이 있으면 도움전화는 언제든 볼 수 있어요.</p>
   <div class="row"><button id="z1">도움전화 보기</button></div>`);
@@ -739,18 +807,38 @@ function sleepCard(){ running=false; card(`<div class="eyebrow">평범한 스파
 // 폰에서 전체 화면(주소창 숨김)과 가로 고정. 안드로이드 크롬에서만 된다. 아이폰은 홈 화면에 추가해서 연다
 function goFull(){ try{ const el=document.documentElement; if(!el.requestFullscreen||document.fullscreenElement||!matchMedia('(pointer:coarse)').matches) return;
   el.requestFullscreen({navigationUI:'hide'}).then(()=>{ try{ screen.orientation.lock('landscape').catch(()=>{}); }catch(e){} }).catch(()=>{}); }catch(e){} }
-function hqCard(){ if(lightsOut()) return sleepCard();
+function hqCard(){ if(lightsOut()) return sleepCard(); syncLevel(1);
   const sv=loadSave(), cl=sv.clear||{}, bossOk=hasPieces(cl)||teacher();
   const st=DAYS.slice(0,TRAIN).map((d,i)=>!isOpen(i)?'lock':(d.boss&&!bossOk)?'need':'open'), any=st.includes('open');
   const why=teacher()?' 선생님 모드라 모든 판이 열려 있어요.':Date.now()<LIVE?' 지금은 정식 시작 전이라 모든 판이 열려 있어요. 11.22부터는 그날 판이 오후 5시에 열려요.':' 새 판은 날마다 오후 5시에 열리고, 지난 판은 언제든 다시 할 수 있어요.';
   card(`<div class="hqtop"><div class="eyebrow">본부 · 1주차 하늘빛</div><div class="raid" id="raid" hidden><span>전교 정화</span><i><b></b></i><span id="raidn"></span></div></div>
   <h2>${st[0]==='lock'?'본 작전은 11.23 월요일 오후 5시에 시작한다':'오늘의 작전을 고른다'}</h2><p class="ntc" id="ntc" hidden></p>
-  <div class="days">${DAYS.slice(0,TRAIN).map((d,i)=>`<button data-d="${i}" ${st[i]!=='open'?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):st[i]==='lock'?'오후 5시에 열림':st[i]==='need'?'조각 3개 필요':'미완료'}</span></button>`).join('')}</div>
-  <div class="row"><button data-d="${TRAIN}"${any?'':' class="go"'}>훈련장 · 조작 연습 1분</button></div>
+  <div class="days">${DAYS.slice(0,TRAIN).map((d,i)=>`<button data-d="${i}" ${st[i]!=='open'?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${held===i?'이어 하기':cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):st[i]==='lock'?'오후 5시에 열림':st[i]==='need'?'조각 3개 필요':'미완료'}</span></button>`).join('')}</div>
+  <div class="row"><button data-d="${TRAIN}"${any?'':' class="go"'}>훈련장 · ${held===TRAIN?'이어 하기':'조작 연습 1분'}</button>${window.WAX&&WAX.toy?`<button id="tb">말랑이 상자 ${ownToys().length}/${TOYS.length}</button>`:''}</div>
   <p class="note">모은 색 방울 ${sv.coins||0}개. 목요일 보스는 글자 조각 「하」「늘」「빛」을 다 모으면 열려요.${why}<span id="hs"></span></p>`);
   ov.firstChild.classList.add('wide'); hqInfo();
-  ov.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ stageNo=+b.dataset.d; SFX.tick();
-    if(DAYS[stageNo].train){ bonus=false; mood='sun'; reset(); closeCard(); running=true; } else briefing(); }); }
+  ov.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ const n=+b.dataset.d; SFX.tick(); goLevel(2);
+    if(n===held){ stageNo=n; held=-1; play(); return; }   // 멈춰 둔 판은 그 자리에서 이어 한다
+    stageNo=n; if(DAYS[stageNo].train){ bonus=false; mood='sun'; reset(); play(); } else briefing(); });
+  if(ov.querySelector('#tb')) on('tb',()=>{ SFX.tick(); goLevel(2); toyCard(); }); }
+// 받은 말랑이. 선생님 모드에서는 미리 볼 수 있게 모두 열어 둔다
+const ownToys=()=>teacher()?TOYS.map(t=>t[0]):toysOf(loadSave());
+// 본부 말랑이 상자: 위의 버튼으로 말랑이를 골라 손가락으로 주무른다. 아직 못 받은 것은 그림자만 보이고 받는 법이 적혀 있다.
+// fresh = 판을 끝내고 막 받은 말랑이를 보여 줄 때
+function toyCard(k,fresh){ if(!(window.WAX&&WAX.toy)) return hqCard();
+  const own=ownToys(); k=k||own[own.length-1]||TOYS[0][0];
+  const sh=rot?innerWidth:innerHeight, h=Math.max(140,Math.min(250,sh-158));   // 키가 낮은 폰에서도 「본부로」까지 한 화면에 들어오게
+  card(`<div class="hqtop"><div class="eyebrow">${fresh?'새 말랑이를 받았다':'본부 · 말랑이 상자'}</div><div class="tpick">${TOYS.map(([t])=>`<button data-t="${t}"${own.includes(t)?'':' class="off"'}>${WAX.info(t).tag}</button>`).join('')}</div></div>
+  <div id="wx" class="wx" style="height:${h}px"></div>
+  <div class="row wxrow"><p class="note" id="wxc"></p><button id="t1">본부로</button></div>`);
+  ov.firstChild.classList.add('wide');
+  const st=ov.querySelector('#wx'), cn=ov.querySelector('#wxc');
+  const show=t=>{ k=t; ov.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+    if(own.includes(t)){ WAX.toy(t,st,cn); return; }
+    const i=WAX.info(t); st.style.background='#efe3c8'; st.innerHTML=`<img class="tlock" src="${i.img}" alt="">`; cn.textContent=i.name+' · '+TOYS.find(x=>x[0]===t)[1]; };
+  ov.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ if(b.dataset.t!==k){ SFX.tick(); show(b.dataset.t); } });
+  show(k); on('t1',()=>{ SFX.tick(); hqCard(); });
+  try{ ov.querySelector('[data-t].on').focus({preventScroll:true}); }catch(e){} }   // 키보드로 고를 때는 지금 고른 말랑이 버튼에서 시작한다
 // 본부 서버에서 받은 소식: 전교 정화 합계, 공지 한 줄, 오늘의 추천곡. 연결이 없으면 아무것도 보이지 않는다
 function hqInfo(){ const put=s=>{ const r=ov.querySelector('#raid'); if(!r||!s||!s.ok) return;
     if(s.raid&&s.raid.goal>0){ r.querySelector('b').style.width=Math.min(100,Math.round(s.raid.total/s.raid.goal*100))+'%'; ov.querySelector('#raidn').textContent=s.raid.total+' / '+s.raid.goal; r.hidden=false; }
@@ -772,7 +860,7 @@ function reportCard(){ const o=DAYS[stageNo].report, yest=new Date(kst()-864e5).
   on('r1',()=>pick('done')); on('r2',()=>pick('alt')); on('r3',()=>pick('no')); }
 function moodCard(){ card(`<div class="eyebrow">마음 날씨</div><h2>지금 기분은 어떤 날씨인가</h2><p class="note">고른 날씨가 오늘 판의 하늘이 돼요.</p>
   <div class="row"><button data-m="sun">맑음</button><button data-m="cloud">구름</button><button data-m="fog">안개</button><button data-m="rain">비</button><button data-m="storm">번개</button></div>`);
-  ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mood=b.dataset.m; hq('mood',mood); reset(); closeCard(); running=true; if(bonus) note(bonusNote); }); }
+  ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mood=b.dataset.m; hq('mood',mood); reset(); play(); if(bonus) note(bonusNote); }); }
 function worry(w){ card(`<div class="eyebrow">걱정 벽돌</div><h2>"${DAYS[stageNo].worry}"</h2><p>이 벽돌에 붙일 기분의 이름을 고른다. 정답은 없다.</p>
   <div class="row"><button data-e="불안">불안하다</button><button data-e="부담">부담스럽다</button><button data-e="귀찮음">귀찮다</button><button data-e="모름">잘 모르겠다</button></div>`);
   ov.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{ w.alive=false; closeCard(); SFX.brk();
@@ -780,12 +868,17 @@ function worry(w){ card(`<div class="eyebrow">걱정 벽돌</div><h2>"${DAYS[sta
     for(let i=0;i<3;i++) popCoin(w.x+8+i*8,GTOP-50,i);
     note(b.dataset.e==='모름'?'모르겠다는 것도 이름이다. 벽이 무너진다':'「'+b.dataset.e+'」 이름을 붙이니 벽이 무너진다'); }); }
 // 도움전화는 어느 화면에서든 그 위에 겹쳐 열린다. 밑에 있던 카드나 게임은 그대로 두고, 닫으면 하던 데로 돌아간다
-function helpCard(){ if(!hv.hidden) return; hq('once','phone'); const under=!ov.hidden, was=running&&!under;
+let hvUnder=false, hvT=0;
+function helpCard(){ if(!hv.hidden) return; clearTimeout(hvT); hq('once','phone'); const under=!ov.hidden, was=running&&!under; hvUnder=under;
   hv.innerHTML=`<div class="card"><div class="eyebrow">도움전화${was?' · 게임은 멈춰 있어요':''}</div><h2>혼자 버티지 않아도 된다</h2>
   <div class="tel"><b>Wee클래스</b><span>학교 3층. 쉬는 시간이나 점심시간에 와도 돼요.</span><b>1388</b><span>청소년상담전화. 24시간, 문자는 #1388</span><b>109</b><span>자살예방 상담전화. 24시간</span><b>117</b><span>학교폭력 신고·상담. 24시간</span></div>
   <div class="row"><button id="h1">${was?'게임으로 돌아가기':'닫기'}</button></div></div>`;
   hv.hidden=false; paused=true; K.l=K.r=K.j=K.b=false; const b=hv.querySelector('#h1'); try{b.focus({preventScroll:true});}catch(e){}
-  b.onclick=()=>{ hv.hidden=true; hv.innerHTML=''; if(!under){ if(running){ paused=false; last=performance.now(); } else home(); } }; }
+  try{ history.pushState(Object.assign({},history.state,{help:1}),''); }catch(e){}   // 뒤로 가기를 누르면 도움전화만 닫히게 기록을 하나 쌓는다 (☎을 누를 때만 열린다)
+  b.onclick=()=>{ b.onclick=null; if(history.state&&history.state.help){ history.back(); hvT=setTimeout(closeHelp,400); } else closeHelp(); }; }
+function closeHelp(){ clearTimeout(hvT); if(hv.hidden) return; hv.hidden=true; hv.innerHTML=''; const late=hashLate; hashLate=false;
+  if(!hvUnder){ if(running){ paused=false; last=performance.now(); } else home(); }
+  else if(!ov.hidden){ if(late) redraw(); focusCard(); } }   // 밑에 있던 카드로 초점을 돌려준다
 function finish(){ running=false; SFX.clear();
   const s=Math.round(playT), mm=Math.floor(s/60), ss=String(s%60).padStart(2,'0');
   if(DAYS[stageNo].train){ card(`<div class="eyebrow">훈련장</div><h1>훈련 완료</h1>
@@ -795,17 +888,20 @@ function finish(){ running=false; SFX.clear();
     <div class="row"><button class="go" id="f1">본부로</button></div>`);
     { const sv=loadSave(); sv.train=true; putSave(sv); }
     ov.firstChild.classList.add('wide'); on('f1',()=>hqCard()); return; }
+  // 목요일 보스와 금요일 판을 처음 끝내면 말랑이를 하나 받는다. 받기를 누르지 않아도 본부 말랑이 상자에 들어가 있다
+  const tk=DAYS[stageNo].toy, newToy=!!tk&&addToy(tk)&&!!(window.WAX&&WAX.toy);
+  if(newToy) WAX.preload(tk);
   card(`<div class="eyebrow">작전 완료 · 본부 도착</div><h1>${DAYS[stageNo].done||'글자 조각 「'+DAYS[stageNo].letter+'」 확보'}</h1>
   <div class="stat"><div><b>${P.coins}</b>색 방울</div><div><b>${P.pcs}/3</b>숨은 색 조각</div><div><b>${mm}:${ss}</b>걸린 시간</div><div><b>${deaths}</b>깃발에서 다시</div></div>
   <div class="order"><div class="eyebrow">${DAYS[stageNo].nl||'내일의 지령'}</div><p><b>「${DAYS[stageNo].next[0]}」</b> ${DAYS[stageNo].next[1]}</p></div>
   <p class="note" id="fr" hidden></p>
-  <div class="row"><button class="go" id="f1">본부로</button></div>`);
+  <div class="row">${newToy?'<button class="go" id="f2">말랑이 받기</button><button id="f1">본부로</button>':'<button class="go" id="f1">본부로</button>'}</div>`);
   // 처음 깬 판만 센다: 전교 정화 +1, 글자 조각, 보스 통과, 그리고 그날 판을 그날 깼으면 '오늘 판 통과'
   { const sv=loadSave(), d=DAYS[stageNo]; sv.clear=sv.clear||{}; const first=!sv.clear[stageNo]; sv.clear[stageNo]=true; sv.coins=(sv.coins||0)+P.coins;
     if(first){ sv.day=sv.day||{}; sv.day[stageNo]=today(); } putSave(sv);   // 깬 날짜: 다음 판에서 지령 보고를 물을지 정할 때 쓴다
     if(first){ hq('add','raid',1); if(d.letter) hq('add','piece',1); if(d.boss) hq('once','decode'); if(d.date===today()) hq('once','brief'); }
     const n=ov.querySelector('#fr'), cnt=first&&HQ.on&&!teacher(), sg=songEl(); if(cnt) n.append('전교 정화 합계에 1을 보탰어요.'); if(cnt&&sg) n.append(' '); if(sg) n.append(sg); n.hidden=!(cnt||sg); }
-  ov.firstChild.classList.add('wide'); on('f1',()=>hqCard()); }
+  ov.firstChild.classList.add('wide'); on('f1',()=>hqCard()); if(newToy) on('f2',()=>{ SFX.item(); toyCard(tk,true); }); }
 // 본부 라디오의 오늘 추천곡 한 줄 (관리 시트의 음악 탭에 그날 곡이 있을 때만)
 function songEl(){ const st=HQ.cached(); if(!(st&&st.song&&st.song.t)) return null; const e=document.createElement('span'); e.className='song'; e.textContent='본부 라디오 오늘의 곡: '+st.song.t+(st.song.a?' · '+st.song.a:''); return e; }
 
@@ -820,7 +916,7 @@ function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music();
   draw(); requestAnimationFrame(frame); }
 reset(); home(); requestAnimationFrame(frame);
 document.addEventListener('visibilitychange',()=>{ last=performance.now(); if(document.hidden) BGM.pause(); });
-window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},get warp(){return warp;},get stageNo(){return stageNo;},get lift(){return lift;},get stuck(){return stuck;},get flags(){return flags;},get cp(){return cp;},get cam(){return cam;},get maxX(){return maxX;},get camY(){return camY;},get W(){return W;},get H(){return H;},die(){respawn();},get bub(){return bubble&&{t:bubble.t,a:bubA};},
-  go(n){stageNo=n||0;bonus=true;mood='sun';reset();closeCard();running=true;}};
+window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},get warp(){return warp;},get stageNo(){return stageNo;},get lift(){return lift;},get stuck(){return stuck;},get flags(){return flags;},get cp(){return cp;},get cam(){return cam;},get maxX(){return maxX;},get camY(){return camY;},get W(){return W;},get H(){return H;},die(){respawn();},get bub(){return bubble&&{t:bubble.t,a:bubA};},get held(){return held;},get topR(){return topR;},toHQ,
+  go(n){stageNo=n||0;bonus=true;mood='sun';reset();play();}};
 })();
 </script>

@@ -4,6 +4,7 @@
  * 이 서버가 모으는 것
  *  - 날짜별 "합계 숫자"만 (접속한 휴대폰 수, 브리핑 완료 수, 지령 보고, 마음 날씨 등)
  *  - 하늘 게시판에 학생이 남긴 이름 없는 한 줄 (선생님이 '공개'로 바꿔야 다른 학생에게 보임)
+ *  - 횡스크롤 게임의 「오류·의견 보내기」로 온 이름 없는 글 (선생님만 보고, 학생 앱에는 나오지 않음)
  * 모으지 않는 것
  *  - 이름, 학번, 요원 코드, 기기 번호, IP 등 누구인지 알 수 있는 정보는 받지도 저장하지도 않습니다.
  *
@@ -12,13 +13,14 @@
  *  - 하늘게시판 : 번호 | 받은 시각 | 내용 | 상태(대기/공개/숨김) | 확인 필요
  *  - 통계       : 날짜 | 접속 | 브리핑 완료 | ... (서버가 자동 기록)
  *  - 음악       : 날짜 | 곡 제목 | 가수 | 늘곰 한마디 (비워 두면 앱에 들어 있는 곡이 나옴)
+ *  - 의견       : 번호 | 받은 시각 | 종류(오류/의견) | 내용 | 어디서(자동) | 상태(새 글/확인함/고침) | 확인 필요
  *
  * 고친 뒤에는 꼭: 배포 → 배포 관리 → 연필(수정) → 버전: 새 버전 → 배포
  * ('새 배포'를 누르면 주소가 바뀌어 앱과 연결이 끊깁니다)
  */
 
 var TZ = 'Asia/Seoul';
-var SH = { cfg: '설정', sky: '하늘게시판', stats: '통계', songs: '음악' };
+var SH = { cfg: '설정', sky: '하늘게시판', stats: '통계', songs: '음악', fb: '의견' };
 
 /* 통계 열: [영문 키, 시트에 보이는 이름]  (순서를 바꾸지 말고, 새 항목은 맨 뒤에 추가) */
 var METRICS = [
@@ -66,6 +68,7 @@ function doPost(e) {
     var a = String(req.a || '');
     if (a === 'count') return out(withLock(function () { return addCounts(req.inc || {}); }));
     if (a === 'sky') return out(withLock(function () { return skyPost(req.t); }));
+    if (a === 'fb') return out(withLock(function () { return fbPost(req); }));
     if (a === 'admin') return out(admin(req));
     return out({ ok: false, msg: 'unknown' });
   } catch (err) { return out({ ok: false, msg: String(err) }); }
@@ -181,6 +184,68 @@ function todaySong(today) {
   return null;
 }
 
+/* ================= 오류·의견 (횡스크롤 게임) ================= */
+/* 게임 이야기에 흔한 '죽는다, 맞는다'는 빼고, 사람이 걱정되는 말만 표시한다 (게임 쪽 검사와 같은 목록) */
+var FB_RISK = /자살|자해|죽고\s*싶|살기\s*싫|살고\s*싶지|사라지고\s*싶|없어지고\s*싶|끝내고\s*싶|왕따|따돌|괴롭힘|괴롭혀|괴롭히|협박|학폭|학교\s*폭력/;
+var FB_STATUS = ['새 글', '확인함', '고침'];
+function fbClean(x) {
+  return String(x == null ? '' : x).replace(/[\u0000-\u001f<>&]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
+}
+function fbPost(req) {
+  var t = fbClean(req.t), c = fbClean(req.c);
+  var k = String(req.k || '') === '의견' ? '의견' : '오류';
+  if (t.length < 2) return { ok: false, msg: 'empty' };
+  /* 도배 방지: 학교 전체 10분에 40개, 하루 300개까지. 같은 글 반복은 한 번만 적음 */
+  var cache = CacheService.getScriptCache();
+  var now = new Date().getTime(), today = todayStr();
+  var w = String(cache.get('fbW') || '').split('|'), n = num(w[0]), start = num(w[1]);
+  if (!start || now - start > 600000) { n = 0; start = now; }
+  var d = String(cache.get('fbD') || '').split('|'), dn = d[0] === today ? num(d[1]) : 0;
+  if (n >= 40 || dn >= 300) return { ok: false, msg: 'busy' };
+  cache.put('fbW', (n + 1) + '|' + start, 900);
+  cache.put('fbD', today + '|' + (dn + 1), 21600);
+  var key = 'fb:' + Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, k + t, Utilities.Charset.UTF_8));
+  if (cache.get(key)) return { ok: true, dup: true };
+  cache.put(key, '1', 3600);
+
+  var flag = FB_RISK.test(t) ? '걱정되는 말' : (CONTACT.test(t) ? '연락처·주소?' : '');
+  var sh = sheet(SH.fb), last = sh.getLastRow();
+  var id = last < 2 ? 1 : num(sh.getRange(last, 1).getValue()) + 1; /* 가운데 줄을 지워도 번호가 겹치지 않게 */
+  sh.appendRow([id, nowStr(), k, safeCell(t), safeCell(c), FB_STATUS[0], flag]);
+  if (flag === '걱정되는 말') addCounts({ risk: 1 });
+  return { ok: true };
+}
+function setFbStatus(id, status) {
+  if (FB_STATUS.indexOf(status) < 0 || !id) return;
+  var sh = sheet(SH.fb), last = sh.getLastRow();
+  if (last < 2) return;
+  var ids = sh.getRange(2, 1, last - 1, 1).getValues();
+  for (var i = 0; i < ids.length; i++) {
+    if (num(ids[i][0]) === id) { sh.getRange(i + 2, 6).setValue(status); return; }
+  }
+}
+/* 관리실에는 최근 200개만 보냄 (그 앞의 글은 시트에 그대로 있음) */
+function fbRows(limit) {
+  var sh = sheet(SH.fb), last = sh.getLastRow();
+  if (last < 2) return [];
+  var from = Math.max(2, last - limit + 1);
+  return sh.getRange(from, 1, last - from + 1, 7).getValues().map(function (r) {
+    return { id: num(r[0]), at: dstr(r[1], true), k: String(r[2] || '오류'), t: String(r[3]).replace(/^'/, ''), c: String(r[4]).replace(/^'/, ''), status: String(r[5] || FB_STATUS[0]).trim(), flag: String(r[6] || '') };
+  });
+}
+function initFb(sh) {
+  sh.getRange(1, 1, 1, 7).setValues([['번호', '받은 시각', '종류', '내용', '어디서(자동)', '상태', '확인 필요']]);
+  /* 아래는 보기 좋게 꾸미는 것뿐이라, 실패해도 글 받기와 관리실은 그대로 돌아가게 한다 */
+  try {
+    sh.getRange('C:E').setNumberFormat('@'); /* '1-3' 같은 글이 날짜로 바뀌지 않게 */
+    sh.getRange('A1:G1').setFontWeight('bold').setBackground('#ffe3d6');
+    sh.setColumnWidth(2, 140); sh.setColumnWidth(4, 420); sh.setColumnWidth(5, 360); sh.setColumnWidth(7, 110);
+    sh.setFrozenRows(1);
+    var rule = SpreadsheetApp.newDataValidation().requireValueInList(FB_STATUS, true).build();
+    sh.getRange(2, 6, Math.max(1, sh.getMaxRows() - 1), 1).setDataValidation(rule);
+  } catch (x) {}
+}
+
 /* ================= 선생님 관리 ================= */
 function admin(req) {
   var cache = CacheService.getScriptCache();
@@ -192,6 +257,7 @@ function admin(req) {
     return { ok: false, msg: 'pw' };
   }
   var op = String(req.op || 'load');
+  if (op === 'fb') withLock(function () { setFbStatus(num(req.id), String(req.status || '')); });
   if (op === 'sky') {
     withLock(function () { setSkyStatus(num(req.id), String(req.status || '')); });
     dropCache();
@@ -219,7 +285,7 @@ function adminData() {
     return { id: num(r[0]), at: dstr(r[1], true), t: String(r[2]).replace(/^'/, ''), status: String(r[3] || '대기').trim(), flag: String(r[4] || '') };
   });
   var st = statRows();
-  return {
+  var res = {
     ok: true,
     now: nowStr(),
     notice: cfg.notice || '',
@@ -229,6 +295,9 @@ function adminData() {
     stats: st.rows,
     posts: posts
   };
+  /* 의견 목록을 못 읽어도 관리실의 다른 탭은 그대로 열리게 한다 */
+  try { res.fb = fbRows(200); } catch (x) { res.fb = []; res.fbErr = String(x); }
+  return res;
 }
 
 /* ================= 시트 도우미 ================= */
@@ -239,6 +308,7 @@ function sheet(name) {
   return sh;
 }
 function initSheet(name, sh) {
+  if (name === SH.fb) return initFb(sh);
   if (name === SH.cfg) {
     sh.getRange(1, 1, 5, 3).setValues([
       ['항목', '값', '설명'],
@@ -318,7 +388,7 @@ function randomPw() {
 /* ================= 처음 한 번 실행 ================= */
 /** 편집기 위쪽에서 'setup'을 고르고 ▶실행을 누르세요. 탭이 만들어지고 관리 비밀번호가 '설정' 탭에 적힙니다. */
 function setup() {
-  [SH.cfg, SH.sky, SH.stats, SH.songs].forEach(sheet);
+  [SH.cfg, SH.sky, SH.stats, SH.songs, SH.fb].forEach(sheet);
   var ss = SpreadsheetApp.getActive();
   var def = ss.getSheetByName('시트1') || ss.getSheetByName('Sheet1');
   if (def && ss.getSheets().length > 1 && def.getLastRow() === 0) ss.deleteSheet(def);

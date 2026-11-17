@@ -65,6 +65,7 @@ thead th{background:var(--paper);font-size:12px}
     <div class="row" style="justify-content:space-between">
       <div class="tabs" role="tablist">
         <button role="tab" data-t="sky" aria-selected="true">하늘 게시판 <span id="pendN"></span></button>
+        <button role="tab" data-t="fb" aria-selected="false">오류·의견 <span id="fbN"></span></button>
         <button role="tab" data-t="stats" aria-selected="false">참여 숫자</button>
         <button role="tab" data-t="notice" aria-selected="false">공지</button>
       </div>
@@ -81,6 +82,17 @@ thead th{background:var(--paper);font-size:12px}
       <div class="card"><h2>확인 기다리는 글</h2><div id="pend"></div></div>
       <div class="card"><h2>하늘에 떠 있는 글 <span class="note">(최근 20개가 학생 앱에 보여요)</span></h2><div id="pub"></div></div>
       <details class="card"><summary><b>숨긴 글</b></summary><div id="hid" style="margin-top:8px"></div></details>
+    </section>
+
+    <section data-p="fb" hidden>
+      <div class="card help" id="fbRisk" hidden>
+        <h2>걱정되는 말이 담긴 글이 있어요</h2>
+        <p>게임은 걱정되는 낱말이 든 글을 보내지 않고 도움전화(Wee클래스·1388·109)를 먼저 보여 줘요. 빨간 표시가 붙은 글은 그 검사를 피해 들어온 글이에요. 글쓴이는 알 수 없으니, 전체 안내로 도움을 청할 곳을 한 번 더 알려 주세요.</p>
+      </div>
+      <div class="card"><h2>새로 온 글</h2>
+        <p class="note">횡스크롤 게임 첫 화면과 본부의 「오류·의견 보내기」로 온 글이에요. 이름은 없고, 보낸 화면과 판, 기기 종류, 화면 크기 같은 게임 정보만 자동으로 붙어요. 학생 앱에는 보이지 않아요. 여기에는 최근 200개가 나오고, 전체는 구글 시트 '의견' 탭에 있어요.</p>
+        <div id="fbNew"></div></div>
+      <details class="card"><summary><b>확인한 글</b> <span class="note" id="fbOldN"></span></summary><div id="fbOld" style="margin-top:8px"></div></details>
     </section>
 
     <section data-p="stats" hidden>
@@ -140,6 +152,7 @@ document.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>{
 function render(){
   $('#stamp').textContent='마지막으로 불러온 시각: '+D.now;
   $('#sheetLink').href=D.sheetUrl;
+  renderFb();
   /* 하늘 게시판 */
   const P=D.posts.slice().reverse();
   const pend=P.filter(p=>p.status!=='공개'&&p.status!=='숨김'), pub=P.filter(p=>p.status==='공개'), hid=P.filter(p=>p.status==='숨김');
@@ -196,6 +209,27 @@ $('#csv').onclick=()=>{
   const blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='회색안개작전_참여숫자_'+D.now.slice(0,10)+'.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
 };
+/* ---- 오류·의견 ---- */
+function renderFb(){
+  const F=D.fb;
+  if(!F){
+    $('#fbN').textContent=''; $('#fbOldN').textContent=''; $('#fbRisk').hidden=true; $('#fbOld').innerHTML='';
+    $('#fbNew').innerHTML='<p class="err">서버 코드가 예전 버전이라 아직 글을 받을 수 없어요.</p><p class="note">Apps Script에 새 <code>server/Code.gs</code>를 붙여 넣고 「배포 → 배포 관리 → 연필(수정) → 버전: 새 버전 → 배포」를 하면 쓸 수 있어요.</p>';
+    return;
+  }
+  const done=f=>f.status==='확인함'||f.status==='고침', L=F.slice().reverse();
+  const fresh=L.filter(f=>!done(f)), old=L.filter(done);
+  fresh.sort((a,b)=>(b.flag==='걱정되는 말'?1:0)-(a.flag==='걱정되는 말'?1:0));
+  $('#fbN').textContent=fresh.length?'('+fresh.length+')':'';
+  $('#fbOldN').textContent=old.length?'('+old.length+')':'';
+  $('#fbRisk').hidden=!fresh.some(f=>f.flag==='걱정되는 말');
+  const btn=(f,s,l,c)=>`<button${c?` class="${c}"`:''} data-fb="${f.id}" data-s="${s}">${l}</button>`;
+  const row=(f,btns)=>`<div class="post"><div><div class="t">${f.flag?`<span class="flag">${esc(f.flag)}</span>`:''}<span class="pill">${esc(f.k)}</span> ${esc(f.t)}</div><div class="m">${esc(f.at)}${f.status==='고침'?' · <span class="pill p공개">고침</span>':''}${f.c?' · '+esc(f.c):''}</div></div><div class="row">${btns}</div></div>`;
+  const bad=D.fbErr?'<p class="err">의견 목록을 읽지 못했어요. 구글 시트의 「의견」 탭을 확인해 주세요.</p>':'';
+  $('#fbNew').innerHTML=bad+(fresh.length?fresh.map(f=>row(f,btn(f,'확인함','확인함','ok')+btn(f,'고침','고침'))).join(''):bad?'':'<p class="empty">새로 온 글이 없어요.</p>');
+  $('#fbOld').innerHTML=old.length?old.map(f=>row(f,(f.status==='고침'?'':btn(f,'고침','고침'))+btn(f,'새 글','새 글로'))).join(''):'<p class="empty">없어요.</p>';
+  document.querySelectorAll('[data-fb]').forEach(x=>x.onclick=()=>{ x.disabled=true; load({op:'fb',id:+x.dataset.fb,status:x.dataset.s}); });
+}
 if(PW && URL_) load();
 </script>
 </body>

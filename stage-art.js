@@ -131,6 +131,15 @@ const SCHOOL=pair((P)=>{ const c=cvs(120,66),x=c.getContext('2d'); const R=(col,
   for(let r=0;r<3;r++) for(let i=0;i<5;i++){ R(P.S,4+i*8,22+r*14,5,8); R(P.S,78+i*8,22+r*14,5,8); }
   for(let r=0;r<3;r++) for(let i=0;i<3;i++) R(P.S,49+i*8,12+r*14,5,8); R(P.B,54,52,12,14); return c; });
 
+// 본부 문 옆 라디오: 나무 상자 위에 올려 둔 주홍 라디오
+const RADIO=pair((P)=>{ const c=cvs(26,34),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,3,22,20,12); R(P.o,4,23,18,10); R(P.e,4,23,18,1); R(P.O,4,32,18,1); R(P.O,10,24,1,8); R(P.O,16,24,1,8);   // 상자
+  R(P.k,1,9,24,13); R(P.r,2,10,22,11); R(P.q,2,10,22,1); R(P.R,2,20,22,1);                                          // 몸통
+  R(P.k,4,12,8,7); R(P.c,5,13,6,5); R(P.k,6,14,1,1); R(P.k,8,14,1,1); R(P.k,7,16,1,1); R(P.k,9,16,1,1);   // 스피커
+  R(P.k,14,12,9,4); R(P.c,15,13,7,2); R(P.R,18,13,1,2);                                                              // 눈금 창
+  R(P.k,15,17,3,3); R(P.y,16,18,1,1); R(P.k,20,17,3,3); R(P.y,21,18,1,1);                                           // 다이얼
+  R(P.k,6,7,14,1); R(P.k,6,8,1,1); R(P.k,19,8,1,1);                                                                  // 손잡이
+  R(P.k,21,7,1,2); R(P.k,22,5,1,2); R(P.k,23,3,1,2); R(P.k,24,1,1,2); R(P.r,24,0,2,1); return c; });                 // 안테나
 const COAT=set(['...kk.kk...','..krrkrrk..','.krrckcrrk.','krrrrcrrrrk','krkrrrrrkrk','kk.krrrk.kk','...kryrk...','...krrrk...','..krrrrrk..','..krrRrrk..','..kkkkkkk..'],'coat');
-window.ART={PAL,GPAL,BEAR,BEARR,COAT,CHICK,MUNG,MUNG_SQ,BUG,GROUND,DIRT,BRICK,HARD,CRATE,USED,WALLB,WALLF,PAD,DROP,SHIELD,PIECE,BUSH,TREE,CLOUD,DOOR,SCHOOL,grey,cvs};
+window.ART={PAL,GPAL,BEAR,BEARR,COAT,CHICK,MUNG,MUNG_SQ,BUG,GROUND,DIRT,BRICK,HARD,CRATE,USED,WALLB,WALLF,PAD,DROP,SHIELD,PIECE,BUSH,TREE,CLOUD,DOOR,RADIO,SCHOOL,grey,cvs};
 })();

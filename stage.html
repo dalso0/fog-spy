@@ -106,6 +106,17 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .stat div{border:3px solid var(--ink);border-radius:4px;padding:6px 6px;text-align:center;background:var(--paper);font-size:12px}
 .stat b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;font-variant-numeric:tabular-nums}
 @media (max-height:300px){ .card.sn>.eyebrow{display:none} }
+.rk{list-style:none;margin:0;padding:0;display:grid;grid-template-rows:repeat(5,auto);grid-auto-flow:column;grid-auto-columns:1fr;gap:3px 16px;font-size:14px}
+.rk li{display:flex;gap:8px;align-items:baseline;border-bottom:2px dotted #d8ccb4;padding:3px 6px;min-width:0}
+.rk li b{min-width:2.4em;font-family:var(--f-display);font-weight:400}
+.rk li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk li i{font-style:normal;font-weight:700}
+.rk li.me{background:#ffe3d6;border-radius:3px}
+.rk li.wait{grid-row:1;border:0;color:#5c5348}
+.card.big .rk{font-size:15.5px} .card.big h1{font-size:36px}
+/* 키가 낮은 화면(세로로 든 폰은 무대를 돌려 눕히므로 폭이 곧 높이): 목록을 촘촘하게, 규칙 안내 줄은 뺀다 */
+@media (max-height:400px), (orientation:portrait) and (max-width:440px){ .rk{font-size:13px;gap:0 14px} .rk li{padding:1px 6px} #rnt{display:none} .card.big h1{font-size:30px} }
+@media (max-height:300px), (orientation:portrait) and (max-width:330px){ .card.rkc>.eyebrow{display:none} }
 .order{border:3px dashed var(--ink);border-radius:4px;padding:10px 12px;background:#fff}
 /* 오류·의견 보내기: 글씨만 있는 작은 버튼으로 열고, 카드는 돌려 놓은 무대 밖에 똑바로 띄운다 (폰을 세워 잡고 글을 쓸 수 있게).
    글씨 버튼은 보이는 크기는 그대로 두고 손가락으로 누르는 넓이만 키운다 (안쪽 여백을 주고 같은 만큼 바깥 여백을 뺀다) */
@@ -159,7 +170,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 <script src="stage-wax.js"></script>
 <script src="stage-feel.js"></script>
 <!-- 본부 서버(운영 시트)와 잇는 두 줄.
-     (1) config.js: 본부 주소만 읽는다. 이 줄만 켜면 「오류·의견 보내기」만 켜진다 (학생이 보내기를 누른 글만 나간다). 2026.11.18 선생님이 서버를 배포한 뒤 켬. 끄려면 이 줄을 주석으로 감싼다 -->
+     (1) config.js: 본부 주소만 읽는다. 이 줄을 켜면 「오류·의견 보내기」(학생이 보내기를 누른 글만 나간다)와 색 방울 순위(판을 깰 때 요원 코드와 판별 최고 방울 수)가 켜진다. 2026.11.18 선생님이 서버를 배포한 뒤 켬. 끄려면 이 줄을 주석으로 감싼다 -->
 <script src="config.js"></script>
 <!-- (2) hq.js: 합계 숫자를 보내고 본부 소식(공지, 전교 정화, 금주의 표어, 오늘의 곡)을 받는다. (1)을 푼 다음에 푼다
 <script src="hq.js"></script>
@@ -379,7 +390,7 @@ function todayNo(){ const cl=loadSave().clear||{}, ymd=today();
 let saveMem=null;   // 저장이 막힌 폰(쿠키를 모두 막아 둔 폰 등)에서는 창을 닫기 전까지만 여기에 들고 있는다
 function loadSave(){ let v=null; try{ v=JSON.parse(saveMem!==null?saveMem:localStorage.getItem('fogspy2')||'{}'); }catch(e){}
   if(!v||typeof v!=='object'||Array.isArray(v)) return {};
-  for(const k of ['rep','day','clear','rooms','fw','fb']) if(k in v){ const o=v[k]; if(!o||typeof o!=='object') delete v[k]; else if(Array.isArray(o)) v[k]=Object.assign({},o); }
+  for(const k of ['rep','day','clear','rooms','fw','fb','best']) if(k in v){ const o=v[k]; if(!o||typeof o!=='object') delete v[k]; else if(Array.isArray(o)) v[k]=Object.assign({},o); }
   if('coins' in v) v.coins=Math.max(0,Math.floor(+v.coins)||0);
   return v; }
 function putSave(v){ const t=JSON.stringify(v); try{ localStorage.setItem('fogspy2',t); saveMem=localStorage.getItem('fogspy2')===t?null:t; }catch(e){ saveMem=t; } }
@@ -955,7 +966,7 @@ function card(html){ ov.innerHTML='<div class="card">'+html+'</div>'; ov.hidden=
 function closeCard(){ ov.hidden=true; ov.innerHTML=''; paused=false; last=performance.now(); }
 function on(id,fn){ ov.querySelector('#'+id).onclick=fn; }
 const IOS_TAB=/iP(hone|ad|od)/.test(navigator.userAgent)&&!navigator.standalone;
-function startCard(){ syncLevel(0); card(`<div class="hqtop"><div class="eyebrow">평범한 스파이</div>${fbShow()?'<button class="lnk" id="fb">오류·의견 보내기</button>':''}</div><h1>회색 안개 작전</h1>
+function startCard(){ syncLevel(0); card(`<div class="hqtop"><div class="eyebrow">평범한 스파이 · 요원 ${agent().code}</div>${fbShow()?'<button class="lnk" id="fb">오류·의견 보내기</button>':''}</div><h1>회색 안개 작전</h1>
   <p>안개 낀 등굣길을 지나 본부 문까지 간다. 폰은 가로로 눕혀서 잡아요.</p>
   <p class="note">왼쪽 ◀ ▶ 로 움직이고, 오른쪽 점프와 숨 버튼을 써요. 컴퓨터에서는 방향키, 스페이스(점프), X(숨).</p>
   ${IOS_TAB?'<p class="note">아이폰은 공유 버튼에서 「홈 화면에 추가」를 누르고 홈 화면의 곰 아이콘으로 열면 주소창 없이 화면이 꽉 차요.</p>':''}
@@ -985,13 +996,15 @@ function hqCard(){ if(lightsOut()) return sleepCard(); syncLevel(1);
   card(`<div class="hqtop"><div class="eyebrow">본부 · 1주차 하늘빛</div><div class="raid" id="raid" hidden><span>전교 정화</span><i><b></b></i><span id="raidn"></span></div>${fbShow()?'<button class="lnk" id="fb">오류·의견 보내기</button>':''}</div>
   <h2>${st[0]==='lock'?'본 작전은 11.23 월요일 오후 5시에 시작한다':'오늘의 작전을 고른다'}</h2><p class="ntc" id="ntc" hidden></p>
   <div class="days">${DAYS.slice(0,TRAIN).map((d,i)=>`<button data-d="${i}" ${st[i]!=='open'?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${held===i?'이어 하기':cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):st[i]==='lock'?'오후 5시에 열림':st[i]==='need'?'조각 3개 필요':'미완료'}</span></button>`).join('')}</div>
-  <div class="row"><button data-d="${TRAIN}"${any?'':' class="go"'}>훈련장 · ${held===TRAIN?'이어 하기':'조작 연습 1분'}</button>${window.WAX&&WAX.toy?`<button id="tb">말랑이 상자 ${ownToys().length}/${TOYS.length}</button>`:''}</div>
-  <p class="note">모은 색 방울 ${sv.coins||0}개. ${weekDone(cl)?'<b>1주차 작전 완료. '+SNACK+'</b>':'목요일 보스는 글자 조각 「하」「늘」「빛」을 다 모으면 열려요.'+why}${saveMem!==null?' 이 폰은 기록을 저장하지 못해요. 창을 닫으면 처음부터 다시 해야 해요.':''}<span id="hs"></span></p>`);
+  <div class="row"><button data-d="${TRAIN}"${any?'':' class="go"'}>훈련장 · ${held===TRAIN?'이어 하기':'조작 연습 1분'}</button>${window.WAX&&WAX.toy?`<button id="tb">말랑이 상자 ${ownToys().length}/${TOYS.length}</button>`:''}${rankShow()?'<button id="rb">순위표</button>':''}</div>
+  <p class="note">요원 코드 <b>${agent().code}</b>${agent().fixed||teacher()?'':' <button class="lnk" id="re">다시 뽑기</button>'} · 모은 색 방울 ${sv.coins||0}개. ${weekDone(cl)?'<b>1주차 작전 완료. '+SNACK+'</b>':'목요일 보스는 글자 조각 「하」「늘」「빛」을 다 모으면 열려요.'+why}${saveMem!==null?' 이 폰은 기록을 저장하지 못해요. 창을 닫으면 처음부터 다시 해야 해요.':''}<span id="hs"></span></p>`);
   ov.firstChild.classList.add('wide'); hqInfo(); if(ov.querySelector('#fb')) on('fb',()=>{ SFX.tick(); fbCard('본부'); });
   ov.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ const n=+b.dataset.d; SFX.tick(); goLevel(2);
     if(n===held){ stageNo=n; held=-1; play(); return; }   // 멈춰 둔 판은 그 자리에서 이어 한다
     stageNo=n; if(DAYS[stageNo].train){ bonus=false; mood='sun'; reset(); play(); } else briefing(); });
-  if(ov.querySelector('#tb')) on('tb',()=>{ SFX.tick(); goLevel(2); toyCard(); }); }
+  if(ov.querySelector('#tb')) on('tb',()=>{ SFX.tick(); goLevel(2); toyCard(); });
+  if(ov.querySelector('#rb')) on('rb',()=>{ SFX.tick(); goLevel(2); rankCard(); });
+  if(ov.querySelector('#re')) on('re',()=>{ SFX.tick(); const sv=loadSave(), a=agent(); let c=a.code; while(c===a.code) c=newCode(); sv.agent=Object.assign({},a,{code:c}); putSave(sv); hqCard(); try{ ov.querySelector('#re').focus({preventScroll:true}); }catch(e){} }); }
 // 받은 말랑이. 선생님 모드에서는 미리 볼 수 있게 모두 열어 둔다
 const ownToys=()=>teacher()?TOYS.map(t=>t[0]):toysOf(loadSave());
 // 본부 말랑이 상자: 위의 버튼으로 말랑이를 골라 손가락으로 주무른다. 아직 못 받은 것은 그림자만 보이고 받는 법이 적혀 있다.
@@ -1008,7 +1021,7 @@ function toyCard(k,fresh){ if(!(window.WAX&&WAX.toy)) return hqCard();
     if(own.includes(t)){ WAX.toy(t,st,cn); return; }
     const i=WAX.info(t); st.style.background='#efe3c8'; st.innerHTML=`<img class="tlock" src="${i.img}" alt="">`; cn.textContent=i.name+' · '+TOYS.find(x=>x[0]===t)[1]; };
   ov.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ if(b.dataset.t!==k){ SFX.tick(); show(b.dataset.t); } });
-  show(k); on('t1',()=>{ SFX.tick(); hqCard(); });
+  show(k); on('t1',()=>{ SFX.tick(); if(fresh&&rankDue) rankCard(rankDue==='final'); else hqCard(); });
   try{ ov.querySelector('[data-t].on').focus({preventScroll:true}); }catch(e){} }   // 키보드로 고를 때는 지금 고른 말랑이 버튼에서 시작한다
 // 본부 서버에서 받은 소식: 전교 정화 합계, 공지 한 줄, 오늘의 추천곡. 연결이 없으면 아무것도 보이지 않는다 (연결이 없을 때의 추천곡은 본부 문 옆 라디오에만 나온다)
 function hqInfo(){ const put=s=>{ const r=ov.querySelector('#raid'); if(!r||!s||!s.ok) return;
@@ -1188,11 +1201,58 @@ function finish(){ running=false; SFX.clear();
   <div class="row">${newToy?'<button class="go" id="f2">말랑이 받기</button><button id="f1">본부로</button>':'<button class="go" id="f1">본부로</button>'}</div>`);
   // 처음 깬 판만 센다: 전교 정화 +1, 글자 조각, 보스 통과, 그리고 그날 판을 그날 깼으면 '오늘 판 통과'
   { const sv=loadSave(), d=DAYS[stageNo]; sv.clear=sv.clear||{}; const first=!sv.clear[stageNo]; sv.clear[stageNo]=true; sv.coins=(sv.coins||0)+P.coins;
+    if(!teacher()){ sv.best=sv.best||{}; sv.best[stageNo]=Math.max(+sv.best[stageNo]||0,P.coins); sv.agent=Object.assign({},agent(),{fixed:true}); }   // 순위는 판마다 가장 많이 모은 수의 합. 첫 판을 깨면 요원 코드가 굳는다
     if(first){ sv.day=sv.day||{}; sv.day[stageNo]=today(); } putSave(sv);   // 깬 날짜: 다음 판에서 지령 보고를 물을지 정할 때 쓴다
     if(first){ hq('add','raid',1); if(d.letter) hq('add','piece',1); if(d.boss) hq('once','decode'); if(d.date===today()) hq('once','brief'); }
     const n=ov.querySelector('#fr'), cnt=first&&HQ.on&&!teacher(), sg=songEl(), sn=weekDone(sv.clear)||(teacher()&&!!d.rest); if(sn){ const b=document.createElement('b'); b.textContent=SNACK; n.append(b); if(cnt||sg) n.append(' '); ov.firstChild.classList.add('sn'); }
     if(cnt) n.append('전교 정화 합계에 1을 보탰어요.'); if(cnt&&sg) n.append(' '); if(sg) n.append(sg); n.hidden=!(cnt||sg||sn); }
-  ov.firstChild.classList.add('wide'); on('f1',()=>hqCard()); if(newToy) on('f2',()=>{ SFX.item(); toyCard(tk,true); }); }
+  rankDue=rankShow()&&(DAYS[stageNo].final?'final':true); if(rankDue) rankSend();   // 깬 기록을 바로 보내 두고, 「본부로」를 누르면 순위표부터 보여 준다
+  ov.firstChild.classList.add('wide'); on('f1',()=>rankDue?rankCard(rankDue==='final'):hqCard()); if(newToy) on('f2',()=>{ SFX.item(); toyCard(tk,true); }); }
+/* ---------- 요원 코드와 색 방울 순위 ----------
+   요원 코드: 처음 열 때 색+동물로 제비뽑기 (예전 앱과 같은 목록). 첫 판을 깨기 전까지는 본부에서 「다시 뽑기」를 할 수 있다.
+   이름이나 반은 받지 않는다. 같은 폰의 기록을 서버에서 이어 붙이려고 아무 뜻 없는 기록 번호(id)를 함께 만든다.
+   순위: 판을 깰 때마다 {기록 번호, 코드, 판별 최고 방울 수}를 서버에 보낸다. 서버는 판별 큰 쪽만 남겨 그 합으로 순위를 매기고
+   (같은 판을 되풀이해서 쌓이지 않게), 코드가 다른 기록과 겹치면 비어 있는 코드로 바꿔 돌려준다.
+   본부 주소(config.js)가 없으면 순위표는 나오지 않는다. 선생님 모드에서는 기록 없이 순위만 본다 */
+const CODE_C=['파란','하늘','초록','연두','노란','주황','빨간','분홍','보라','남색','하얀','까만','회색','은빛','금빛','민트','살구','밤색','청록','무지개'];
+const CODE_A=['돌고래','수달','너구리','고슴도치','펭귄','올빼미','다람쥐','여우','판다','코알라','거북이','고래','해달','참새','두루미','호랑이','사슴','토끼','물개','카멜레온','나무늘보','미어캣','라쿤','부엉이','치타','늑대','까치','문어','도마뱀','햄스터'];
+const newCode=()=>CODE_C[Math.floor(Math.random()*CODE_C.length)]+CODE_A[Math.floor(Math.random()*CODE_A.length)];
+function agent(){ const sv=loadSave(), a=sv.agent;
+  if(a&&typeof a==='object'&&/^[a-z0-9]{16}$/.test(a.id)&&typeof a.code==='string'&&/^[가-힣0-9]{3,12}$/.test(a.code)) return a;
+  let id=''; try{ const u=new Uint8Array(16); crypto.getRandomValues(u); u.forEach(x=>id+=(x%36).toString(36)); }catch(e){ while(id.length<16) id+=Math.floor(Math.random()*36).toString(36); }
+  sv.agent={id,code:newCode(),fixed:false}; putSave(sv); return sv.agent; }
+const rankShow=()=>FB_ON&&(teacher()||!!agent().fixed);
+let rankDue=false, RK=null;
+function rankSend(){ const a=agent(), sv=loadSave(), best={};
+  for(const k in (sv.best||{})) if(/^\d{1,2}$/.test(k)) best[k]=Math.max(0,Math.floor(+sv.best[k])||0);
+  const body=JSON.stringify(teacher()?{a:'rank',view:1}:{a:'rank',id:a.id,code:a.code,best});
+  const p=Promise.race([fetch(FB_URL,{method:'POST',body,headers:{'Content-Type':'text/plain;charset=utf-8'}}).then(r=>r.json()).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),12000))])
+    .then(j=>{ if(j&&j.ok&&!teacher()&&typeof j.code==='string'&&/^[가-힣0-9]{3,14}$/.test(j.code)&&j.code!==a.code){ const s2=loadSave(); s2.agent=Object.assign({},agent(),{code:j.code}); putSave(s2); } return j; });
+  RK={t:Date.now(),p}; return p; }
+// final = 마지막 판을 깼을 때 크게 보여 주는 최종 순위표 (DAYS에 final:true인 판)
+function rankCard(final){ rankDue=false;
+  card(`<div class="eyebrow">${final?'작전 끝 · 최종 순위':'요원 순위 · 색 방울'}</div><h1>${final?'최종 순위':'순위표'}</h1>
+  <ol class="rk" id="rk"><li class="wait">순위표를 불러오는 중이에요.</li></ol>
+  <p id="rme" hidden></p>
+  <p class="note" id="rnt">판마다 가장 많이 모은 색 방울을 더해서 순위를 매겨요. 같은 판을 다시 해서 더 많이 모으면 그 판 기록이 바뀌어요.</p>
+  <div class="row"><button class="go" id="r1">본부로</button></div>`);
+  ov.firstChild.classList.add('wide','rkc'); if(final) ov.firstChild.classList.add('big'); on('r1',()=>{ SFX.tick(); hqCard(); });
+  const box=ov.firstChild, p=(RK&&Date.now()-RK.t<30000)?RK.p:rankSend();
+  p.then(j=>{ if(ov.firstChild!==box) return;   // 그 사이에 다른 카드로 넘어갔다
+    const ol=box.querySelector('#rk'), me=box.querySelector('#rme'), nt=box.querySelector('#rnt');
+    if(!(j&&j.ok)){ ol.innerHTML=''; const li=document.createElement('li'); li.className='wait'; li.textContent=j&&j.msg==='busy'?'잠깐 뒤에 다시 열어 주세요.':'지금은 순위표를 불러오지 못했어요. 기록은 다음에 판을 깰 때 함께 보내요.'; ol.append(li); return; }
+    ol.innerHTML='';
+    (j.top||[]).slice(0,10).forEach(o=>{ const li=document.createElement('li'); if(o.me) li.className='me';
+      const b=document.createElement('b'), sp=document.createElement('span'), i=document.createElement('i');
+      b.textContent=(+o.r||0)+'위'; sp.textContent=String(o.c||'').slice(0,14); i.textContent=(+o.n||0)+'개'; li.append(b,sp,i); ol.append(li); });
+    if(!ol.children.length){ const li=document.createElement('li'); li.className='wait'; li.textContent='아직 순위에 오른 요원이 없어요.'; ol.append(li); }
+    let t='';
+    if(teacher()) t='선생님 모드라 순위에 들어가지 않아요. 순위에 오른 요원 '+(+j.total||0)+'명.';
+    else if(j.hidden) t='이 기록은 본부가 순위에서 뺐어요.';
+    else if(j.r) t='요원 '+j.code+' · 내 순위 '+j.r+'위 (요원 '+(+j.total||0)+'명 가운데) · 색 방울 '+(+j.sum||0)+'개'+(j.gap>0?'. 10위까지 '+j.gap+'개 남았어요.':'.');
+    else t='요원 '+(j.code||agent().code)+' · 색 방울을 모으면 순위에 올라가요.';
+    if(j.changed) t+=' 코드가 다른 요원과 겹쳐서 「'+j.code+'」로 바뀌었어요.';
+    me.textContent=t; me.hidden=false; }); }
 // 카드에 붙는 오늘의 추천곡 한 줄: 관리 시트의 음악 탭에 그날 곡이 있을 때만 나온다 (게임에 들어 있는 요일별 곡은 본부 문 옆 라디오에만 나온다)
 function songEl(){ const st=HQ.cached(); if(!(st&&st.song&&cut(st.song.t,40))) return null; const o=songNow(), e=document.createElement('span'); e.className='song'; e.textContent='본부 라디오 오늘의 곡: '+o.t+(o.a?' · '+o.a:''); return e; }
 

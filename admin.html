@@ -69,6 +69,7 @@ thead th{background:var(--paper);font-size:12px}
       <div class="tabs" role="tablist">
         <button role="tab" data-t="sky" aria-selected="true">하늘 게시판 <span id="pendN"></span></button>
         <button role="tab" data-t="fb" aria-selected="false">오류·의견 <span id="fbN"></span></button>
+        <button role="tab" data-t="rank" aria-selected="false">방울 순위</button>
         <button role="tab" data-t="stats" aria-selected="false">참여 숫자</button>
         <button role="tab" data-t="notice" aria-selected="false">공지</button>
       </div>
@@ -99,6 +100,12 @@ thead th{background:var(--paper);font-size:12px}
         <p class="note" id="fbMore" hidden></p>
         <div id="fbNew"></div></div>
       <details class="card"><summary><b>확인한 글</b> <span class="note" id="fbOldN"></span></summary><div id="fbOld" style="margin-top:8px"></div></details>
+    </section>
+
+    <section data-p="rank" hidden>
+      <div class="card"><h2>색 방울 순위</h2>
+        <p class="note">횡스크롤 게임에서 판을 깰 때 들어온 기록이에요. 판마다 가장 많이 모은 방울을 더한 수로 순위를 매기고, 학생은 판을 깬 뒤와 본부의 「순위표」에서 1~10위와 자기 등수를 봐요. 요원 코드는 게임이 색+동물 목록에서 뽑은 것이라 누가 어떤 코드인지는 알 수 없어요. 숫자가 이상한 기록(한 판에 놓인 방울보다 많이 보낸 것은 서버가 이미 잘라요)이 있으면 「숨기기」로 순위에서 빼 주세요. 전체는 구글 시트 '순위' 탭에 있어요.</p>
+        <div id="rankL"></div></div>
     </section>
 
     <section data-p="stats" hidden>
@@ -159,6 +166,7 @@ function render(){
   $('#stamp').textContent='마지막으로 불러온 시각: '+D.now;
   $('#sheetLink').href=D.sheetUrl;
   renderFb();
+  renderRank();
   /* 하늘 게시판 */
   const P=D.posts.slice().reverse();
   const pend=P.filter(p=>p.status!=='공개'&&p.status!=='숨김'), pub=P.filter(p=>p.status==='공개'), hid=P.filter(p=>p.status==='숨김');
@@ -240,6 +248,15 @@ function renderFb(){
   $('#fbNew').innerHTML=bad+(fresh.length?fresh.map(f=>row(f,btn(f,'확인함','확인함','ok')+btn(f,'고침','고침'))).join(''):bad?'':'<p class="empty">새로 온 글이 없어요.</p>');
   $('#fbOld').innerHTML=old.length?old.map(f=>row(f,(f.status==='고침'?'':btn(f,'고침','고침'))+btn(f,'새 글','새 글로'))).join(''):'<p class="empty">없어요.</p>';
   document.querySelectorAll('[data-fb]').forEach(x=>x.onclick=()=>{ x.disabled=true; load({op:'fb',id:+x.dataset.fb,status:x.dataset.s}); });
+}
+/* ---- 방울 순위 ---- */
+function renderRank(){
+  const R=D.rank;
+  if(!R){ $('#rankL').innerHTML='<p class="err">서버 코드가 예전 버전이라 순위를 받을 수 없어요.</p><p class="note">Apps Script에 새 <code>server/Code.gs</code>를 붙여 넣고 「배포 → 배포 관리 → 연필(수정) → 버전: 새 버전 → 배포」를 해 주세요.</p>'; return; }
+  const bad=D.rankErr?'<p class="err">순위 탭을 읽지 못했어요. 구글 시트의 「순위」 탭을 확인해 주세요.</p>':'';
+  const stages=b=>Object.keys(b||{}).sort((x,y)=>x-y).map(k=>['월','화','수','목','금'][k]?(['월','화','수','목','금'][k]+' '+b[k]):((+k+1)+'판 '+b[k])).join(' · ');
+  $('#rankL').innerHTML=bad+(R.length?'<div class="tbl"><table><thead><tr><th>등수</th><th>요원 코드</th><th>방울</th><th>판별 최고</th><th>마지막</th><th></th></tr></thead><tbody>'+R.map(r=>`<tr${r.hide?' style="opacity:.55"':''}><td>${r.hide?'숨김':r.r?r.r+'위':'-'}</td><td>${esc(r.c)}</td><td>${+r.n||0}</td><td>${esc(stages(r.b))}</td><td>${esc(r.last||'')}</td><td><button data-rk="${esc(r.id)}" data-h="${r.hide?'':'1'}">${r.hide?'다시 넣기':'숨기기'}</button></td></tr>`).join('')+'</tbody></table></div>':bad?'':'<p class="empty">아직 들어온 기록이 없어요.</p>');
+  document.querySelectorAll('[data-rk]').forEach(x=>x.onclick=()=>{ x.disabled=true; load({op:'rankHide',id:x.dataset.rk,hide:!!x.dataset.h}); });
 }
 if(PW && URL_) load();
 </script>

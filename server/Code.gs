@@ -5,8 +5,11 @@
  *  - 날짜별 "합계 숫자"만 (접속한 휴대폰 수, 브리핑 완료 수, 지령 보고, 마음 날씨 등)
  *  - 하늘 게시판에 학생이 남긴 이름 없는 한 줄 (선생님이 '공개'로 바꿔야 다른 학생에게 보임)
  *  - 횡스크롤 게임의 「오류·의견 보내기」로 온 이름 없는 글 (선생님만 보고, 학생 앱에는 나오지 않음)
+ *  - 횡스크롤 게임의 색 방울 순위: 게임이 처음 열릴 때 제비뽑기로 정한 요원 코드(색+동물)와 판별 최고 방울 수,
+ *    그리고 게임이 만든 아무 뜻 없는 기록 번호 (같은 폰의 기록을 이어 붙이는 데만 씀)
  * 모으지 않는 것
- *  - 이름, 학번, 요원 코드, 기기 번호, IP 등 누구인지 알 수 있는 정보는 받지도 저장하지도 않습니다.
+ *  - 이름, 학번, 반, 기기 번호, IP 등 누구인지 알 수 있는 정보는 받지도 저장하지도 않습니다.
+ *    요원 코드는 학생이 고르는 글이 아니라 정해진 목록에서 뽑힌 말이라, 누가 어떤 코드인지는 학생 본인만 압니다.
  *
  * 시트 탭 (처음 실행할 때 자동으로 만들어집니다)
  *  - 설정       : 관리 비밀번호, 공지 한 줄, 전교 정화 목표
@@ -14,13 +17,14 @@
  *  - 통계       : 날짜 | 접속 | 브리핑 완료 | ... (서버가 자동 기록)
  *  - 음악       : 날짜 | 곡 제목 | 가수 | 늘곰 한마디 (비워 두면 앱에 들어 있는 곡이 나옴)
  *  - 의견       : 번호 | 받은 시각 | 종류(오류/의견) | 내용 | 어디서(자동) | 상태(새 글/확인함/고침) | 확인 필요
+ *  - 순위       : 기록 번호 | 요원 코드 | 방울 합계 | 판별 최고 | 숨김 | 처음 | 마지막 (첫 기록이 오면 생김)
  *
  * 고친 뒤에는 꼭: 배포 → 배포 관리 → 연필(수정) → 버전: 새 버전 → 배포
  * ('새 배포'를 누르면 주소가 바뀌어 앱과 연결이 끊깁니다)
  */
 
 var TZ = 'Asia/Seoul';
-var SH = { cfg: '설정', sky: '하늘게시판', stats: '통계', songs: '음악', fb: '의견' };
+var SH = { cfg: '설정', sky: '하늘게시판', stats: '통계', songs: '음악', fb: '의견', rank: '순위' };
 
 /* 통계 열: [영문 키, 시트에 보이는 이름]  (순서를 바꾸지 말고, 새 항목은 맨 뒤에 추가) */
 var METRICS = [
@@ -69,6 +73,7 @@ function doPost(e) {
     if (a === 'count') return out(withLock(function () { return addCounts(req.inc || {}); }));
     if (a === 'sky') return out(withLock(function () { return skyPost(req.t); }));
     if (a === 'fb') return out(withLock(function () { return fbPost(req); }));
+    if (a === 'rank') return out(rankPost(req));
     if (a === 'admin') return out(admin(req));
     return out({ ok: false, msg: 'unknown' });
   } catch (err) { return out({ ok: false, msg: String(err) }); }
@@ -309,6 +314,130 @@ function initFb(sh) {
   } catch (x) {}
 }
 
+/* ================= 색 방울 순위 (횡스크롤 게임) =================
+   게임은 판을 깰 때마다 {기록 번호, 요원 코드, 판별 최고 방울 수}를 보낸다. 서버는 판별로 더 큰 쪽만 남기고(되풀이해서 쌓이지 않게),
+   그 합으로 순위를 매긴다. 같은 판을 다시 해서 더 많이 모으면 그 판 기록만 바뀐다.
+   - 요원 코드는 아래 두 목록을 붙인 말만 받는다. 다른 기록이 이미 쓰는 코드면 비어 있는 코드를 골라 돌려준다 (게임은 그 코드로 바꾼다).
+   - 판별 최고 수는 RANK_CAP을 넘지 않게 자른다 (폰의 기록을 고쳐 부풀린 숫자 거르기). 판에 놓인 방울을 다 모아도 넘지 않을 만큼 넉넉히 잡았다.
+   - 선생님이 관리실에서 숨긴 기록은 순위에서 빠진다.
+   - view: 기록 없이 순위만 본다 (선생님 모드) */
+var CODE_C = ['파란', '하늘', '초록', '연두', '노란', '주황', '빨간', '분홍', '보라', '남색', '하얀', '까만', '회색', '은빛', '금빛', '민트', '살구', '밤색', '청록', '무지개'];
+var CODE_A = ['돌고래', '수달', '너구리', '고슴도치', '펭귄', '올빼미', '다람쥐', '여우', '판다', '코알라', '거북이', '고래', '해달', '참새', '두루미', '호랑이', '사슴', '토끼', '물개', '카멜레온', '나무늘보', '미어캣', '라쿤', '부엉이', '치타', '늑대', '까치', '문어', '도마뱀', '햄스터'];
+/* 판 번호(0부터) → 한 판에서 받을 수 있는 방울의 위 끝. 목록에 없는 판(앞으로 생길 판)은 RANK_CAP_ELSE */
+var RANK_CAP = [130, 120, 110, 150, 170];
+var RANK_CAP_ELSE = 200, RANK_STAGES = 30;
+function codeOk(c) {
+  c = String(c || '');
+  for (var i = 0; i < CODE_C.length; i++) if (c.indexOf(CODE_C[i]) === 0 && CODE_A.indexOf(c.slice(CODE_C[i].length)) >= 0) return true;
+  return false;
+}
+function rankSheet() {
+  var sh = sheet(SH.rank);
+  if (sh.getLastRow() < 1) {
+    sh.getRange(1, 1, 1, 7).setValues([['기록 번호', '요원 코드', '방울 합계', '판별 최고', '숨김', '처음', '마지막']]);
+    try { sh.getRange('A1:G1').setFontWeight('bold').setBackground('#dff0e8'); sh.setFrozenRows(1); sh.getRange('A:B').setNumberFormat('@'); sh.getRange('D:D').setNumberFormat('@'); sh.setColumnWidth(4, 220); } catch (x) {}
+  }
+  return sh;
+}
+function rankRead(sh) {
+  var last = sh.getLastRow();
+  if (last < 2) return [];
+  return sh.getRange(2, 1, last - 1, 7).getValues().map(function (r, i) {
+    var b = {}; try { b = JSON.parse(String(r[3] || '{}')) || {}; } catch (x) { b = {}; }
+    return { row: i + 2, id: String(r[0] || '').replace(/^'/, ''), code: String(r[1] || '').replace(/^'/, ''), sum: num(r[2]), best: b, hide: String(r[4] || '').trim() !== '', first: r[5], last: r[6] };
+  }).filter(function (o) { return o.id; });
+}
+function rankBest(old, inc) {
+  var b = {}, k, n;
+  for (k in old) if (/^\d{1,2}$/.test(k)) b[k] = Math.max(0, Math.floor(num(old[k])));
+  if (inc && typeof inc === 'object') for (k in inc) {
+    if (!/^\d{1,2}$/.test(k) || +k >= RANK_STAGES) continue;
+    n = Math.max(0, Math.floor(num(inc[k])));
+    n = Math.min(n, +k < RANK_CAP.length ? RANK_CAP[+k] : RANK_CAP_ELSE);
+    if (!(k in b) || n > b[k]) b[k] = n;
+  }
+  return b;
+}
+function rankSum(b) { var t = 0; for (var k in b) t += b[k]; return t; }
+/* 공동 순위: 합계가 같으면 같은 등수 (1, 2, 2, 4 …) */
+function rankList(all) {
+  var v = all.filter(function (o) { return !o.hide && o.sum > 0; });
+  v.sort(function (a, b) { return b.sum - a.sum || a.row - b.row; }); /* 합계가 같으면 먼저 적힌 기록이 위 (등수는 같다) */
+  var r = 0;
+  for (var i = 0; i < v.length; i++) { if (i === 0 || v[i].sum !== v[i - 1].sum) r = i + 1; v[i].r = r; }
+  return v;
+}
+function rankReply(all, me, extra) {
+  var v = rankList(all), res = { ok: true, total: v.length, top: [] };
+  for (var i = 0; i < v.length && i < 10; i++) res.top.push({ r: v[i].r, c: v[i].code, n: v[i].sum, me: !!me && v[i].id === me.id });
+  if (me) {
+    res.code = me.code; res.sum = me.sum;
+    if (me.hide) res.hidden = true;
+    else {
+      for (var j = 0; j < v.length; j++) if (v[j].id === me.id) { res.r = v[j].r; break; }
+      if (res.r > 10 && v.length >= 10) res.gap = v[9].sum - me.sum; /* 이만큼 더 모으면 10위와 같아진다 */
+    }
+  }
+  for (var k in extra || {}) res[k] = extra[k];
+  return res;
+}
+function rankPost(req) {
+  var cache = CacheService.getScriptCache();
+  if (req.view) {
+    var c0 = cache.get('rankView');
+    if (c0) return JSON.parse(c0);
+    var res0 = rankReply(rankRead(rankSheet()), null);
+    try { cache.put('rankView', JSON.stringify(res0), 30); } catch (x) {}
+    return res0;
+  }
+  var id = String(req.id || '');
+  if (!/^[a-z0-9]{12,24}$/.test(id)) return { ok: false, msg: 'id' };
+  /* 같은 폰이 3초 안에 또 보내면 기다리게 한다 (버튼을 여러 번 누른 것) */
+  if (cache.get('rk:' + id)) return { ok: false, msg: 'busy' };
+  cache.put('rk:' + id, '1', 3);
+  return withLock(function () {
+    var sh = rankSheet(), all = rankRead(sh), me = null, used = {}, i;
+    for (i = 0; i < all.length; i++) { if (all[i].id === id) me = all[i]; else used[all[i].code] = true; }
+    var want = String(req.code || ''), changed = false;
+    if (me) want = me.code; /* 한 번 적힌 기록의 코드는 바뀌지 않는다 */
+    else if (!codeOk(want) || used[want]) { want = freeCode(used); changed = true; }
+    var best = rankBest(me ? me.best : {}, req.best), sum = rankSum(best), now = nowStr();
+    if (!me) {
+      if (all.length >= 2000) return { ok: false, msg: 'full' };
+      sh.appendRow([id, want, sum, JSON.stringify(best), '', now, now]);
+      me = { row: sh.getLastRow(), id: id, code: want, sum: sum, best: best, hide: false, first: now };
+      all.push(me);
+    } else {
+      sh.getRange(me.row, 3, 1, 2).setValues([[sum, JSON.stringify(best)]]);
+      sh.getRange(me.row, 7).setValue(now);
+      me.sum = sum; me.best = best;
+    }
+    cache.remove('rankView');
+    return rankReply(all, me, changed ? { changed: true } : null);
+  });
+}
+function freeCode(used) {
+  for (var t = 0; t < 60; t++) {
+    var c = CODE_C[Math.floor(Math.random() * CODE_C.length)] + CODE_A[Math.floor(Math.random() * CODE_A.length)];
+    if (!used[c]) return c;
+  }
+  for (var i = 0; i < CODE_C.length; i++) for (var j = 0; j < CODE_A.length; j++) if (!used[CODE_C[i] + CODE_A[j]]) return CODE_C[i] + CODE_A[j];
+  return CODE_C[0] + CODE_A[0] + String(Math.floor(Math.random() * 90) + 10);
+}
+function setRankHidden(id, hide) {
+  if (!id) return;
+  var sh = rankSheet(), all = rankRead(sh);
+  for (var i = 0; i < all.length; i++) if (all[i].id === id) { sh.getRange(all[i].row, 5).setValue(hide ? '숨김' : ''); break; }
+  CacheService.getScriptCache().remove('rankView');
+}
+/* 관리실: 숨긴 기록까지 모두 (등수는 숨기지 않은 기록끼리) */
+function rankAll() {
+  var all = rankRead(rankSheet()), v = rankList(all), rmap = {};
+  v.forEach(function (o) { rmap[o.id] = o.r; });
+  all.sort(function (a, b) { return b.sum - a.sum; });
+  return all.map(function (o) { return { id: o.id, c: o.code, n: o.sum, r: rmap[o.id] || 0, hide: o.hide, b: o.best, last: dstr(o.last, true) }; });
+}
+
 /* ================= 선생님 관리 ================= */
 function admin(req) {
   var cache = CacheService.getScriptCache();
@@ -320,6 +449,7 @@ function admin(req) {
     return { ok: false, msg: 'pw' };
   }
   var op = String(req.op || 'load');
+  if (op === 'rankHide') withLock(function () { setRankHidden(String(req.id || ''), !!req.hide); });
   if (op === 'fb') withLock(function () { setFbStatus(num(req.id), String(req.status || '')); });
   if (op === 'sky') {
     withLock(function () { setSkyStatus(num(req.id), String(req.status || '')); });
@@ -360,6 +490,7 @@ function adminData() {
   };
   /* 의견 목록을 못 읽어도 관리실의 다른 탭은 그대로 열리게 한다 */
   try { var f = fbRows(200); res.fb = f.rows; res.fbMore = f.more; res.fbMoreNew = f.moreNew; } catch (x) { res.fb = []; res.fbErr = String(x); }
+  try { res.rank = rankAll(); } catch (x) { res.rank = []; res.rankErr = String(x); }
   return res;
 }
 

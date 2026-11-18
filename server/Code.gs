@@ -185,9 +185,41 @@ function todaySong(today) {
 }
 
 /* ================= 오류·의견 (횡스크롤 게임) ================= */
-/* 게임 이야기에 흔한 '죽는다, 맞는다'는 빼고, 사람이 걱정되는 말만 표시한다 (게임 쪽 검사와 같은 목록) */
-var FB_RISK = /자살|자해|죽고\s*싶|살기\s*싫|살고\s*싶지|사라지고\s*싶|없어지고\s*싶|끝내고\s*싶|왕따|따돌|괴롭힘|괴롭혀|괴롭히|협박|학폭|학교\s*폭력/;
+/* 걱정되는 말 검사. 게임(stage.html)과 같은 목록이다. 고칠 때는 두 곳을 글자까지 같게 고친다.
+   FB_HARD: 사람이 걱정되는 말(죽고 싶다, 자해, 왕따, 아빠한테 맞았다, 형이 때려요). 게임이 보내기 전에 멈추고 도움전화를 보여 주므로,
+     '걱정되는 말' 표시가 붙은 글은 그 검사를 거치지 않고 들어온 글이다.
+   FB_SOFT: 게임 이야기에도 흔한 말(때려요, 맞았어요, 뺏겼어요, 끝내고 싶다). 글에 게임 안에서만 쓰는 낱말(FB_GAME)이 없으면 게임이 멈추고, 여기서는 '걱정되는 말'로 표시한다.
+     게임 낱말과 함께 쓴 글은 게임 이야기로 보고 받되 '한 번 더 보기'로 표시한다. 다만 게임에서 늘 쓰는 '맞다'는 글에 사람이나 곳을 가리키는 낱말(FB_WHO)이 있을 때만 표시한다
+     ('보스한테 맞았어요'는 표시 없음, '보스 깨는데 학교에서 맞았어요'는 한 번 더 보기).
+   FB_OK: 뜻이 다른 것이 분명한 꼴('박자가 안 맞고', '저한테 맞는 난이도', '판을 빨리 끝내고 싶어요')은 FB_SOFT를 보기 전에 지운다.
+   FB_NOT: '안 죽고 싶어요', '죽고 싶지 않아요'는 글에 게임 낱말이 있을 때만 게임 이야기로 본다. */
+var FB_HARD = /자살(?!골|아|았)|쟈살|(?:^|[^가-힣])자\s살\s?(?:하|할|해|을|생각|충동|각)|자[^가-힣\s]{1,2}살|(?:^|[^가-힣])자해|[^가-힣\s]자해|[^혼하과각글숫문의피\s]자해(?:도|만|중|를|해|했|함)|자해\s?(?:해|했|함|하고|하는|하면|를|흉|충동|생각|자국)|죽[고구]\s?(?:만|는|도)?\s?(?:싶|시퍼|시픔|시프|십(?:다|어|음|은))|죽어\s?버리고\s?싶|죽을래|살기(?:가|도|는)?\s?(?:너무|진짜|정말)?\s?싫|사는\s?게\s?(?:너무\s?)?(?:싫|지옥|의미)|살\s?이유가?\s?없|살아서\s?뭐\s?[하해]|살아\s?있는\s?게\s?싫|살고\s?싶지|살고\s?싶진\s?[않안앉]|그만\s?살고\s?싶|태어나지\s?말걸|안\s?태어났으면|사라지고\s?싶|사라져\s?버리고\s?싶|없어지고\s?싶|없어져\s?버리고\s?싶|없어져야\s?(?:할|될)\s?것\s?같|(?:^|[^가-힣])(?:내가|제가|나만|저만|나는|저는|나도|저도|난|전)\s?(?:그냥\s?|차라리\s?)?(?:사라졌으면|없어졌으면|사라지면\s?좋|없어지면\s?좋|죽었으면\s?좋|죽었음\s?좋|죽으면\s?(?:좋|다들|모두|편|다\s?(?:편|좋|해결|끝나겠)))|나\s?같은\s?(?:건|거|애는|놈은)\s?(?:죽|없어|사라)|뒤지고\s?싶|디지고\s?싶|뒈지고\s?싶|ㅈㅅ\s?(?:하고\s?싶|할래|마렵|마려|각)|극단적(?:인)?\s?(?:선택|생각)|나쁜\s?생각(?:이|을|만)?\s?(?:들|나|해|하)|(?:^|[^가-힣])유서(?!\s?깊)|(?:손목|팔목|팔|허벅지)(?:을|를)?\s?(?:긋|그[었엇]|그을|그어|그음)|칼로\s?(?:[가-힣]+\s)?(?:긋|그[었엇]|그을|그어|그음)|(?:^|[^가-힣])목을?\s?(?:매|메)(?:고|달|서)|목숨을?\s?끊|번개탄|한강\s?(?:가고\s?싶|갈까|가야)|옥상[^.!?]*(?:뛰어|떨어지)|(?:뛰어내|떨어지)[^.!?]*옥상|(?:삶|인생)을?\s?끝내|(?:인생|삶|이번\s?생|망겜|지옥)[^.!?]*끝내\s?(?:버리)?고\s?싶|왕따(?!시(?:\s|$|ㅋ|ㅎ|만|하|큰|[.,!?~]))|왕[^가-힣\s]{1,2}따|(?:^|[^가-힣])은따|(?:^|[^가-힣])전따|(?:^|[^가-힣])따\s?(?:당|시[키켜킨킴켰])|따돌림|따돌임|따돌\s?당|협박|학폭|학교\s?폭력|가정\s?폭력|폭력을?\s?(?:당|써|쓰)|폭행|(?:^|[^가-힣])학대|아동\s?학대|학대\s?(?:당|를|받|해|했)|성추행|성폭[력행]|성희롱|몸을?\s?(?:[가-힣]+\s)?만[져지졌]|사진을?\s?(?:[가-힣]+\s)?(?:뿌[린리려렸]|퍼[뜨트]|유포)|삥\s?뜯|빵\s?셔틀|돈을?\s?(?:다\s|맨날\s)?(?:뜯|가져오[라래])|맞고\s?(?:살|다녀|다니|지내|자랐|컸)|맞으면서\s?(?:살|다녀|다니|지내|자랐|컸)|(?:(?:^|[^가-힣])(?:형|걔|걔네|쌤)|(?:사촌|동네|우리|친|큰|작은)\s?형|아빠|엄마|아버지|어머니|부모님|삼촌|할아버지|할머니|이모|고모|사촌|누나|오빠|언니|동생|선배|친구|애들|선생님|담임|일진|코치님?|감독님|관장님?)(?:들)?(?:한테|에게)(?:서)?\s?(?:[가-힣]+\s)?(?:맞(?!는\s?(?:난이도|수준|단계|레벨|속도|게임|판)|는지|대|다고|냐|나요|게\s(?!생[겼기]|[됐됨될되])|춰|추|춤)|두들겨|얻어|처맞|쳐맞)|(?:(?:^|[^가-힣])(?:형|걔|걔네|쌤)|(?:사촌|동네|우리|친|큰|작은)\s?형|아빠|엄마|아버지|어머니|부모님|삼촌|할아버지|할머니|이모|고모|사촌|누나|오빠|언니|동생|선배|친구|애들|선생님|담임|일진|코치님?|감독님|관장님?)(?:들)?(?:이|가|은|는)\s?(?:(?!보스|뭉치|장막|띵띵이|병아리|깃발|안개|방울|말랑이|몬스터|상자|블록|곰|적)[가-힣]+\s){0,2}(?:때[리려린렸림릴립렷]|괴롭[히혀힘힌힙혔혓]|따돌|뺏[어았]|팼|패요|패서|발로\s?[차찼])/;
+var FB_SOFT = /끝내\s?(?:버리)?고\s?싶|괴롭[히혀힘힌힙혔혓]|따돌|때[리려린렸림릴립렷]|맞고|맞[았앗]|맞을까\s?봐|맞은\s?적이?\s?(?:있|많)|(?:한테|에게)\s?맞|(?:맨날|매일|날마다|마다|학교에서|집에서|학원에서|자꾸|계속|또|항상|매번)\s?맞(?!는\s?(?:난이도|수준|단계|레벨|속도|게임|판)|는지|게\s(?!생[겼기]|[됐됨될되])|춰|추|춤)|처맞|쳐맞|얻어\s?맞|두들겨|(?:이|가|를|을)\s?(?:막\s)?(?:팼|패요|패서|패고|팹니다)|발로\s?[차찼]|뺏[기겼어겨긴는김길겻으]|뺐[기겼겨긴김길겻]|빼앗|뛰어\s?내리고\s?싶|뛰어\s?내릴(?:까|래)|죽었으면\s?좋[겠겟]|죽었음\s?좋[겠겟]|죽으면\s?좋[겠겟]|죽을까|죽어\s?버[릴리렸려]|죽으려(?!면)|죽을려(?!면)|죽어야(?:지|겠|겟|\s?돼|\s?해)|죽는\s?게\s?(?:더\s|훨씬\s|차라리\s)?(?:낫|나[을아])|죽을\s?(?:거예요|겁니다|게요|준비|용기|계획)|죽으러|죽기로|죽지\s?못해|죽으면\s?편|죽어도\s?상관|죽인대|죽인다고|죽이겠다|죽여\s?버린|나가\s?죽으|쫓겨[났나날]|집에\s?못\s?들어|맞아서\s?(?:멍|병원|아파|피|울)|(?:뺨|싸대기|따귀|주먹|몽둥이|회초리)(?:을|를|으로|로)?\s?맞|맞기\s?싫|(?:가면|오면|마시면|취하면)\s?맞[아는음]|죽을\s?생각|죽는\s?방법|사라[졌졋]으면|없어[졌졋]으면|사라지면\s?좋|없어지면\s?좋|뒤질래|뒤질까|찐따라고/;
+var FB_GAME = /보스|(?:^|[^고])뭉치|장막|띵띵이|병아리|깃발|안개|방울|말랑이|훈련장|점프|캐릭터|몬스터(?!\s?(?:사|마시|음료|한\s?캔))|스테이지|코인(?!\s?노래)|상자|블록(?!\s?당)|요원(?:이|을|를)\s|몹(?!시|쓸)|(?:^|[^가-힣])적(?:한테|에게|들(?:이|한테|에게))|(?:^|[^곰])곰(?!곰|이라고|\s?같다고|탱|처럼|돌이)/;
+var FB_NOT = /안\s?죽고\s?싶(?!겠|냐|은(?!데)|을|았|었|던|다면|다고\s?하면)|죽고\s?(?:는\s?)?싶지[는도가]?\s?않(?!겠|냐|은(?!데)|을|았|었|던|다면|다고\s?하면)|죽고\s?싶진\s?않(?!겠|냐|은(?!데)|을|았|었|던|다면|다고\s?하면)/g;
+var FB_OK = /(?:타이밍|박자|암호|정답|답|날짜|시간|순서|글자|비번|비밀번호|소리|싱크)(?:이|가|은|는|도|랑|이랑|하고)?\s?(?:다\s|딱\s|잘\s|안\s|전부\s)?맞[았고는아춰추음]|(?:이랑|랑|과|와)\s?안\s?맞[았는아고]|(?:한테|에게)\s?(?:딱\s|잘\s)?맞(?:는\s?(?:난이도|수준|단계|레벨|속도|게임|판)|는지|게\s(?!생[겼기]|[됐됨될되])|춰|추|춤)|(?:게임|겜|판|숙제|스테이지|작전|미션|지령|훈련)(?:을|를|은|는)?\s?(?:빨리|얼른|후딱|금방)?\s?끝내|왜\s?(?:자꾸\s?|계속\s?|맨날\s?|이렇게\s?)*죽을까(?=[요용여]|\s*[?？]|\s*$)|(?:자꾸|계속|바로|또|한\s?방에|시작하자마자|떨어지면|닿으면)\s?죽어\s?버[려리렸]|(?:난이도|속도|수준|게임|겜|판|모드)(?:이|가|은|는|도)?\s?(?:저|나|제)한테\s?(?:딱\s|잘\s)?맞[아았는]|안\s?죽는\s?방법|시간\s?(?:을\s?)?[뺏뺐]/g;
+var FB_WHO = /아빠|엄마|아버지|어머니|부모|삼촌|할아버지|할머니|이모|고모|사촌|코치|감독님|관장|(?:^|[^인대모유원])형|누나|오빠|언니|동생|선배|후배|친구|애들|걔|쌤|선생|담임|일진|학교|교실|반에서|집에서|학원|화장실|복도/; /* 서버에서만 쓴다 */
+var FB_PHONE = /\d{3,4}[-\s.]\d{4}/; /* 자동 정보 칸에는 '@'(화면 배율)가 늘 들어 있어서 CONTACT 대신 전화번호 꼴만 본다 */
 var FB_STATUS = ['새 글', '확인함', '고침'];
+function fbBlank(x) { return x.replace(/[\s\S]/g, ' '); }
+function fbRisk(t) {
+  t = String(t);
+  var game = FB_GAME.test(t);
+  if (FB_HARD.test(game ? t.replace(FB_NOT, fbBlank) : t)) return true;
+  return !game && FB_SOFT.test(t.replace(FB_OK, fbBlank));
+}
+function fbLook(t) {
+  var s = String(t).replace(FB_OK, fbBlank).replace(/안\s?맞[가-힣]*|(?:게|거|것|이게|버그|오류)\s?맞[가-힣]*|맞[아나]요\s*[?？]/g, fbBlank), who = FB_WHO.test(s); /* 옳다·알맞다는 뜻이 분명한 '맞다'는 지우고 본다 */
+  if (who && /맞[아았고는을음]/.test(s)) return true;
+  if (!who) s = s.replace(/[가-힣]*맞[가-힣]*/g, fbBlank);
+  return FB_SOFT.test(s);
+}
+function fbFlag(t, c) {
+  if (fbRisk(t) || FB_HARD.test(c)) return '걱정되는 말';
+  if (fbLook(t)) return '한 번 더 보기';
+  if (CONTACT.test(t) || FB_PHONE.test(c)) return '연락처·주소?';
+  return '';
+}
 function fbClean(x) {
   return String(x == null ? '' : x).replace(/[\u0000-\u001f<>&]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
 }
@@ -195,43 +227,74 @@ function fbPost(req) {
   var t = fbClean(req.t), c = fbClean(req.c);
   var k = String(req.k || '') === '의견' ? '의견' : '오류';
   if (t.length < 2) return { ok: false, msg: 'empty' };
-  /* 도배 방지: 학교 전체 10분에 40개, 하루 300개까지. 같은 글 반복은 한 번만 적음 */
   var cache = CacheService.getScriptCache();
+  /* 같은 글(종류·내용·자동 정보가 모두 같은 글)이 10분 안에 또 오면 한 번만 적고, 도배 세기에도 넣지 않는다
+     (답이 늦어서 학생이 다시 누른 글을 거르려는 것). 자동 정보에는 판과 자리, 다시 한 횟수가 들어 있어서 다른 학생의 글은 거의 따로 적히지만,
+     기종이 같은 폰으로 같은 자리에서 똑같은 글을 쓰면 한 줄만 남을 수 있다. 그래서 10분만 기억한다 */
+  var key = 'fb:' + Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, k + '|' + t + '|' + c, Utilities.Charset.UTF_8));
+  if (cache.get(key)) return { ok: true, dup: true };
+  /* 도배 방지: 학교 전체 10분에 40개까지. 하루 300개 세기는 캐시에 두기 때문에, 6시간 넘게 글이 없으면 0부터 다시 센다 */
   var now = new Date().getTime(), today = todayStr();
   var w = String(cache.get('fbW') || '').split('|'), n = num(w[0]), start = num(w[1]);
   if (!start || now - start > 600000) { n = 0; start = now; }
   var d = String(cache.get('fbD') || '').split('|'), dn = d[0] === today ? num(d[1]) : 0;
   if (n >= 40 || dn >= 300) return { ok: false, msg: 'busy' };
+
+  var flag = fbFlag(t, c);
+  var sh = fbSheet();
+  sh.appendRow([fbNextId(sh), nowStr(), k, safeCell(t), safeCell(c), FB_STATUS[0], flag]);
+  /* 시트에 적힌 다음에 '받은 글' 표시와 세기를 올린다 (쓰다가 실패한 글을 다시 보내면 그때 적히게) */
+  cache.put(key, '1', 600);
   cache.put('fbW', (n + 1) + '|' + start, 900);
   cache.put('fbD', today + '|' + (dn + 1), 21600);
-  var key = 'fb:' + Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, k + t, Utilities.Charset.UTF_8));
-  if (cache.get(key)) return { ok: true, dup: true };
-  cache.put(key, '1', 3600);
-
-  var flag = FB_RISK.test(t) ? '걱정되는 말' : (CONTACT.test(t) ? '연락처·주소?' : '');
-  var sh = sheet(SH.fb), last = sh.getLastRow();
-  var id = last < 2 ? 1 : num(sh.getRange(last, 1).getValue()) + 1; /* 가운데 줄을 지워도 번호가 겹치지 않게 */
-  sh.appendRow([id, nowStr(), k, safeCell(t), safeCell(c), FB_STATUS[0], flag]);
-  if (flag === '걱정되는 말') addCounts({ risk: 1 });
+  if (flag === '걱정되는 말') { try { addCounts({ risk: 1 }); } catch (x) {} }
   return { ok: true };
+}
+/* 「의견」 탭을 돌려준다. 머리줄 없는 빈 탭이 먼저 있었으면 머리줄을 넣고, 머리줄이 지워져 첫 줄부터 글이면 한 줄을 끼워 넣는다 */
+function fbSheet() {
+  var sh = sheet(SH.fb), last = sh.getLastRow();
+  if (last < 1) { initFb(sh); return sh; }
+  var a1 = sh.getRange(1, 1).getValue();
+  if (typeof a1 === 'number' || /^\d+$/.test(String(a1).trim())) { sh.insertRowBefore(1); initFb(sh); }
+  return sh;
+}
+/* 새 번호는 번호 칸에서 가장 큰 수 + 1 (선생님이 시트를 정렬하거나 줄을 지워도, 아래에 메모를 적어도 번호가 겹치지 않게) */
+function fbNextId(sh) {
+  var last = sh.getLastRow(), max = 0;
+  if (last >= 2) sh.getRange(2, 1, last - 1, 1).getValues().forEach(function (r) { var v = num(r[0]); if (v > max) max = v; });
+  return Math.floor(max) + 1;
 }
 function setFbStatus(id, status) {
   if (FB_STATUS.indexOf(status) < 0 || !id) return;
-  var sh = sheet(SH.fb), last = sh.getLastRow();
+  var sh = fbSheet(), last = sh.getLastRow();
   if (last < 2) return;
   var ids = sh.getRange(2, 1, last - 1, 1).getValues();
   for (var i = 0; i < ids.length; i++) {
     if (num(ids[i][0]) === id) { sh.getRange(i + 2, 6).setValue(status); return; }
   }
 }
-/* 관리실에는 최근 200개만 보냄 (그 앞의 글은 시트에 그대로 있음) */
+/* 관리실에는 최근 limit개를 보내고, 그보다 앞의 글은 아직 안 본 글(상태가 '새 글')만 함께 보낸다 (모두 합쳐 limit의 두 배까지).
+   다만 아직 안 본 '걱정되는 말' 글은 그 한도를 넘겨도 50개까지 더 보낸다 (글이 많이 쌓여도 묻히지 않게).
+   보내지 않은 글은 시트에 그대로 있다. more: 보내지 않은 글 수, moreNew: 그 가운데 아직 안 본 글 수 */
 function fbRows(limit) {
-  var sh = sheet(SH.fb), last = sh.getLastRow();
-  if (last < 2) return [];
-  var from = Math.max(2, last - limit + 1);
-  return sh.getRange(from, 1, last - from + 1, 7).getValues().map(function (r) {
-    return { id: num(r[0]), at: dstr(r[1], true), k: String(r[2] || '오류'), t: String(r[3]).replace(/^'/, ''), c: String(r[4]).replace(/^'/, ''), status: String(r[5] || FB_STATUS[0]).trim(), flag: String(r[6] || '') };
-  });
+  var sh = fbSheet(), last = sh.getLastRow();
+  if (last < 2) return { rows: [], more: 0, moreNew: 0 };
+  var v = sh.getRange(2, 1, last - 1, 7).getValues(), rows = [], more = 0, moreNew = 0, seen = 0, extra = 0;
+  for (var i = v.length - 1; i >= 0; i--) {
+    var r = v[i], id = num(r[0]), t = String(r[3] == null ? '' : r[3]).replace(/^'/, '');
+    if (!id && !t) continue; /* 글이 아닌 줄 (선생님이 다른 칸에 적은 메모 같은 것) */
+    var status = String(r[5] || FB_STATUS[0]).trim(), flag = String(r[6] || '').trim();
+    var fresh = status === FB_STATUS[0];
+    seen++;
+    if (seen > limit && !fresh) { more++; continue; }
+    if (rows.length >= limit * 2) {
+      if (flag !== '걱정되는 말' || extra >= 50) { more++; if (fresh) moreNew++; continue; }
+      extra++;
+    }
+    rows.push({ id: id, at: dstr(r[1], true), k: String(r[2] || '오류'), t: t, c: String(r[4] == null ? '' : r[4]).replace(/^'/, ''), status: status, flag: flag });
+  }
+  rows.reverse();
+  return { rows: rows, more: more, moreNew: moreNew };
 }
 function initFb(sh) {
   sh.getRange(1, 1, 1, 7).setValues([['번호', '받은 시각', '종류', '내용', '어디서(자동)', '상태', '확인 필요']]);
@@ -296,7 +359,7 @@ function adminData() {
     posts: posts
   };
   /* 의견 목록을 못 읽어도 관리실의 다른 탭은 그대로 열리게 한다 */
-  try { res.fb = fbRows(200); } catch (x) { res.fb = []; res.fbErr = String(x); }
+  try { var f = fbRows(200); res.fb = f.rows; res.fbMore = f.more; res.fbMoreNew = f.moreNew; } catch (x) { res.fb = []; res.fbErr = String(x); }
   return res;
 }
 

@@ -51,6 +51,10 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 #bs{right:calc(max(10px,env(safe-area-inset-right,0px)) + 42px)}
 #bq{right:calc(max(10px,env(safe-area-inset-right,0px)) + 84px)}
 #bq svg{display:block;pointer-events:none}
+/* 라디오 앞에 서면 아래 가운데에 뜨는 「유튜브에서 듣기」 (양쪽 조작 버튼 사이) */
+#yt{left:50%;bottom:14px;transform:translateX(-50%);height:44px;padding:0 14px;font-size:15px;text-decoration:none;white-space:nowrap;background:rgba(255,248,232,.94);touch-action:manipulation}
+#yt b{color:var(--red-d);margin-right:6px}
+#yt:active{transform:translateX(-50%) translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .btn:focus-visible,.ov button:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
 .ov{position:absolute;inset:0;background:rgba(31,27,24,.62);display:flex;align-items:center;justify-content:center;padding:14px;z-index:5}
 .card{background:var(--panel);border:4px solid var(--ink);border-radius:6px;box-shadow:0 6px 0 var(--ink);
@@ -164,6 +168,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
   <button id="bq" class="btn top" aria-label="본부로 (판 고르기)"><svg viewBox="0 0 9 8" width="18" height="16" aria-hidden="true" shape-rendering="crispEdges"><path fill="#1f1b18" d="M4 0h1v1h1v1h1v1h1v1h1v1H8v3H5V5H4v3H1V5H0V4h1V3h1V2h1V1h1z"/></svg></button>
   <button id="bs" class="btn top" aria-label="소리 켜고 끄기">♪</button>
   <button id="bh" class="btn top" aria-label="도움전화">☎</button>
+  <a id="yt" class="btn" hidden target="_blank" rel="noopener"><b>▶</b>유튜브에서 듣기</a>
   <div id="ov" class="ov" hidden></div>
   <div id="hv" class="ov" hidden></div>
 </div>
@@ -291,7 +296,7 @@ const LEVELS=[
   ground(216,246); flag(217); curtain(221); swarm(229); mung(233,239);
   pad(240); hard(244,246,5); piece(245,4);
   ground(250,281); mung(253,260); mung(257,265); brick(261,261,R1); crate(262,R1,'coins'); brick(263,263,R1);
-  nook(267,'sky'); door(271);
+  nook(267,'sky'); door(276);   // 문을 다섯 칸 뒤로: 통로와 문 사이에 라디오 자리
 },
 // 화: 운동장
 (L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
@@ -432,13 +437,19 @@ function build(){
   if(nook&&nook.kind!=='wax'){ ground(RX,RX+29); for(let r=0;r<GY;r++){ set(RX,r,2); set(RX+29,r,2); } pipeT(RA); pipeT(RE);
     if(nook.kind==='sky'){ stairs(RX+9,4); hard(RX+13,RX+17,8); coinRow(RX+18,RX+20,10); }
     else coinRow(RX+12,RX+15,10); }
-  const bare=x=>x>190&&(x<door.x-40||x>door.x+175);   // 표어 간판(출발 지점)과 본부 문·라디오 둘레에는 나무를 심지 않는다
+  // 라디오: 작전을 마치고 본부 문으로 들어가기 직전, 문 바로 앞 땅에 둔다. 문에서 네 칸 앞부터 왼쪽으로 찾아, 땅이 이어지고 위가 비어 있고 통로(파이프)와 겹치지 않는 자리에 놓는다
+  let rc=Math.round(door.x/T)-4;
+  const rFree=c=>{ for(let d=0;d<3;d++){ if(at(c+d,GY)!==1) return false; for(let r=GY-5;r<GY;r++) if(at(c+d,r)!==0) return false; } return !(nook&&Math.abs(nook.x-c*T)<56); };
+  for(let n=0;n<14&&!rFree(rc);n++) rc--;
+  const rX=rc*T;
+  const bare=x=>x>190&&(x<rX-40||x>door.x+60);   // 표어 간판(출발 지점)과 라디오·본부 문 둘레에는 나무를 심지 않는다
   for(let c=6;c<LC-4;c+=23){ if(at(c,GY)===1&&at(c,GY-1)===0&&bare(c*T)) decor.push({x:c*T-7,kind:'tree'}); const b=c+11; if(at(b,GY)===1&&at(b,GY-1)===0&&bare(b*T)) decor.push({x:b*T-7,kind:'bush'}); }
-  sign={x:52,t:mottoNow(),k:0,al:1}; radio={x:door.x+38,s:songNow(),k:0,al:1,said:false};
+  sign={x:52,t:mottoNow(),k:0,al:1}; radio={x:rX,s:songNow(),k:0,al:1,said:false};
 }
 
 /* ---------- 상태 ---------- */
 const K={l:false,r:false,j:false,b:false}; let jBuf=0, prevB=false;
+let bolt=null, boltNext=2.5;   // 날씨 「번개」: 지금 치는 번개와 다음 번개 시각
 let P, cam, maxX, cp, tNow, playT, running=false, paused=false, bonus=false, bonusNote='', mood='sun';
 let bq=[], parts=[], gusts=[], clouds=[], bubble=null, bubA=1, msg=null, deaths=0, shake=0, freeze=0, chickX=40, chickY=150, warp=null, stuck=0, lift=null;
 function reset(){
@@ -446,7 +457,7 @@ function reset(){
   P={x:2*T,y:GTOP-22,w:12,h:22,vx:0,vy:0,face:1,ground:true,coy:0,grey:0,inv:0,shield:bonus?1:0,coins:bonus?5:0,pcs:0,
      charge:0,charging:false,full:false,glide:false,jumpHeld:false,boost:false,runT:0,airT:0,coat:false,puffCd:0,bHold:0};
   BGM.rewind();
-  held=-1; cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; bq=[]; msg=null; deaths=0; shake=0; freeze=0; chickX=P.x+30; chickY=P.y-20; warp=null; stuck=0; lift=null;
+  held=-1; cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; bq=[]; msg=null; deaths=0; shake=0; bolt=null; boltNext=2.5; freeze=0; chickX=P.x+30; chickY=P.y-20; warp=null; stuck=0; lift=null;
   say('금주의 표어다 삐약. 「'+sign.t+'」',4.6,1);   // 판마다 첫 말은 간판의 표어. 다음 말이 오면 1초 뒤에 자리를 내준다 (첫 판의 조작 안내가 늦지 않게)
 }
 
@@ -472,7 +483,7 @@ document.addEventListener('contextmenu',e=>{ if(!inText(e)) e.preventDefault(); 
 // 화면 배율 고정: 두 번 누르기 확대, 두 손가락 확대를 막는다 (아이폰 사파리는 viewport 설정만으로는 안 막힌다)
 ['gesturestart','gesturechange','gestureend','dblclick'].forEach(n=>document.addEventListener(n,e=>{ if(n!=='dblclick'||!inText(e)) e.preventDefault(); },{passive:false}));
 document.addEventListener('touchmove',e=>{ if(e.touches.length>1) e.preventDefault(); },{passive:false});
-{ let lastEnd=0; document.addEventListener('touchend',e=>{ const now=performance.now(); if(now-lastEnd<350&&!e.target.closest('button,textarea')) e.preventDefault(); lastEnd=now; },{passive:false}); }
+{ let lastEnd=0; document.addEventListener('touchend',e=>{ const now=performance.now(); if(now-lastEnd<350&&!e.target.closest('button,textarea,a')) e.preventDefault(); lastEnd=now; },{passive:false}); }
 { const bs=document.getElementById('bs'); sound=!loadSave().mute; bs.textContent=sound?'♪':'×';   // 소리를 꺼 두면 다음에 열 때도 꺼져 있다
   bs.onclick=()=>{ sound=!sound; bs.textContent=sound?'♪':'×'; const sv=loadSave(); sv.mute=!sound; putSave(sv);
     if(sound){ ac(); SFX.tick(); } else if(AC){ try{ AC.suspend(); }catch(e){} } }; }
@@ -607,6 +618,8 @@ function step(dt){
   if(P.ground){ P.coy=.1; P.glide=false; P.airT=0; if(Math.abs(P.vx)>8) P.runT+=dt*Math.abs(P.vx)/MAXV; } else P.airT+=dt;
   if(P.y>WH+40){ respawn(); return; }
   P.grey=Math.max(0,P.grey-dt); P.inv=Math.max(0,P.inv-dt);
+  // 본부 문이 길의 끝이다. 문을 뛰어넘어 그 뒤로 달려가 낭떠러지에 떨어지지 않게, 문 오른쪽 끝에서 막는다 (문 위에 내려서면 작전 완료)
+  if(!room&&P.x>door.x+door.w-P.w-2){ P.x=door.x+door.w-P.w-2; if(P.vx>0) P.vx=0; }
   if(P.x>maxX&&!room) maxX=P.x;
   const still=P.ground&&Math.abs(P.vx)<8;
   // 모으기
@@ -622,7 +635,7 @@ function step(dt){
   // 깃발, 말풍선
   if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; stuck=0; if(bossC) bossC.blk=bossC.wk=bossC.hits=0; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
   if(!room) for(const s of says) if(!s.done&&P.x>s.x){ s.done=true; say(s.t); }
-  if(!room&&!radio.said&&A.RADIO&&P.x>door.x-150){ radio.said=true; say('본부 라디오에서 오늘의 곡이 나온다 삐약.',3.6); }
+  if(!room&&!radio.said&&A.RADIO&&P.x>Math.min(radio.x,door.x)-140){ radio.said=true; say('문 앞 라디오 앞에 서면 오늘의 곡을 들을 수 있다 삐약.',3.6); }
   // 말풍선은 한 번 뜨면 적어도 1.6초는(표어는 1초) 그대로 두고, 다음 말은 그 뒤에 한 번에 바꾼다
   if(bubble&&tNow>=bubble.until) bubble=null;
   if(bq.length&&(!bubble||tNow-bubble.t0>=bubble.min)){ const n=bq.shift(); bubble={t:n.t,t0:tNow,until:tNow+n.dur,min:n.min}; }
@@ -769,7 +782,7 @@ const texts=[];
 function spr(s,x,y,col,fl){ bx.drawImage(col?(fl?s.cf:s.c):(fl?s.gf:s.g),Math.round(x),Math.round(y)); }
 function box(x,y,w,h,fill,line){ bx.fillStyle=line; bx.fillRect(x+1,y,w-2,1); bx.fillRect(x+1,y+h-1,w-2,1); bx.fillRect(x,y+1,1,h-2); bx.fillRect(x+w-1,y+1,1,h-2); bx.fillStyle=fill; bx.fillRect(x+1,y+1,w-2,h-2); }
 function ring(cx,cy,frac,on,off){ for(let i=0;i<12;i++){ const a=-Math.PI/2+i/12*6.283; bx.fillStyle=i<Math.round(frac*12)?on:off; bx.fillRect(Math.round(cx+Math.cos(a)*7)-1,Math.round(cy+Math.sin(a)*7)-1,2,2); } }
-/* ---------- 길 위의 게시물: 출발 지점의 표어 간판과 본부 문 옆 라디오 ----------
+/* ---------- 길 위의 게시물: 출발 지점의 표어 간판과 본부 문 바로 앞 라디오 ----------
    표어는 주마다 하나(11.23~, 11.30~, 12.7~), 곡은 요일마다 하나가 게임에 들어 있다. 본부 서버가 표어나 그날 곡을 주면 그것을 쓴다.
    판의 글자는 화면 글자(texts)로 또렷하게 올린다. 화면 글자는 곰보다 앞에 그려지니, 곰이 판 앞을 지날 때는 글자를 옅게 한다 */
 const MOTTOS=['오늘 하늘, 한 번 올려다봤나요?','멈추면 들린다','천천히 먹어도 괜찮아'];
@@ -798,6 +811,16 @@ function radioLay(){ if(radio.k===k&&radio.W===W) return; radio.k=k; radio.W=W;
   radio.w=Math.ceil(tw/k)+12; radio.h=radio.a?32:23; }
 if(document.fonts){ const re=()=>{ if(sign) sign.k=0; if(radio) radio.k=0; if(bubble) bubble.k=0; }; try{ document.fonts.ready.then(re); document.fonts.addEventListener('loadingdone',re); }catch(e){} }   // 글꼴이 늦게 오면 판 크기를 다시 잰다
 function fadeFor(o,x,y,w,h,cx,cy){ const px=P.x-cx, py=P.y-cy, over=!warp&&px+P.w+7>x&&px-7<x+w&&py-3<y+h&&py+P.h>y; o.al+=((over?.2:1)-o.al)*.25; return o.al; }
+// 번개 줄기: 하늘 위에서 산 너머까지 지그재그로 내려오는 픽셀 줄기와 짧은 곁가지. 처음 0.18초는 또렷하고 그 뒤 사라진다
+function drawBolt(b,hz,a){ let r=b.seed; const rnd=()=>{ r=(r*16807+11)%2147483647; return r/2147483647; };
+  const al=a<.18?1:Math.max(0,1-(a-.18)/.27), end=Math.round(hz-28); bx.globalAlpha=al;
+  const seg=(x,y0,y1,w,c)=>{ bx.fillStyle=c; bx.fillRect(x,y0,w,y1-y0); };
+  let x=b.x, y=0; const pts=[];
+  while(y<end){ const ny=Math.min(end,y+6+Math.floor(rnd()*8)); pts.push([x,y,ny]); x+=Math.round((rnd()-.5)*10); y=ny; }
+  for(const [px,y0,y1] of pts){ bx.globalAlpha=al*.35; seg(px-3,y0,y1+1,8,'#fff6c8'); bx.globalAlpha=al; seg(px-1,y0,y1+1,5,'#3d4a66'); }
+  for(const [px,y0,y1] of pts){ seg(px,y0,y1+1,3,'#fffbe3'); }
+  for(let i=2;i<pts.length-2;i+=4){ let [bxx,by]=pts[i]; const dir=rnd()<.5?-1:1; for(let j=0;j<3;j++){ const ny=by+5; seg(bxx,by,ny,1,'#fff6c8'); bxx+=dir*(3+Math.floor(rnd()*3)); by=ny; } }
+  bx.globalAlpha=1; }
 function noteMark(x,y,c){ bx.fillStyle=c; bx.fillRect(x+2,y,1,5); bx.fillRect(x+3,y,1,1); bx.fillRect(x+4,y+1,1,2); bx.fillRect(x,y+4,3,2); }
 function drawSign(cx,cy,hz,edge){ const x=sign.x-cx; if(x>W+4||x<-130) return; signLay();
   const w=sign.w, h=sign.h, y=hz-38-h, col=sign.x<edge, C=col?A.PAL:A.GPAL, R=(c,a,b,ww,hh)=>{ bx.fillStyle=c; bx.fillRect(a,b,ww,hh); };
@@ -854,6 +877,9 @@ function draw(){
   bx.fillStyle=mix(GSKY[3],sk[3],prog); bx.fillRect(0,hz,W,H-hz);
   // 구름
   bx.globalAlpha=.35+.65*prog; for(let i=0;i<7;i++){ const span=WORLD*.25+W+60, x=((i*173+40-cx*.25)%span+span)%span-40, y=Math.round(hz*(.12+((i*37)%30)/100)); bx.drawImage(A.CLOUD,Math.round(x),y); } bx.globalAlpha=1;
+  // 번개 (마음 날씨 「번개」): 4~8초마다 하늘 한쪽에 번개가 내리꽂히고 하늘이 잠깐 밝아진다. 깜박임은 한 번에 한 번, 세지 않게
+  if(mood==='storm'){ if(tNow>=boltNext){ bolt={t0:tNow,x:Math.round(W*(.15+Math.random()*.7)),seed:Math.floor(Math.random()*1e4)}; boltNext=tNow+4+Math.random()*4; }
+    if(bolt&&tNow-bolt.t0<.45) drawBolt(bolt,hz,tNow-bolt.t0); }
   // 먼 산, 학교, 가까운 언덕
   bx.fillStyle=mix('#a3a9af','#9ec7a4',prog); for(let x=0;x<W;x+=2){ const wx=x+Math.floor(cx*.12), h=Math.round(26+Math.sin(wx*.018)*12+Math.sin(wx*.041)*6); bx.fillRect(x,hz-h,2,h); }
   for(let n=0;n<4;n++){ const x=Math.round(260+n*640-cx*.35); if(x>W||x<-130) continue; bx.drawImage(A.SCHOOL.g,x,hz-60); if(prog>0){ bx.globalAlpha=prog; bx.drawImage(A.SCHOOL.c,x,hz-60); bx.globalAlpha=1; } }
@@ -884,7 +910,7 @@ function draw(){
     const wv=Math.floor(tNow*6)%2; for(let i=0;i<9;i++){ const w=i<5?3+i*2:19-i*2; bx.fillStyle='#1f1b18'; bx.fillRect(x+5,y-33+i,w+1,1); bx.fillStyle=f.on?'#d9512c':'#9aa2ab'; bx.fillRect(x+5,y-33+i,w-(wv&&i%2?1:0),1); } }
   // 본부 문
   { const x=door.x-cx; if(x<W+10){ bx.drawImage(door.x<edge?A.DOOR.c:A.DOOR.g,x,door.y-cy); texts.push({t:'본부',x:x+16,y:door.y-cy+6.6,s:6.5,c:'#fff8e8',a:'center',f:DISP}); } }
-  // 표어 간판(출발 지점)과 라디오(본부 문 옆)
+  // 표어 간판(출발 지점)과 라디오(본부 문 바로 앞)
   if(!room){ drawSign(cx,cy,hz,edge); drawRadio(cx,cy,hz,edge); }
   // 색 방울, 조각, 아이템
   for(const c of coins) if(!c.got&&c.x>cx-10&&c.x<cx+W+10) spr(A.DROP[c.h],c.x-4-cx,c.y-5-cy+Math.round(Math.sin(tNow*4+c.x*.08)*1.4),true);
@@ -933,6 +959,8 @@ function draw(){
   if(room&&!warp){ const e=RE*T-cx; box(e-6,hz-88,44,13,'#fff8e8','#1f1b18'); texts.push({t:'나가는 곳',x:e+16,y:hz-78.3,s:7.5,c:'#1f1b18',a:'center',f:DISP}); if(!over(RE*T)) arrowDn(e+16,hz-72+bob,'#d9512c'); }
   // 비
   if(mood==='rain'||mood==='storm'){ bx.fillStyle='#e6eef3'; for(let i=0;i<34;i++){ const x=((i*41-Math.floor(tNow*30))%W+W)%W, y=(i*53+Math.floor(tNow*260))%H; bx.fillRect(x,y,1,3); } }
+  // 번개가 칠 때 화면 전체가 잠깐 밝아진다
+  if(mood==='storm'&&!room&&bolt){ const a=tNow-bolt.t0; if(a<.3){ bx.globalAlpha=a<.06?.22:.22*(1-(a-.06)/.24); bx.fillStyle='#f4f1e6'; bx.fillRect(0,0,W,H); bx.globalAlpha=1; } }
   // 통로를 탈 때 화면이 어두워졌다 밝아진다 (위쪽 표시는 그대로 둔다)
   let dark=0;
   { const fd=!warp?0:warp.ph==='close'?Math.min(1,warp.t/.25):warp.ph==='wait'?1:warp.ph==='open'?1-Math.min(1,warp.t/.25):0;
@@ -1026,7 +1054,7 @@ function toyCard(k,fresh){ if(!(window.WAX&&WAX.toy)) return hqCard();
   ov.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ if(b.dataset.t!==k){ SFX.tick(); show(b.dataset.t); } });
   show(k); on('t1',()=>{ SFX.tick(); if(fresh&&rankDue) rankCard(rankDue==='final'); else hqCard(); });
   try{ ov.querySelector('[data-t].on').focus({preventScroll:true}); }catch(e){} }   // 키보드로 고를 때는 지금 고른 말랑이 버튼에서 시작한다
-// 본부 서버에서 받은 소식: 전교 정화 합계, 공지 한 줄, 오늘의 추천곡. 연결이 없으면 아무것도 보이지 않는다 (연결이 없을 때의 추천곡은 본부 문 옆 라디오에만 나온다)
+// 본부 서버에서 받은 소식: 전교 정화 합계, 공지 한 줄, 오늘의 추천곡. 연결이 없으면 아무것도 보이지 않는다 (연결이 없을 때의 추천곡은 본부 문 앞 라디오에만 나온다)
 function hqInfo(){ const put=s=>{ const r=ov.querySelector('#raid'); if(!r||!s||!s.ok) return;
     { const h=ov.querySelector('#hs'), sg=songEl(); h.textContent=''; if(sg) h.append(' ',sg); }
     if(s.raid&&s.raid.goal>0){ r.querySelector('b').style.width=Math.min(100,Math.round(s.raid.total/s.raid.goal*100))+'%'; ov.querySelector('#raidn').textContent=s.raid.total+' / '+s.raid.goal; r.hidden=false; }
@@ -1256,21 +1284,30 @@ function rankCard(final){ rankDue=false;
     else t='요원 '+(j.code||agent().code)+' · 색 방울을 모으면 순위에 올라가요.';
     if(j.changed) t+=' 코드가 다른 요원과 겹쳐서 「'+j.code+'」로 바뀌었어요.';
     me.textContent=t; me.hidden=false; }); }
-// 카드에 붙는 오늘의 추천곡 한 줄: 관리 시트의 음악 탭에 그날 곡이 있을 때만 나온다 (게임에 들어 있는 요일별 곡은 본부 문 옆 라디오에만 나온다)
+// 카드에 붙는 오늘의 추천곡 한 줄: 관리 시트의 음악 탭에 그날 곡이 있을 때만 나온다 (게임에 들어 있는 요일별 곡은 본부 문 앞 라디오에만 나온다)
 function songEl(){ const st=HQ.cached(); if(!(st&&st.song&&cut(st.song.t,40))) return null; const o=songNow(), e=document.createElement('span'); e.className='song'; e.textContent='본부 라디오 오늘의 곡: '+o.t+(o.a?' · '+o.a:''); return e; }
 
+/* ---------- 라디오 곡 듣기 ----------
+   곰이 땅을 딛고 라디오 앞에 서 있으면 아래 가운데에 「유튜브에서 듣기」가 뜬다. 누르면 새 창에서 그 곡을 유튜브에서 찾는다
+   (곡마다 영상 주소를 넣어 두면 영상이 내려가거나 바뀔 때 끊기므로, 곡 이름과 가수로 찾는 주소를 쓴다). 안개 속(아직 지나오지 않은 곳)의 라디오는 꺼져 있다 */
+const YT=document.getElementById('yt');
+function ytShow(){ const on=!!(running&&!paused&&!room&&!warp&&!lift&&radio&&A.RADIO&&ov.hidden&&hv.hidden&&P&&P.ground&&radio.x<maxX+150&&Math.abs(P.x+P.w/2-(radio.x+14))<30);
+  if(on){ const q=radio.s.t+(radio.s.a?' '+radio.s.a:''), u='https://www.youtube.com/results?search_query='+encodeURIComponent(q);
+    if(YT.getAttribute('href')!==u){ YT.setAttribute('href',u); YT.setAttribute('aria-label','유튜브에서 '+q+' 듣기'); } }
+  if(YT.hidden===on) YT.hidden=!on; }
+YT.addEventListener('click',()=>{ K.l=K.r=K.j=K.b=false; });   // 새 창으로 넘어갈 때 누르고 있던 조작이 남지 않게
 /* ---------- 돌리기 ---------- */
 // 배경 음악: 판이 도는 동안만 튼다. 숨을 모을 때와 가만히 있어야 할 때는 작게, 안개에 물들면 먹먹하게.
 function music(){ const okay=sound&&running&&AC&&AC.state==='running'&&!document.hidden;
   if(!okay){ BGM.pause(); return; }
   const calm=room||P.charging||(P.ground&&Math.abs(P.vx)<8&&swarms.some(s=>s.state==='alert'));
   BGM.set(paused?.3:(calm?.28:1),P.grey>0); BGM.play(AC); }
-function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music();
+function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music(); ytShow();
   if(running&&!paused){ acc+=d; while(acc>=1/120){ step(1/120); acc-=1/120; if(!running||paused){ acc=0; break; } } }
   draw(); requestAnimationFrame(frame); }
 reset(); home(); requestAnimationFrame(frame);
 document.addEventListener('visibilitychange',()=>{ last=performance.now(); if(document.hidden) BGM.pause(); });
-window.G={get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},get warp(){return warp;},get stageNo(){return stageNo;},get lift(){return lift;},get stuck(){return stuck;},get flags(){return flags;},get cp(){return cp;},get cam(){return cam;},get maxX(){return maxX;},get camY(){return camY;},get W(){return W;},get H(){return H;},die(){respawn();},get bub(){return bubble&&{t:bubble.t,a:bubA};},get held(){return held;},get topR(){return topR;},get gusts(){return gusts;},get sign(){return sign;},get radio(){return radio;},say,get bubL(){return bubble&&bubble.lines?{n:bubble.lines.length,fs:bubble.fs,bw:bubble.bw,t:bubble.t}:null;},toHQ,get note(){return msg&&msg.until>tNow?msg.t:'';},
+window.G={get radio(){return radio;},get bolt(){return bolt;},boltSoon(){boltNext=tNow;},hold(v){paused=!!v;},get mood(){return mood;},set mood(v){mood=v;},get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},get warp(){return warp;},get stageNo(){return stageNo;},get lift(){return lift;},get stuck(){return stuck;},get flags(){return flags;},get cp(){return cp;},get cam(){return cam;},get maxX(){return maxX;},get camY(){return camY;},get W(){return W;},get H(){return H;},die(){respawn();},get bub(){return bubble&&{t:bubble.t,a:bubA};},get held(){return held;},get topR(){return topR;},get gusts(){return gusts;},get sign(){return sign;},get radio(){return radio;},say,get bubL(){return bubble&&bubble.lines?{n:bubble.lines.length,fs:bubble.fs,bw:bubble.bw,t:bubble.t}:null;},toHQ,get note(){return msg&&msg.until>tNow?msg.t:'';},
   go(n){stageNo=n||0;bonus=true;mood='sun';reset();play();}};
 })();
 </script>

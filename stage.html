@@ -182,7 +182,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 <script src="stage-art.js?v=1120"></script>
 <script src="stage-music.js?v=1120"></script>
 <script src="stage-wax.js?v=1120b"></script>   <!-- ?v= 를 바꾸면 폰이 예전 파일을 붙들고 있지 않고 새로 받는다 -->
-<script src="stage-feel.js?v=1120"></script>
+<script src="stage-feel.js?v=1120c"></script>
 <!-- 본부 서버(운영 시트)와 잇는 두 줄.
      (1) config.js: 본부 주소만 읽는다. 이 줄을 켜면 「오류·의견 보내기」(학생이 보내기를 누른 글만 나간다)와 색 방울 순위(판을 깰 때 요원 코드와 판별 최고 방울 수)가 켜진다. 2026.11.18 선생님이 서버를 배포한 뒤 켬. 끄려면 이 줄을 주석으로 감싼다 -->
 <script src="config.js"></script>
@@ -283,7 +283,7 @@ const LEVELS=[
   coin(47,6); coin(48,5); coin(49,5); coin(50,5); coin(51,6);
   // 2구간: 발판과 벽돌
   ground(52,82); hard(55,56,R1); crate(57,R1,'coat'); hard(58,59,R1); hard(61,63,6); piece(62,5);
-  say(45,'회색 안개는 나쁜 기분이 아니다. 아무 느낌도 못 알아차리게 무뎌지는 것이다 삐약.'); say(65,'벽돌 위의 뭉치는 아래에서 벽돌을 쳐서 날려라 삐약.'); brick(66,70,R1); mung(66,71,R1);
+  say(45,'회색 안개는 나쁜 기분이 아니다. 아무것도 못 느끼게 무뎌진 마음이다 삐약.'); say(65,'벽돌 위의 뭉치는 아래에서 벽돌을 쳐서 날려라 삐약.'); brick(66,70,R1); mung(66,71,R1);
   mung(73,81); coin(83,7); coin(84,6); coin(85,7);
   // 3구간: 숨 바람
   ground(86,123); flag(87); say(90,'안개 장막이다. 숨 버튼을 꾹 눌렀다가 떼라 삐약.'); curtain(97);
@@ -349,7 +349,7 @@ const LEVELS=[
 },
 // 금: 쉬어 가는 판. 빌런은 조금, 색 방울은 많이
 (L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
-  ground(0,61); say(2,'오늘은 쉬어 가는 판이다. 급할 것 없다. 색 방울이나 넉넉히 모아라 삐약.');
+  ground(0,61); say(2,'오늘은 쉬어 가는 판이다. 천천히 색 방울이나 모아라 삐약.');
   coinRow(6,12,10); crate(15,R1,'coins'); crate(17,R1,'coat'); coinRow(20,26,10); pad(30); hard(33,37,6); coinRow(33,37,4); piece(35,3);
   mung(42,52); coinRow(44,50,10); stairs(56,4); coin(62,5); coin(63,5); coin(64,6); coin(65,7);
   ground(66,120); flag(68); nook(74,'sky'); crate(80,R1,'coins'); brick(81,82,R1); crate(83,R1,'shield'); coinRow(88,94,10); curtain(98);
@@ -376,10 +376,10 @@ const LEVELS=[
 // report의 셋째 칸 = 집에서 바로 할 수 있는 지령일 때 「안 했다」 뒤에 보여 주는 「지금 10초만」 문장
 const DAYS=[
   {d:'11.23 월',date:'2026-11-23',name:'등굣길',letter:'하',next:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기. 사진은 찍지 않기.'],feel:'mon'},
-  {d:'11.24 화',date:'2026-11-24',name:'운동장',letter:'늘',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.','폰을 내려놓고 창밖 하늘을 10초 동안 올려다본다.'],next:['다른 길','평소와 다른 길로 한번 걸어 보기. 처음 보는 것 하나 찾기.'],feel:'tue'},
+  {d:'11.24 화',date:'2026-11-24',name:'운동장',letter:'늘',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.','폰을 내려놓고 창밖 하늘을 10초 동안 올려다본다.'],next:['다른 길','평소와 다른 길로 걸으며 처음 보는 것 하나 찾기.'],feel:'tue'},
   {d:'11.25 수',date:'2026-11-25',name:'뒷산 길',letter:'빛',report:['다른 길','평소와 다른 길로 걸으며 처음 보는 것 하나 찾기.'],next:['초록 세 개','복도나 창밖에서 초록색 세 개 찾기. 아무도 눈치채지 못하게.'],feel:'wed'},
-  {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,toy:'apple',done:'1주차 암호 「하늘빛」 완성',report:['초록 세 개','복도나 창밖에서 초록색 세 개 찾기.','폰을 내려놓고 방 안이나 창밖에서 초록색 세 개를 찾는다.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.'],feel:'thu'},
-  {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,toy:'mandarin',done:'쉬어 가는 판 완료',report:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.','폰을 내려놓고 일어서서 발바닥이 바닥에 닿는 느낌을 10초 동안 확인한다.'],next:['소리 세기','10초 동안 가만히 있으면서 들리는 소리 세 가지 세기.'],nl:'주말의 지령',feel:'fri'},
+  {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,toy:'apple',done:'1주차 암호 「하늘빛」 완성',report:['초록 세 개','복도나 창밖에서 초록색 세 개 찾기.','폰을 내려놓고 방 안이나 창밖에서 초록색 세 개를 찾는다.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 느껴 보기.'],feel:'thu'},
+  {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,toy:'mandarin',done:'쉬어 가는 판 완료',report:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 느껴 보기.','폰을 내려놓고 일어서서, 발바닥이 바닥에 닿는 느낌을 10초 동안 느껴 본다.'],next:['소리 세기','10초 동안 가만히 귀 기울이고 들리는 소리 세 가지 세기.'],nl:'주말의 지령',feel:'fri'},
   {d:'언제든',name:'훈련장',train:true} ];
 // 한 주 다섯 판을 다 깨면 본부와 금요일 완료 카드에 간식 안내가 나온다. 미션 단어는 그 주의 암호
 const SNACK='월요일에 위클래스에 와서 암호 「하늘빛」을 말하면 활동 간식을 받아요.', weekDone=c=>!!c&&DAYS.slice(0,TRAIN).every((d,i)=>c[i]);
@@ -387,11 +387,11 @@ let stageNo=0;
 // 이 판에서 한 마음돌봄 행동: b = 끝까지 모은 숨, s = 가만히 있기(띵띵이, 하늘 방, 가만히 방), n = 감정 벽에 붙인 이름. 완료 카드에 걸린 시간 대신 이 숫자를 보여 준다. 어디에도 남기지 않는다
 let care={b:0,s:0,n:0};
 /* ---------- 날짜 잠금과 소등 ----------
-   학생은 모두 한국에 있으니 기기 시간대와 상관없이 한국 시간으로 센다. 그날 판은 오후 5시에 열리고 지난 판은 계속 열려 있다.
+   학생은 모두 한국에 있으니 기기 시간대와 상관없이 한국 시간으로 센다. 그날 판은 오후 3시에 열리고 지난 판은 계속 열려 있다.
    밤 10시부터 아침 6시까지는 본부가 소등한다. LIVE 전은 미리 해 보는 기간이라 잠금도 소등도 없다.
    선생님 모드(주소 끝 #all, 또는 시작 화면의 「평범한 스파이」 글자를 일곱 번 누르기)도 모두 열려 있다 */
 const TRAIN=5, LIVE=Date.parse('2026-11-22T00:00:00+09:00');
-const openAt=i=>Date.parse(DAYS[i].date+'T17:00:00+09:00');
+const openAt=i=>Date.parse(DAYS[i].date+'T15:00:00+09:00');
 const kst=()=>new Date(Date.now()+9*3600e3);
 const teacher=()=>location.hash==='#all'||!!loadSave().teacher;
 const free=()=>teacher()||Date.now()<LIVE;
@@ -415,7 +415,7 @@ function loadSave(){ let v=null; try{ v=JSON.parse(saveMem!==null?saveMem:localS
 function putSave(v){ const t=JSON.stringify(v); try{ localStorage.setItem('fogspy2',t); saveMem=localStorage.getItem('fogspy2')===t?null:t; }catch(e){ saveMem=t; } }
 /* 본부 말랑이 상자: 수요일 판의 통로 방에서 왁뿌볼을 깨면, 목요일 보스를 넘기면, 금요일 판을 끝내면 하나씩 들어온다 (기획안: 보스를 넘기거나 금요일 판을 끝내면 하나씩).
    기록은 폰 안(fogspy2.toys)에만 두고 서버에는 보내지 않는다. 2주차의 버터 슬랑이·복숭아, 최종 보스의 찹쌀떡은 stage-wax.js에 이미 들어 있다 */
-const TOYS=[['wax','수요일 판의 통로 방에서 하나 깨면 들어온다'],['apple','목요일 보스를 넘기면 들어온다'],['mandarin','금요일 쉬어 가는 판을 끝내면 들어온다']];
+const TOYS=[['wax','수요일 판 통로 방에서 깨면 받는다'],['apple','목요일 보스를 이기면 받는다'],['mandarin','금요일 판을 끝내면 받는다']];
 function toysOf(sv){ const t=Array.isArray(sv.toys)?sv.toys.filter(k=>typeof k==='string'):[], cl=sv.clear||{};
   if(sv.rooms&&sv.rooms[2]&&!t.includes('wax')) t.push('wax');   // 상자가 생기기 전에 수요일 방에서 왁뿌볼을 깬 기록도 센다
   DAYS.forEach((d,i)=>{ if(d.toy&&cl[i]&&!t.includes(d.toy)) t.push(d.toy); });   // 상자가 생기기 전에 목·금 판을 끝낸 기록도 센다
@@ -580,7 +580,7 @@ const deep=()=>!!(bossC&&bossC.alive&&bossC.hp===1&&bossC.x>=bossC.tx&&bossC.x>P
 function blow(c){
   if(c.boss&&c.hp>1){ c.hp--; c.w=14+c.hp*8; c.tx=Math.max(c.x,c.tx)+22*T; c.cd=.8; c.i=0; c.nap=false; c.blk=c.wk=c.hits=0; shake=.25; freeze=.06; for(let i=0;i<26;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',90,2);
     for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); note(c.hp===2?'한 겹 걷혔다. 장막이 물러난다':'이제 한 겹 남았다'); SFX.calm();
-    if(c.hp===1) say('마지막 겹이다. 이번에는 숨이 천천히 모인다. 고리가 차는 동안 진짜로 같이 들이쉬어라 삐약.',7); }
+    if(c.hp===1) say('마지막 겹이다. 이번에는 숨이 천천히 모인다. 고리가 차는 동안 너도 같이 숨을 들이쉬어라 삐약.',7); }
   else { c.alive=false; for(let i=0;i<34;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',80,2); for(let i=0;i<(c.boss?6:2);i++) popCoin(c.x+6+i*9,GTOP-40,i+2);
     if(c.boss){ for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); shake=.3; say('「회색 장막」이 걷혔다. 본부 문이 보인다 삐약.'); } note(c.boss?'「회색 장막」이 걷혔다':'안개 장막이 걷혔다'); SFX.calm(); } }
 function popMung(m,flung){ m.sq=flung?.01:.32; m.vx=0; popCoin(m.x+8,m.y,1); SFX.stomp(); puff(m.x+8,m.y+8,6,'#ffffff',40); }
@@ -649,7 +649,7 @@ function step(dt){
   // 깃발, 말풍선
   if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; stuck=0; if(bossC) bossC.blk=bossC.wk=bossC.hits=0; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
   if(!room) for(const s of says) if(!s.done&&P.x>s.x){ s.done=true; say(s.t); }
-  if(!room&&!radio.said&&A.RADIO&&P.x>Math.min(radio.x,door.x)-140){ radio.said=true; say('문 앞 라디오 앞에 서면 오늘의 곡을 들을 수 있다 삐약.',3.6); }
+  if(!room&&!radio.said&&A.RADIO&&P.x>Math.min(radio.x,door.x)-140){ radio.said=true; say('문 앞 라디오에 다가가면 오늘의 곡을 들을 수 있다 삐약.',3.6); }
   // 말풍선은 한 번 뜨면 적어도 1.6초는(표어는 1초) 그대로 두고, 다음 말은 그 뒤에 한 번에 바꾼다
   if(bubble&&tNow>=bubble.until) bubble=null;
   if(bq.length&&(!bubble||tNow-bubble.t0>=bubble.min)){ const n=bq.shift(); bubble={t:n.t,t0:tNow,until:tNow+n.dur,min:n.min}; }
@@ -676,7 +676,7 @@ function step(dt){
         const dx=tx-b.x, dy=ty-b.y, d=Math.hypot(dx,dy)||1, sp=active?132:85; b.x+=dx/d*Math.min(sp*dt,d); b.y+=dy/d*Math.min(sp*dt,d);
         if(active&&Math.abs(b.x-P.x-6)<8&&Math.abs(b.y-P.y-11)<12){ hurt(Math.sign(dx)||1); b.x-=dx/d*28; b.y-=28; } }
       if(Math.abs(P.x-sx)>300){ s.state='idle'; s.calm=0; }
-      if(s.calm>=2.1){ s.state='leave'; s.t=0; for(let i=0;i<3;i++) popCoin(P.x+6+(i-1)*9,P.y-4,i+1); SFX.calm(); care.s++; note('반응하지 않으니 지나갔다'); } }
+      if(s.calm>=2.1){ s.state='leave'; s.t=0; for(let i=0;i<3;i++) popCoin(P.x+6+(i-1)*9,P.y-4,i+1); SFX.calm(); care.s++; note('가만히 있으니 지나갔다'); } }
     else { s.t+=dt; for(const b of s.bugs){ b.x+=(Math.cos(b.ph)*40+50)*dt; b.y-=100*dt; } if(s.t>2.2) s.state='gone'; } }
   // 숨 바람
   for(const g of gusts){ const d=220*dt; g.x+=g.dir*d; g.left-=d; if(Math.random()<.5){ const t=.3; parts.push({x:g.x,y:g.y+(Math.random()-.5)*18,vx:g.dir*30,vy:(Math.random()-.5)*20,t,T0:t,col:'#ffffff',s:1+Math.round(g.pow),g:0}); }
@@ -720,7 +720,7 @@ function step(dt){
       if(room.kind==='sky'){ if(still&&hands&&P.y+P.h<=8*T+1) room.p+=dt/7; }
       else if(still&&hands) room.p+=dt/8;
       if(room.p>=1){ room.p=1; room.done=true; care.s++; roomCount(); for(let i=0;i<5;i++) popCoin(P.x+6+(i-2)*9,P.y-6,i); SFX.calm();
-        note({sky:'먼 데를 보니 눈과 머리가 쉰다',still:'아무것도 안 해도 불은 켜진다'}[room.kind]); say('잘했다. 오른쪽 통로 위에 서 있으면 밖으로 나간다 삐약.'); } }
+        note({sky:'먼 곳을 보니 눈이 편안하다',still:'아무것도 안 해도 불은 켜진다'}[room.kind]); say('잘했다. 오른쪽 통로 위에 서 있으면 밖으로 나간다 삐약.'); } }
     if(still&&!P.charging&&onPipe(ex)){ room.et+=dt; if(room.et>=1) warpIn(ex+10,()=>{ leaveRoom(); warpOut(); },()=>{ shutPipe(); note('다시 길 위로'); }); } else room.et=0; }
   if(P.ground&&!room&&P.x+P.w>door.x+10&&P.x<door.x+door.w-6) finish();
   cam+=(camTarget()-cam)*Math.min(1,dt*6);
@@ -746,9 +746,9 @@ function waxCard(){ if(!window.WAX){ warp.after=()=>{ shutPipe(); note('다시 �
    보스 앞에서는 돌아오지 않아도 묻는다: 끝까지 모은 숨이 같은 겹에서 여섯 번 막혔을 때(why===true), 뭉치에 여섯 번 물들었을 때(why==='hit') */
 function offerLift(why){ stuck=0; const f=flags.filter(f=>f.x>cp.x+4).sort((a,b)=>a.x-b.x)[0], b=!!bossC&&bossC.alive&&(why===true||why==='hit'||(bossC.x>cp.x&&(!f||bossC.x<f.x)));   // b: 다음 깃발보다 앞에 보스 장막이 버티고 있다
   card(`<div class="eyebrow">병아리 요원의 도움</div><h2>${why===true?'숨 바람이 여러 번 막혔다':why==='hit'?'안개에 여러 번 물들었다':'같은 자리로 세 번 돌아왔다'}</h2>
-  <p>${b?'병아리가 숨을 보태서 장막 한 겹을 걷어 줄 수 있다.':f?'병아리가 다음 깃발까지 데려다줄 수 있다.':'병아리가 본부 문 앞까지 데려다줄 수 있다.'} 직접 한 번 더 해 봐도 된다.</p>
-  <div class="row"><button id="l1">${b?'한 겹 걷어 달라고 한다':'데려다 달라고 한다'}</button><button id="l2">한 번 더 해 본다</button></div>
-  <p class="note">도움을 받아도 작전 기록은 똑같이 남는다.</p>`);
+  <p>${b?'병아리가 숨을 보태서 장막 한 겹을 걷어 줄 수 있다.':f?'병아리가 다음 깃발까지 데려다줄 수 있다.':'병아리가 본부 문 앞까지 데려다줄 수 있다.'}</p>
+  <div class="row"><button id="l1">도움 받기</button><button id="l2">내가 다시 해 보기</button></div>
+  <p class="note">도움을 받아도 기록은 똑같다.</p>`);
   on('l1',()=>{ closeCard(); if(b&&bossC.alive){ blow(bossC); if(bossC.alive) say('한 겹은 내가 걷었다. 남은 건 직접 불어라 삐약.'); } else startLift(f); });
   // 뛰려고 누르던 스페이스·엔터가 곧바로 이 단추를 눌러 카드가 읽기도 전에 닫히지 않게, 카드가 뜬 뒤 0.6초 동안의 키 누름과 누르고 있던 키를 떼는 한 번은 넘긴다
   { const t0=performance.now(), btn=ov.querySelector('#l2'); let rep=false;
@@ -1013,11 +1013,11 @@ function closeCard(){ ov.hidden=true; ov.innerHTML=''; paused=false; last=perfor
 function on(id,fn){ ov.querySelector('#'+id).onclick=fn; }
 const IOS_TAB=/iP(hone|ad|od)/.test(navigator.userAgent)&&!navigator.standalone;
 function startCard(){ syncLevel(0); card(`<div class="hqtop"><div class="eyebrow">평범한 스파이 · 요원 ${agent().code}</div>${fbShow()?'<button class="lnk" id="fb">오류·의견 보내기</button>':''}</div><h1>회색 안개 작전</h1>
-  <p>안개 낀 등굣길을 지나 본부 문까지 간다. 폰은 가로로 눕혀서 잡아요.</p>
-  <p class="note">왼쪽 ◀ ▶ 로 움직이고, 오른쪽 점프와 숨 버튼을 써요. 컴퓨터에서는 방향키, 스페이스(점프), X(숨).</p>
-  ${IOS_TAB?'<p class="note">아이폰은 공유 버튼에서 「홈 화면에 추가」를 누르고 홈 화면의 곰 아이콘으로 열면 주소창 없이 화면이 꽉 차요.</p>':''}
-  ${teacher()?'<p class="note">선생님 모드: 날짜와 소등에 상관없이 모든 판이 열려 있어요. '+(location.hash==='#all'?'주소 끝의 #all을 지우면 꺼져요.':'위의 「평범한 스파이」 글자를 빠르게 일곱 번 누르면 꺼져요.')+'</p>':''}
-  <div class="row"><button class="go" id="s1">오늘의 작전 시작</button>${todayNo()>=0?'<button id="s2">본부에서 고르기</button>':''}</div>`);
+  <p>안개 낀 등교길을 지나 본부 문까지 간다.</p>
+  <p class="note">폰을 가로로 들고 ◀ ▶와 점프·숨 버튼을 써요. 컴퓨터는 방향키, 스페이스(점프), X(숨).</p>
+  ${IOS_TAB?'<p class="note">아이폰은 공유 버튼의 「홈 화면에 추가」로 넣어 두고 열면 화면이 꽉 차요.</p>':''}
+  ${teacher()?'<p class="note">선생님 모드: 모든 판이 열려 있어요. '+(location.hash==='#all'?'주소 끝의 #all을 지우면 꺼져요.':'「평범한 스파이」를 일곱 번 누르면 꺼져요.')+'</p>':''}
+  <div class="row"><button class="go" id="s1">오늘의 작전 시작</button>${todayNo()>=0?'<button id="s2">다른 판 고르기</button>':''}</div>`);
   secret(); if(ov.querySelector('#fb')) on('fb',()=>{ SFX.tick(); fbCard('첫 화면'); });
   on('s1',()=>{ ac(); SFX.tick(); goFull(); if(lightsOut()) return sleepCard(); const t=todayNo();
     if(t<0){ goLevel(1); return hqCard(); }
@@ -1028,8 +1028,8 @@ function home(){ if(lightsOut()) sleepCard(); else startCard(); }
 // 선생님 모드: 카드 맨 위 「평범한 스파이」 글자를 4초 안에 일곱 번 누르면 켜지고 꺼진다. 홈 화면 앱에서는 주소에 #all을 붙일 수 없어서 둔 길이다
 function secret(){ const el=ov.querySelector('.eyebrow'); let n=0, t0=0; if(el) el.onclick=()=>{ const now=Date.now(); if(now-t0>4000){ n=0; t0=now; } if(++n<7) return; const sv=loadSave(); sv.teacher=!sv.teacher; putSave(sv); SFX.tick(); home(); }; }
 function sleepCard(){ running=false; syncLevel(0); card(`<div class="eyebrow">평범한 스파이</div><h1>본부 소등</h1>
-  <p>밤 10시부터 아침 6시까지 본부는 불을 끈다. 늘곰도 잔다. 요원도 폰을 내려놓고 쉰다.</p>
-  <p class="note">오늘 판은 내일도 그대로 열려 있어요. 지금 힘든 일이 있으면 도움전화는 언제든 볼 수 있어요.</p>
+  <p>밤 10시부터 아침 6시까지 본부는 불을 끈다. 요원도 이제 폰을 내려놓고 쉬어라.</p>
+  <p class="note">힘든 일이 있으면 도움전화를 눌러 보세요.</p>
   <div class="row"><button id="z1">도움전화 보기</button></div>`);
   secret(); on('z1',()=>helpCard()); }
 // 폰에서 전체 화면(주소창 숨김)과 가로 고정. 안드로이드 크롬에서만 된다. 아이폰은 홈 화면에 추가해서 연다
@@ -1039,8 +1039,8 @@ function hqCard(){ if(lightsOut()) return sleepCard(); syncLevel(1);
   const sv=loadSave(), cl=sv.clear||{}, bossOk=hasPieces(cl)||teacher();
   const st=DAYS.slice(0,TRAIN).map((d,i)=>!isOpen(i)?'lock':(d.boss&&!bossOk)?'need':'open'), any=st.includes('open');
   card(`<div class="hqtop"><div class="eyebrow">본부 · 1주차 하늘빛</div><div class="raid" id="raid" hidden><span>전교 정화</span><i><b></b></i><span id="raidn"></span></div><div class="hqr"><div class="agc"><small>요원 코드</small><b>${agent().code}</b></div>${agent().fixed||teacher()?'':'<button class="lnk" id="re">다시 뽑기</button>'}${fbShow()?'<button class="lnk" id="fb">오류·의견 보내기</button>':''}</div></div>
-  <h2>${st[0]==='lock'?'본 작전은 11.23 월요일 오후 5시에 시작한다':'오늘의 작전을 고른다'}</h2><p class="ntc" id="ntc" hidden></p>
-  <div class="days">${DAYS.slice(0,TRAIN).map((d,i)=>`<button data-d="${i}" ${st[i]!=='open'?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${held===i?'이어 하기':cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):st[i]==='lock'?'오후 5시에 열림':st[i]==='need'?'조각 3개 필요':'미완료'}</span></button>`).join('')}</div>
+  <h2>${st[0]==='lock'?'작전은 11월 23일(월) 오후 3시에 시작한다':'작전 고르기'}</h2><p class="ntc" id="ntc" hidden></p>
+  <div class="days">${DAYS.slice(0,TRAIN).map((d,i)=>`<button data-d="${i}" ${st[i]!=='open'?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${held===i?'이어 하기':cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):st[i]==='lock'?'오후 3시에 열림':st[i]==='need'?'조각 3개면 열림':'아직'}</span></button>`).join('')}</div>
   <div class="row"><button data-d="${TRAIN}"${any?'':' class="go"'}>훈련장 · ${held===TRAIN?'이어 하기':'조작 연습 1분'}</button>${window.WAX&&WAX.toy?`<button id="tb">말랑이 상자 ${ownToys().length}/${TOYS.length}</button>`:''}${rankShow()?'<button id="rb">순위표</button>':''}</div>
   <p class="note">${weekDone(cl)?'<b>1주차 작전 완료. '+SNACK+'</b> ':''}${saveMem!==null?'이 폰은 기록을 저장하지 못해요. 창을 닫으면 처음부터 다시 해야 해요.':''}<span id="hs"></span></p>`);
   ov.firstChild.classList.add('wide'); hqInfo(); if(ov.querySelector('#fb')) on('fb',()=>{ SFX.tick(); fbCard('본부'); });
@@ -1087,25 +1087,25 @@ function briefing(){ const sv=loadSave(), cl=sv.clear||{}, rp=(sv.rep||{})[stage
 function reportCard(){ const o=DAYS[stageNo].report, yest=new Date(kst()-864e5).toISOString().slice(0,10);
   card(`<div class="eyebrow">${(loadSave().day||{})[stageNo-1]===yest?'어제의':'지난'} 지령 보고</div><h2>「${o[0]}」</h2><p>${o[1]} 해 봤나?</p>
   <div class="row"><button id="r1">했다</button><button id="r2">안 했다</button></div>
-  <p class="note">안 했어도 작전은 그대로 나간다. 지원 물자도 똑같이 준다.</p>`);
+  <p class="note">안 했어도 괜찮다. 솔직하게 고르면 된다.</p>`);
   // 서버에는 그 판의 첫 보고만 센다
   const pick=k=>{ const sv=loadSave(); sv.rep=sv.rep||{}; if(!sv.rep[stageNo]){ sv.rep[stageNo]=k; putSave(sv); hq('add','ord_'+k,1); } bonus=true; bonusNote='보고 완료. 색 방패 1개와 색 방울 5개'; SFX.tick();
-    if(k==='done') howCard(o); else if(o[2]) nowCard(o); else moodCard('보고 받았다. 안 했다는 것도 정확한 보고다.'); };
+    if(k==='done') howCard(o); else if(o[2]) nowCard(o); else moodCard('보고 받았다. 안 한 날도 있는 법이다.'); };
   on('r1',()=>pick('done')); on('r2',()=>pick('no')); }
-const HOW=[['할 만했다','할 만한 것은 또 해도 된다.'],['별 느낌 없었다','별 느낌 없었다는 것도 정확한 보고다.'],['좀 어색했다','처음 하는 일은 원래 어색하다.'],['딴생각이 났다','딴생각이 난 걸 알아챈 것이 요령이다.']];
+const HOW=[['할 만했다','할 만한 것은 또 해도 된다.'],['별 느낌 없었다','별 느낌이 없을 때도 있다.'],['좀 어색했다','처음 하는 일은 원래 어색하다.'],['딴생각이 났다','딴생각이 난 걸 알아차렸다면 잘한 거다.']];
 function howCard(o){ card(`<div class="eyebrow">지령 보고 · 「${o[0]}」</div><h2>해 보니 어땠나</h2>
   <div class="row">${HOW.map((h,i)=>`<button data-h="${i}">${h[0]}</button>`).join('')}</div>
-  <p class="note">정답은 없다. 고른 것은 어디에도 남기지 않는다.</p>`);
+  <p class="note">정답은 없다. 고른 건 어디에도 남지 않는다.</p>`);
   ov.firstChild.classList.add('wide');
   ov.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ SFX.tick(); moodCard('보고 받았다. '+HOW[+b.dataset.h][1]); }); }
 function nowCard(o){ card(`<div class="eyebrow">지령 「${o[0]}」</div><h2>지금 해 볼까</h2><p>${o[2]}</p>
-  <div class="row"><button class="go" id="n1">해 본다</button><button id="n2">그냥 나간다</button></div>`);
-  on('n2',()=>{ SFX.tick(); moodCard('보고 받았다. 안 했다는 것도 정확한 보고다.'); });
-  on('n1',()=>{ SFX.tick(); card(`<div class="eyebrow">지령 「${o[0]}」 · 지금</div><h1 id="nc">10</h1><p>${o[2]}</p><div class="row"><button class="go" id="n3" hidden>돌아왔다</button></div>`);
+  <div class="row"><button class="go" id="n1">지금 해 보기</button><button id="n2">그냥 출발</button></div>`);
+  on('n2',()=>{ SFX.tick(); moodCard('보고 받았다. 안 한 날도 있는 법이다.'); });
+  on('n1',()=>{ SFX.tick(); card(`<div class="eyebrow">지령 「${o[0]}」 · 지금</div><h1 id="nc">10</h1><p>${o[2]}</p><div class="row"><button class="go" id="n3" hidden>다 했다</button></div>`);
     const box=ov.firstChild, t0=Date.now(), iv=setInterval(()=>{ if(ov.firstChild!==box){ clearInterval(iv); return; }
       const left=10-Math.floor((Date.now()-t0)/1000); box.querySelector('#nc').textContent=Math.max(0,left);
       if(left<=0){ clearInterval(iv); SFX.calm(); const b=box.querySelector('#n3'); b.hidden=false; try{ b.focus({preventScroll:true}); }catch(e){} } },200);
-    on('n3',()=>{ SFX.tick(); moodCard('방금 한 것으로 됐다. 내일은 학교에서 한 번 더 해 본다.'); }); }); }
+    on('n3',()=>{ SFX.tick(); moodCard('이것으로 충분하다. 내일은 학교에서도 해 봐라.'); }); }); }
 /* 마음 날씨: 판을 시작할 때 한 번, 판을 끝낸 완료 카드에서 한 번 더 고른다 (3분 사이에 달라졌는지 스스로 견주어 보게).
    「바람」의 기록 이름은 예전 그대로 fog다 (예전에는 「안개」였다. 게임의 적이 회색 안개라서, 안개를 고른 학생의 기분이 걷어 내야 할 적처럼 들리지 않게 바꿨다). 운영 시트의 「안개」 칸이 「바람」이다.
    폰 안에만 최근 사흘의 날씨를 적어 둔다(fogspy2.md, 하루에 처음 고른 것 하나). 사흘 내리 비나 번개면 본부가 한 번 Wee클래스와 도움전화를 알려 준다. 서버에는 예전처럼 그날 합계만 간다 */
@@ -1117,10 +1117,10 @@ function moodLog(m){ if(teacher()) return false; const sv=loadSave(), ymd=today(
   md.push([ymd,m]); md=md.slice(-3); sv.md=md; if(!bad(m)) sv.mdT=false;
   const due=md.length===3&&md.every(e=>bad(e[1]))&&!sv.mdT; if(due) sv.mdT=true; putSave(sv); return due; }
 function rainCard(go){ card(`<div class="eyebrow">본부에서 한마디</div><h2>요즘 날씨가 계속 궂다</h2>
-  <p>궂은 날이 이어질 때도 있다. Wee클래스는 학교 3층이다. 쉬는 시간이나 점심시간에 와도 된다.</p>
-  <div class="row"><button class="go" id="w1">작전 나간다</button><button id="w2">도움전화 보기</button></div>`);
+  <p>궂은 날이 이어질 때도 있다. 학교 3층 Wee클래스에는 쉬는 시간이나 점심시간에 언제든 와도 된다.</p>
+  <div class="row"><button class="go" id="w1">작전 출발</button><button id="w2">도움전화 보기</button></div>`);
   on('w1',()=>{ SFX.tick(); go(); }); on('w2',()=>{ SFX.tick(); helpCard(); }); }
-function moodCard(lead){ card(`<div class="eyebrow">마음 날씨</div><h2>지금 기분은 어떤 날씨인가</h2><p class="note">${lead?lead+' ':''}고른 날씨가 오늘 판의 하늘이 돼요.</p>
+function moodCard(lead){ card(`<div class="eyebrow">마음 날씨</div><h2>지금 내 마음은 어떤 날씨?</h2><p class="note">${lead?lead+' ':''}고른 날씨가 오늘 판의 하늘이 돼요.</p>
   <div class="row">${moodRow()}</div>`);
   const go=()=>{ reset(); play(); if(bonus) note(bonusNote); };
   ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mood=b.dataset.m; hq('mood',mood); if(moodLog(mood)) rainCard(go); else go(); }); }
@@ -1128,21 +1128,21 @@ function moodCard(lead){ card(`<div class="eyebrow">마음 날씨</div><h2>지�
    정답은 없다. 「다른 낱말 보기」를 누르면 같은 상황에 어울릴 수 있는 다른 낱말 여섯 개로 바뀐다 (감정카드와 무드미터에 나오는 낱말들).
    상황과 낱말은 stage-feel.js에 있다. 판마다 상황이 여러 개라서, 그 판의 벽을 무너뜨릴 때마다 다음 상황으로 넘어간다 (fogspy2.fw에 판별 횟수만 적는다).
    고른 낱말은 어디에도 남기지 않는다 (폰에도 서버에도). 감정을 좋은 것과 나쁜 것으로 나누지 않는다 */
-const FEEL=window.FEEL||{words:{'잘 모르겠다':'아직 이름을 못 붙인 마음. 그것도 이름이다.','덤덤하다':'별다른 느낌 없이 그저 그런 마음.'},cases:{x:['지금 이 벽 앞에 서 있다.',['잘 모르겠다','덤덤하다'],[]]},days:{}};   // 파일을 못 받았을 때 쓰는 한 장
-const FEEL_ASK='이럴 때 내 마음에 가까운 이름을 고른다. 낱말을 누르면 뜻이 보인다. 정답은 없다.';
+const FEEL=window.FEEL||{words:{'잘 모르겠다':'아직 무슨 마음인지 모르겠는 상태. 그것도 마음이다.','덤덤하다':'별다른 느낌 없이 그저 그런 마음.'},cases:{x:['지금 이 벽 앞에 서 있다.',['잘 모르겠다','덤덤하다'],[]]},days:{}};   // 파일을 못 받았을 때 쓰는 한 장
+const FEEL_ASK='이럴 때 내 마음과 가장 가까운 말을 골라요. 누르면 뜻이 보여요. 정답은 없어요.';
 function feelCase(){ const ids=((FEEL.days||{})[DAYS[stageNo].feel]||[]).filter(id=>FEEL.cases[id]), all=ids.length?ids:Object.keys(FEEL.cases);
   const n=Math.abs(Math.floor(+((loadSave().fw||{})[stageNo])||0));   // 저장값이 깨져 있어도(숫자가 아니어도) 첫 상황으로 넘어간다
   return FEEL.cases[all[n%all.length]]||FEEL.cases[all[0]]; }
 // 마음을 모르겠는 학생은 아무 낱말이나 누르지 않고 「잘 모르겠다」를 고를 수 있다 (눈에 덜 띄게 카드 위쪽 구석에 둔다)
-const FEEL_DK='잘 모르겠다', FEEL_DKM='아직 이름을 못 붙인 마음. 그것도 이름이다.';
+const FEEL_DK='잘 모르겠다', FEEL_DKM='아직 무슨 마음인지 모르겠는 상태. 그것도 마음이다.';
 function feel(w){ const fc=feelCase(), sit=fc[0], sets=fc.slice(1).filter(x=>Array.isArray(x)&&x.length), more=sets.length>1, dk=![].concat(...sets).includes(FEEL_DK); let alt=0, pick='';
   card(`<div class="hqtop"><div class="eyebrow">감정 벽</div>${dk?'<button class="lnk" id="e3">'+FEEL_DK+'</button>':''}</div><h2>${sit}</h2><div class="feel" id="fw"></div><p class="fm" id="fm"></p>
-  <div class="row">${more?'<button id="e2"></button>':''}<button class="go" id="e1" disabled>이 이름을 붙인다</button></div>`);
+  <div class="row">${more?'<button id="e2"></button>':''}<button class="go" id="e1" disabled>이 마음으로 하기</button></div>`);
   ov.firstChild.classList.add('wide');
   const fw=ov.querySelector('#fw'), fm=ov.querySelector('#fm'), go=ov.querySelector('#e1');
   const choose=(t,x)=>{ pick=t; SFX.tick(); fw.querySelectorAll('[data-e]').forEach(y=>y.classList.toggle('on',y===x));
     fm.innerHTML='<b>「'+t+'」</b> '+(FEEL.words[t]||(t===FEEL_DK?FEEL_DKM:'')); go.disabled=false; };
-  const show=()=>{ pick=''; go.disabled=true; fm.textContent=FEEL_ASK; if(more) ov.querySelector('#e2').textContent=alt===sets.length-1?'처음 낱말 보기':'다른 낱말 보기';
+  const show=()=>{ pick=''; go.disabled=true; fm.textContent=FEEL_ASK; if(more) ov.querySelector('#e2').textContent=alt===sets.length-1?'처음 말 보기':'다른 말 보기';
     fw.innerHTML=(sets[alt]||[]).map(t=>`<button data-e="${t}">${t}</button>`).join('');
     fw.querySelectorAll('[data-e]').forEach(x=>x.onclick=()=>choose(x.dataset.e,x)); };
   show(); focusCard();
@@ -1153,8 +1153,8 @@ function feel(w){ const fc=feelCase(), sit=fc[0], sets=fc.slice(1).filter(x=>Arr
     w.alive=false; care.n++; closeCard(); SFX.brk();
     for(let r=0;r<GY;r++) for(let i=0;i<2;i++) parts.push({deb:true,x:w.x+i*16+4,y:r*T+4,vx:(i?1:-1)*(20+Math.random()*50),vy:-60-Math.random()*90,t:.9,T0:.9,g:600,sx:0,sy:0});
     for(let i=0;i<3;i++) popCoin(w.x+8+i*8,GTOP-50,i);
-    note(pick===FEEL_DK?'모르겠다는 것도 이름이다. 벽이 무너진다':'「'+pick+'」 이름을 붙이니 벽이 무너진다');
-    if(first) say('같은 일에도 붙이는 이름은 사람마다 다르다. 그래서 정답이 없다 삐약.',5); }); }
+    note(pick===FEEL_DK?'모르겠다는 것도 마음이다. 벽이 무너진다':'「'+pick+'」, 내 마음을 알아차리자 벽이 무너진다');
+    if(first) say('같은 일에도 마음은 사람마다 다르다. 그래서 정답이 없다 삐약.',5); }); }
 // 도움전화는 어느 화면에서든 그 위에 겹쳐 열린다. 밑에 있던 카드나 게임은 그대로 두고, 닫으면 하던 데로 돌아간다
 let hvUnder=false, hvT=0;
 const TEL='<div class="tel"><b>Wee클래스</b><span>학교 3층. 쉬는 시간이나 점심시간에 와도 돼요.</span><b>1388</b><span>청소년상담전화. 24시간, 문자는 #1388</span><b>109</b><span>자살예방 상담전화. 24시간</span><b>117</b><span>학교폭력 신고·상담. 24시간</span></div>';
@@ -1229,10 +1229,10 @@ function fbCard(from){ if(!hv.hidden) return; clearTimeout(hvT); hvUnder=!ov.hid
   const shut=(eye,h,body,extra)=>{ hv.innerHTML=`<div class="card"><div class="eyebrow">${eye}</div><h2>${h}</h2>${body}<div class="row">${extra||''}<button id="h1">닫기</button></div></div>`; hv.scrollTop=0;
     const b=hvClose(); try{b.focus({preventScroll:true});}catch(e){} };
   // 글 쓰는 카드. 키 낮은 가로 화면에서는 글 칸(왼쪽)과 안내·단추(오른쪽) 두 칸으로 놓인다 (.fb2)
-  const form=text=>{ hv.innerHTML=`<div class="card"><div class="eyebrow">오류·의견 보내기</div><h2>본부에 알릴 것을 적는다</h2>
+  const form=text=>{ hv.innerHTML=`<div class="card"><div class="eyebrow">오류·의견 보내기</div><h2>본부에 알리기</h2>
   <div class="fb2"><div><div class="tpick" id="fk"><button data-k="오류">오류가 났다</button><button data-k="의견">의견이 있다</button></div>
   <textarea id="ft" rows="3" maxlength="200" aria-label="본부에 알릴 내용"></textarea></div>
-  <div><p class="note" id="fn">이름은 보내지 않아요. 화면과 판, 몇 번 다시 했는지, 기기와 브라우저 종류, 화면 크기, 오류 기록만 함께 가요. 이름이나 연락처는 쓰지 마세요. 답장은 없어요.${live?'':FB_ON?' 선생님 미리보기: 선생님 모드에서는 실제로 보내지지 않아요.':' 선생님 미리보기: 아직 본부와 연결하지 않아서 실제로 보내지지는 않아요.'}</p>
+  <div><p class="note" id="fn">누가 썼는지는 보내지 않아요. 이름이나 연락처는 쓰지 마세요. 답장은 없어요.${live?'':FB_ON?' 선생님 미리보기: 선생님 모드에서는 실제로 보내지지 않아요.':' 선생님 미리보기: 아직 본부와 연결하지 않아서 실제로 보내지지는 않아요.'}</p>
   <p class="note" id="fm2" role="status" hidden></p>
   <div class="row"><button class="go" id="f3">보내기</button><button id="h1">닫기</button></div></div></div></div>`; hv.scrollTop=0;
     hvClose();
@@ -1245,7 +1245,7 @@ function fbCard(from){ if(!hv.hidden) return; clearTimeout(hvT); hvUnder=!ov.hid
       if(tc.length<2) return tell('두 글자 이상 적어 주세요.');
       const bad=fbRisk(tc);   // 서버와 같은 글로 본다 ('죽고<싶어요'처럼 끊어 쓴 말도 서버에서는 걱정되는 말이 된다)
       if(bad){ hq('once','risk'); hq('once','phone');
-        shut('도움전화','혼자 버티지 않아도 된다',`<p>보내기 전에 멈췄어요. 글에 「${escH(bad)}」 같은 말이 있어서예요. 힘든 일을 적은 거라면, 이 칸은 누가 썼는지 알 수 없고 답장도 못 해요. 바로 들어 줄 사람에게 말해 주세요.</p>${TEL}<p class="note">게임 이야기였다면 「고쳐 쓰기」로 돌아가서 그 말만 바꿔 보내 주세요.</p>`,'<button id="f4">고쳐 쓰기</button>');
+        shut('도움전화','혼자 버티지 않아도 된다',`<p>글에 「${escH(bad)}」 같은 말이 있어서 보내지 않았어요. 힘든 일이 있다면 이 칸으로는 도울 수가 없어요. 아래로 바로 이야기해 주세요.</p>${TEL}<p class="note">게임 이야기였다면 「고쳐 쓰기」로 돌아가서 그 말만 바꿔 보내 주세요.</p>`,'<button id="f4">고쳐 쓰기</button>');
         hv.querySelector('#f4').onclick=()=>{ SFX.tick(); form(raw); }; return; }   // 쓴 글은 그대로 두고 적는 칸으로 돌아간다
       const f=fbQuota();
       if(f.n>=5) return tell('하루에 다섯 번까지 보낼 수 있어요. 내일 다시 보내 주세요.');
@@ -1257,15 +1257,15 @@ function fbCard(from){ if(!hv.hidden) return; clearTimeout(hvT); hvUnder=!ov.hid
       Promise.race([fetch(FB_URL,{method:'POST',body,headers:{'Content-Type':'text/plain;charset=utf-8'}}).then(r=>r.json()).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),12000))]).then(j=>{
         const ok=!!(j&&j.ok), g=fbQuota(); if(ok) g.n++; else if(g.t===t1) g.t=t0; fbKeep(g);   // 카드를 닫았어도 횟수는 센다
         if(hv.hidden||hv.querySelector('#f3')!==go) return;   // 기다리는 사이에 닫았다
-        if(ok) shut('오류·의견 보내기','본부가 받았다','<p>고맙다. 본부가 확인하고, 고칠 수 있는 것부터 고친다.</p>');
+        if(ok) shut('오류·의견 보내기','본부가 받았다','<p>고맙다. 본부가 읽고 고칠 수 있는 것부터 고친다.</p>');
         else { go.disabled=false; tell(j&&j.msg==='busy'?'지금은 글이 많이 몰렸어요. 조금 있다가 다시 보내 주세요.':j&&j.msg==='empty'?'두 글자 이상 적어 주세요.':'지금은 보내지 못했어요. 조금 있다가 다시 눌러 주세요.'); } }); }; };
   form(''); }
 function finish(){ running=false; SFX.clear();
   const s=Math.round(playT), mm=Math.floor(s/60), ss=String(s%60).padStart(2,'0');
   if(DAYS[stageNo].train){ card(`<div class="eyebrow">훈련장</div><h1>훈련 완료</h1>
     <div class="stat"><div><b>${P.coins}</b>색 방울</div><div><b>${P.pcs}/3</b>색 조각</div><div><b>${mm}:${ss}</b>걸린 시간</div><div><b>${deaths}</b>깃발에서 다시</div></div>
-    <p>${isOpen(0)?'조작은 이게 전부다. 본부에서 오늘의 작전을 고르면 된다.':'조작은 이게 전부다. 본 작전은 11월 23일 월요일 오후 5시에 시작한다.'}</p>
-    <p class="note">훈련장에서 모은 색 방울은 기록에 넣지 않아요. 몇 번이든 다시 해도 돼요.</p>
+    <p>${isOpen(0)?'조작은 이게 전부다. 이제 본부에서 작전을 골라라.':'조작은 이게 전부다. 작전은 11월 23일(월) 오후 3시에 시작한다.'}</p>
+    <p class="note">훈련장은 순위에 들어가지 않아요. 몇 번이든 다시 해도 돼요.</p>
     <div class="row"><button class="go" id="f1">본부로</button></div>`);
     { const sv=loadSave(); sv.train=true; putSave(sv); }
     ov.firstChild.classList.add('wide'); on('f1',()=>hqCard()); return; }
@@ -1287,7 +1287,7 @@ function finish(){ running=false; SFX.clear();
   rankDue=rankShow()&&!!d.final&&'final'; if(rankShow()) rankSend();   // 깬 기록은 바로 보내 둔다
   const pcs=P.pcs, coinsN=P.coins;
   const second=now=>{ const same=now===mood, t=now?(same?'그대로 「'+was+'」':'「'+was+'」에서 「'+MOODN[now]+'」'+(/[가-힣]/.test(MOODN[now])&&(MOODN[now].charCodeAt(MOODN[now].length-1)-44032)%28?'으로':'로')):(d.done||'글자 조각 「'+d.letter+'」 확보');
-    card(`${head}<h2>${t}</h2>${now?`<p>${same?'그대로여도 된다. 알아차린 것으로 충분하다.':'3분 사이에도 날씨는 바뀐다.'}</p>`:''}
+    card(`${head}<h2>${t}</h2>${now?`<p>${same?'그대로여도 괜찮다. 알아차린 것만으로 충분하다.':'몇 분 사이에도 날씨는 바뀐다.'}</p>`:''}
     <div class="order"><div class="eyebrow">${d.nl||'내일의 지령'}</div><p><b>「${d.next[0]}」</b> ${d.next[1]}</p></div>
     <p class="note" id="fr" hidden></p>
     <div class="row">${newToy?'<button class="go" id="f2">말랑이 받기</button><button id="f1">본부로</button>':'<button class="go" id="f1">본부로</button>'}</div>`);
@@ -1295,8 +1295,8 @@ function finish(){ running=false; SFX.clear();
       if(cnt) n.append('전교 정화 합계에 1을 보탰어요.'); if(cnt&&sg) n.append(' '); if(sg) n.append(sg); n.hidden=!(cnt||sg||sn); }
     ov.firstChild.classList.add('wide'); on('f1',()=>{ SFX.tick(); rankDue?rankCard(true):hqCard(); }); if(newToy) on('f2',()=>{ SFX.item(); toyCard(tk,true); }); };
   card(`${head}<h1>${d.done||'글자 조각 「'+d.letter+'」 확보'}</h1>
-  <div class="stat"><div><b>${coinsN}</b>색 방울 · 조각 ${pcs}/3</div><div><b>${care.b}</b>끝까지 모은 숨</div><div><b>${care.s}</b>가만히 있기</div><div><b>${care.n}</b>붙인 이름</div></div>
-  <div class="order"><div class="eyebrow">마음 날씨</div><p>출발할 때 고른 날씨는 <b>「${was}」</b>. 지금은?</p></div>
+  <div class="stat"><div><b>${coinsN}</b>색 방울 (조각 ${pcs}/3)</div><div><b>${care.b}</b>깊은 숨</div><div><b>${care.s}</b>가만히 있기</div><div><b>${care.n}</b>알아차린 마음</div></div>
+  <div class="order"><div class="eyebrow">마음 날씨</div><p>출발할 때는 <b>「${was}」</b>${(was.charCodeAt(was.length-1)-44032)%28?'이었다':'였다'}. 지금은?</p></div>
   <div class="row">${moodRow()}<button class="lnk" id="m0">넘어가기</button></div>`);
   ov.firstChild.classList.add('wide');
   try{ document.activeElement.blur(); }catch(e){}   // 문에 닿을 때 누르고 있던 키로 날씨가 골라지지 않게 초점을 두지 않는다
@@ -1327,13 +1327,13 @@ function rankCard(final){ rankDue=false;
   card(`<div class="eyebrow">${final?'작전 끝 · 최종 순위':'요원 순위 · 색 방울'}</div><h1>${final?'최종 순위':'순위표'}</h1>
   <ol class="rk" id="rk"><li class="wait">순위표를 불러오는 중이에요.</li></ol>
   <p id="rme" hidden></p>
-  <p class="note" id="rnt">판마다 가장 많이 모은 색 방울을 더해서 순위를 매겨요. 같은 판을 다시 해서 더 많이 모으면 그 판 기록이 바뀌어요.</p>
+  <p class="note" id="rnt">판마다 가장 많이 모은 색 방울을 더한 순위예요.</p>
   <div class="row"><button class="go" id="r1">본부로</button></div>`);
   ov.firstChild.classList.add('wide','rkc'); if(final) ov.firstChild.classList.add('big'); on('r1',()=>{ SFX.tick(); hqCard(); });
   const box=ov.firstChild, p=(RK&&Date.now()-RK.t<30000)?RK.p:rankSend();
   p.then(j=>{ if(ov.firstChild!==box) return;   // 그 사이에 다른 카드로 넘어갔다
     const ol=box.querySelector('#rk'), me=box.querySelector('#rme'), nt=box.querySelector('#rnt');
-    if(!(j&&j.ok)){ ol.innerHTML=''; const li=document.createElement('li'); li.className='wait'; li.textContent=j&&j.msg==='busy'?'잠깐 뒤에 다시 열어 주세요.':'지금은 순위표를 불러오지 못했어요. 기록은 다음에 판을 깰 때 함께 보내요.'; ol.append(li); return; }
+    if(!(j&&j.ok)){ ol.innerHTML=''; const li=document.createElement('li'); li.className='wait'; li.textContent=j&&j.msg==='busy'?'잠깐 뒤에 다시 열어 주세요.':'순위표를 불러오지 못했어요. 잠시 뒤에 다시 열어 주세요.'; ol.append(li); return; }
     ol.innerHTML='';
     (j.top||[]).slice(0,10).forEach(o=>{ const li=document.createElement('li'); if(o.me) li.className='me';
       const b=document.createElement('b'), sp=document.createElement('span'), i=document.createElement('i');

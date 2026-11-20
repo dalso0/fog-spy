@@ -246,5 +246,5 @@ Object.keys(SOFT).forEach(k=>{ const O=SOFT[k]; INFO[k]={name:O.name,tag:O.tag,i
 window.WAX={open:waxToy,
   toy(k,st,cnt){ if(k==='wax') waxToy(st,cnt,()=>{}); else softToy(st,cnt,k); },   // 상자에서는 몇 개를 깨든 끝이 없다
   info:k=>INFO[k]||null,
-  preload(k){ if(k&&k!=='wax'){ if(INFO[k]) sqImg(INFO[k].img); return; } for(let i=0;i<4;i++){ sqImg('img/sq-candy-'+i+'.webp'); sqImg('img/sq-crack-'+i+'.webp'); sqImg('img/sq-jelly-'+i+'.webp'); } }};
+  preload(k){ if(k&&k!=='wax'){ if(INFO[k]) sqImg(INFO[k].img); return; } for(let i=0;i<4;i++){ sqImg('img/sq-candy-'+i+'.webp'); sqImg('img/sq-crack-'+i+'.webp'); sqImg('img/sq-lab-'+i+'.png'); sqImg('img/sq-jelly-'+i+'.webp'); } }};
 })();

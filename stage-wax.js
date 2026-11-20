@@ -1,5 +1,5 @@
 /* 말랑이: 수요일 통로 방의 왁뿌볼과 본부 말랑이 상자의 말랑이들. 기존 앱(index.html)의 것을 그대로 옮겨 왔다.
-   왁뿌볼은 실물 그림 위에 조각 단위로 깨지는 사탕 껍질과 말랑한 속(맞은 조각에는 금 간 실물 그림 sq-crack-*.webp가 비친다), 나머지는 실물 그림을 그물망으로 감싸 누른 자리가 들어가고 출렁이는 장난감이다.
+   왁뿌볼은 실물 그림 위에 조각 단위로 깨지는 사탕 껍질과 말랑한 속(누르면 금 간 실물 그림 sq-crack-*.webp가 번지고, 조각은 그 사진 속 금을 따라 나눈 지도 sq-lab-*.png대로 떨어진다), 나머지는 실물 그림을 그물망으로 감싸 누른 자리가 들어가고 출렁이는 장난감이다.
    쓰는 법: WAX.open(무대 요소, 안내 글 요소, 다 깼을 때 부를 함수) / WAX.toy(이름, 무대 요소, 안내 글 요소) / WAX.info(이름) / WAX.preload(이름)
    소리는 게임의 ♪ 버튼을 따른다 (stage.html이 window.gameAudio를 내어 준다) */
 (()=>{
@@ -28,59 +28,45 @@ function wxBoing(p){ const A=wxAudio(); if(!A) return; try{ const t=A.currentTim
 function waxToy(st,cnt,finish){
   const COL=[ // [진한색, 밝은색, 속 젤리, 이름, 어두운색, 그림 번호]
     ['#e06a12','#ffb46a','#ffe0bf','꿀','#7a3206',0],['#d3202f','#ff8f98','#ffd5d2','딸기','#74101c',1],['#4faa1e','#b6ee8a','#dcf7c8','청포도','#225a0c',2],['#1e9fc9','#9fe0f5','#d5eefc','소다','#0c5878',3]];
-  COL.forEach(c=>{ sqImg(`img/sq-candy-${c[5]}.webp`); sqImg(`img/sq-crack-${c[5]}.webp`); sqImg(`img/sq-jelly-${c[5]}.webp`); });
-  const ok=i=>i&&i.complete&&i.naturalWidth; let cimg=null, kimg=null, jimg=null;   // kimg: 같은 공에 금이 간 실물 그림. 맞은 조각에만 비친다
+  COL.forEach(c=>{ sqImg(`img/sq-candy-${c[5]}.webp`); sqImg(`img/sq-crack-${c[5]}.webp`); sqImg(`img/sq-lab-${c[5]}.png`); sqImg(`img/sq-jelly-${c[5]}.webp`); });
+  const ok=i=>i&&i.complete&&i.naturalWidth; let cimg=null, kimg=null, limg=null, jimg=null;   // kimg: 같은 공에 금이 간 실물 그림(힉스필드). limg: 그 사진 속 금을 따라 나눈 조각 지도(칸마다 조각 번호×7)
   st.style.background='radial-gradient(circle at 50% 38%,#fffaf0,#f1dfb8)';
   st.innerHTML='<canvas class="wxcv" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none"></canvas><button class="wxagain" id="wxa" hidden>하나 더 깨기</button>';
   const cv=st.querySelector('canvas'), g=cv.getContext('2d'), again=st.querySelector('#wxa');
   let W=0,H=0,dpr=1,R=96,cx=0,cy=0,floor=null;
   const fit=()=>{ W=st.clientWidth||320; H=st.clientHeight||240; dpr=Math.min(3,window.devicePixelRatio||1); cv.width=W*dpr; cv.height=H*dpr; R=Math.min(104,W*.3,H*.34); cx=W/2; cy=H*.47; floor=null; };   // 크기가 바뀌면 바닥 조각은 비운다
   fit();
-  let round=0, col, shards, seams, hair, fly, dust, pops, total, gone, phase, sq, s=0, sv=0, jk=0, jv=0, jx=0, jy=0, tx=0, ty=0, shake=0, hold=null, lastT=0, bobT=0, dropY=0, dropV=0;
+  let round=0, labOk=false, col, shards, LN=0, lab=null, shell=null, shade=null, dirty=true, spK='', fly, dust, pops, total, gone, phase, sq, s=0, sv=0, jk=0, jv=0, jx=0, jy=0, tx=0, ty=0, shake=0, hold=null, lastT=0, bobT=0, dropY=0, dropV=0;
 
-  function build(){
-    col=COL[(round+Math.floor(Math.random()*COL.length))%COL.length];
-    const N=26, seeds=[]; let tries=0;   // 간격을 들쭉날쭉하게 해서 벌집처럼 고른 조각이 되지 않게 한다
-    while(seeds.length<N && tries++<4000){ const a=Math.random()*6.283, r=Math.sqrt(Math.random())*.95, p=[Math.cos(a)*r,Math.sin(a)*r];
-      if(seeds.every(q=>Math.hypot(q[0]-p[0],q[1]-p[1])>.17+Math.random()*.16)) seeds.push(p); }
-    shards=seeds.map((si,i)=>{ let poly=[]; for(let k=0;k<44;k++){ const a=k/44*6.283; poly.push([Math.cos(a),Math.sin(a)]); }
-      seeds.forEach((sj,j)=>{ if(j===i||poly.length<3) return; const mx=(si[0]+sj[0])/2, my=(si[1]+sj[1])/2, nx=sj[0]-si[0], ny=sj[1]-si[1], out=[];
-        for(let k=0;k<poly.length;k++){ const a=poly[k], b=poly[(k+1)%poly.length], da=(a[0]-mx)*nx+(a[1]-my)*ny, db=(b[0]-mx)*nx+(b[1]-my)*ny;
-          if(da<=0) out.push(a); if((da<0&&db>0)||(da>0&&db<0)){ const t=da/(da-db); out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]); } }
-        poly=out; });
-      let mx=0,my=0; poly.forEach(p=>{mx+=p[0];my+=p[1];}); mx/=poly.length||1; my/=poly.length||1;
-      return {poly, c:[mx,my], dmg:0, crk:0, on:poly.length>=3, tough:.8+Math.random()*.5, jit:[0,0]}; }).filter(x=>x.on);
-    // 금을 삐뚤빼뚤하게: 모든 변을 잘게 나눈 뒤 같은 물결로 휜다. 이웃 조각과 맞닿은 변은 같은 점을 지나므로 틈이 생기지 않는다
-    const ph=[0,1,2,3,4,5].map(()=>Math.random()*6.283), F=[7+Math.random()*3,11+Math.random()*4,23+Math.random()*6];
-    const warp=(x,y)=>{ const d=Math.hypot(x,y), k=Math.max(0,Math.min(1,(.985-d)/.07)); if(!k) return [x,y];
-      const ax=.03*Math.sin(F[0]*y+ph[0])+.016*Math.sin(F[1]*(x+y)+ph[1])+.007*Math.sin(F[2]*x+ph[2]), ay=.03*Math.sin(F[0]*x+ph[3])+.016*Math.sin(F[1]*(x-y)+ph[4])+.007*Math.sin(F[2]*y+ph[5]);
-      return [x+ax*k, y+ay*k]; };
-    const key=(a,b)=>{ const A=a[0].toFixed(4)+','+a[1].toFixed(4), B=b[0].toFixed(4)+','+b[1].toFixed(4); return A<B?A+'|'+B:B+'|'+A; };
-    const own={};
-    shards.forEach((sh,si)=>{ const P=sh.poly, out=[];
-      for(let i=0;i<P.length;i++){ const a=P[i], b=P[(i+1)%P.length], rim=Math.hypot(a[0],a[1])>.985&&Math.hypot(b[0],b[1])>.985;
-        const n=rim?1:Math.max(1,Math.round(Math.hypot(b[0]-a[0],b[1]-a[1])/.05)), sa=(a[0]+a[1]<b[0]+b[1]||(a[0]+a[1]===b[0]+b[1]&&a[0]<b[0]));
-        for(let j=0;j<n;j++){ const [p0,p1,u]=sa?[a,b,j/n]:[b,a,(n-j)/n]; out.push(j?warp(p0[0]+(p1[0]-p0[0])*u,p0[1]+(p1[1]-p0[1])*u):warp(a[0],a[1])); } }
-      sh.poly=out; for(let i=0;i<out.length;i++){ const a=out[i], b=out[(i+1)%out.length]; if(Math.hypot(a[0],a[1])>.985&&Math.hypot(b[0],b[1])>.985) continue; (own[key(a,b)]=own[key(a,b)]||[]).push(si); } });
-    seams=[]; Object.keys(own).forEach(k=>{ const o=own[k]; if(o.length!==2) return; const [A,B]=k.split('|').map(q=>q.split(',').map(Number)); seams.push({a:A,b:B,s:o[0],t:o[1]}); });
-    cimg=sqImg(`img/sq-candy-${col[5]}.webp`); kimg=sqImg(`img/sq-crack-${col[5]}.webp`); jimg=sqImg(`img/sq-jelly-${col[5]}.webp`);
-    hair=[]; fly=[]; floor=null; dust=[]; pops=[]; total=shards.length; gone=0; phase='shell'; sq=0; s=0; sv=0; jk=0; jv=0; jx=jy=tx=ty=0; hold=null; dropY=-H*.7; dropV=0; again.hidden=true;
+  /* 조각 지도: 힉스필드 사진 속 금(흰 결)을 따라 공을 30조각쯤으로 나눈 그림. 조각은 사진의 금을 따라 떨어진다.
+     지도를 못 받았으면 공을 고르지 않은 크기로 대충 나눈 지도를 만들어 쓴다 */
+  function readLab(){ try{ if(ok(limg)){ const n=limg.naturalWidth, c=document.createElement('canvas'); c.width=c.height=n; const x=c.getContext('2d'); x.drawImage(limg,0,0);
+      const d=x.getImageData(0,0,n,n).data, L=new Uint8Array(n*n); for(let i=0;i<n*n;i++) L[i]=Math.round(d[i*4]/7); return {n,L}; } }catch(e){}
+    const n=112, L=new Uint8Array(n*n), seeds=[]; let t=0; while(seeds.length<26&&t++<4000){ const a=Math.random()*6.283, r=Math.sqrt(Math.random())*.95, q=[Math.cos(a)*r,Math.sin(a)*r]; if(seeds.every(o=>Math.hypot(o[0]-q[0],o[1]-q[1])>.2+Math.random()*.14)) seeds.push(q); }
+    for(let y=0;y<n;y++) for(let x=0;x<n;x++){ const u=(x+.5)/n*2-1, v=(y+.5)/n*2-1; if(u*u+v*v>1) continue; let b=0,bd=9; seeds.forEach((q,k)=>{ const d=Math.hypot(q[0]-u+.04*Math.sin(v*13),q[1]-v+.04*Math.sin(u*11)); if(d<bd){ bd=d; b=k+1; } }); L[y*n+x]=b; }
+    return {n,L}; }
+  function build(keep){   // keep: 색과 떨어지는 움직임은 그대로 두고 조각만 다시 나눈다
+    if(!keep) col=COL[(round+Math.floor(Math.random()*COL.length))%COL.length];
+    cimg=sqImg(`img/sq-candy-${col[5]}.webp`); kimg=sqImg(`img/sq-crack-${col[5]}.webp`); limg=sqImg(`img/sq-lab-${col[5]}.png`); jimg=sqImg(`img/sq-jelly-${col[5]}.webp`);
+    lab=readLab(); labOk=ok(limg); const n=lab.n, L=lab.L, M={};
+    for(let y=0;y<n;y++) for(let x=0;x<n;x++){ const k=L[y*n+x]; if(!k) continue; const o=M[k]||(M[k]={k,cnt:0,sx:0,sy:0,x0:n,y0:n,x1:0,y1:0}); o.cnt++; o.sx+=x; o.sy+=y; if(x<o.x0) o.x0=x; if(y<o.y0) o.y0=y; if(x>o.x1) o.x1=x; if(y>o.y1) o.y1=y; }
+    shards=Object.values(M).filter(o=>o.cnt>8).map(o=>({k:o.k, c:[(o.sx/o.cnt+.5)/n*2-1,(o.sy/o.cnt+.5)/n*2-1], bb:[o.x0,o.y0,o.x1+1,o.y1+1], dmg:0, crk:0, on:true, tough:.8+Math.random()*.5, sp:null}));
+    LN=n; shell=shade=null; spK=''; dirty=true; total=shards.length; if(keep) return;
+    fly=[]; floor=null; dust=[]; pops=[]; total=shards.length; gone=0; phase='shell'; sq=0; s=0; sv=0; jk=0; jv=0; jx=jy=tx=ty=0; hold=null; dropY=-H*.7; dropV=0; again.hidden=true;
     cnt.textContent=`${col[3]}맛 왁뿌볼 · 겉을 두드리거나 문질러서 깨요`;
   }
   const local=e=>{ const r=cv.getBoundingClientRect(), tn=!!(window.G&&window.G.rot), lx=tn?e.clientY-r.top:e.clientX-r.left, ly=tn?r.right-e.clientX:e.clientY-r.top; return [(lx-cx)/R, (ly-cy-dropY)/R]; };
-  function popShard(sh,hx,hy,power){ sh.on=false; gone++;
+  function popShard(sh,hx,hy,power){ sh.on=false; gone++; dirty=true;
     const dx=sh.c[0]-hx*.35, dy=sh.c[1]-hy*.35, L=Math.hypot(dx,dy)||1, sp=(150+Math.random()*190)*(.7+power*.5);
-    fly.push({ox:sh.c[0]*R, oy:sh.c[1]*R, poly:sh.poly.map(p=>[(p[0]-sh.c[0])*R,(p[1]-sh.c[1])*R]), x:cx+sh.c[0]*R, y:cy+sh.c[1]*R, vx:dx/L*sp+(Math.random()-.5)*60, vy:dy/L*sp-120-Math.random()*120, r:0, vr:(Math.random()-.5)*14, t:0, b:0, gy:cy+R+4+Math.random()*16, lite:Math.random()<.4});
-    for(let i=0;i<5;i++) dust.push({x:cx+sh.c[0]*R,y:cy+sh.c[1]*R,vx:(Math.random()-.5)*260,vy:-Math.random()*240-20,t:0,z:1.5+Math.random()*2.5,w:Math.random()<.5});
-    hair=hair.filter(h=>h.sh!==sh); }
+    fly.push({sh, x:cx+sh.c[0]*R, y:cy+sh.c[1]*R, vx:dx/L*sp+(Math.random()-.5)*60, vy:dy/L*sp-120-Math.random()*120, r:0, vr:(Math.random()-.5)*14, t:0, b:0, gy:cy+R+4+Math.random()*16});
+    for(let i=0;i<5;i++) dust.push({x:cx+sh.c[0]*R,y:cy+sh.c[1]*R,vx:(Math.random()-.5)*260,vy:-Math.random()*240-20,t:0,z:1.5+Math.random()*2.5,w:Math.random()<.5}); }
   function hit(x,y,power,quiet){ if(phase!=='shell') return 0; const d0=Math.hypot(x,y); if(d0>1.04) return 0;
-    let popped=0, near=null, nd=9; const rad=.42+power*.3;
-    shards.forEach(sh=>{ if(!sh.on) return; const d=Math.hypot(sh.c[0]-x,sh.c[1]-y); if(d<nd){ nd=d; near=sh; }
+    let popped=0; const rad=.42+power*.3;
+    shards.forEach(sh=>{ if(!sh.on) return; const d=Math.hypot(sh.c[0]-x,sh.c[1]-y);
       const f2=Math.max(0,1-d/(rad*2.4)); sh.crk=Math.min(1,sh.crk+.07*power+f2*power*1.8);   // 금은 깨지는 범위보다 훨씬 넓게, 누를 때마다 공 전체로 조금씩 번진다
-      const f=Math.max(0,1-d/rad); if(f<=0) return; sh.dmg+=power*f*f/sh.tough; sh.jit=[(Math.random()-.5)*.012,(Math.random()-.5)*.012];
+      const f=Math.max(0,1-d/rad); if(f<=0) return; sh.dmg+=power*f*f/sh.tough;
       if(sh.dmg>=1){ popShard(sh,x,y,power); popped++; } });
-    if(near&&near.on&&!quiet&&hair.length<70){ const k=2+Math.floor(Math.random()*3); for(let i=0;i<k;i++){ let a=Math.random()*6.283, px=x, py=y; const pts=[[x,y]], seg=2+Math.floor(Math.random()*3);
-        for(let j=0;j<seg;j++){ a+=(Math.random()-.5)*1.2; const L=.05+Math.random()*.1; px+=Math.cos(a)*L; py+=Math.sin(a)*L; pts.push([px,py]); } hair.push({pts,sh:near}); } }
+    dirty=true;
     if(popped){ wxSnap(Math.min(1,.5+popped*.25)); wxCrackle(.6); buzz(popped>1?[18,20,30]:22); shake=Math.min(9,shake+3+popped*2); sv+=.5+popped*.3;
       if(Math.random()<.6||popped>1) pops.push({x:cx+x*R,y:cy+y*R-10,t:0,s:popped>1?'와작!':['빠직!','톡!','쩍!','딱!'][Math.floor(Math.random()*4)]}); }
     else if(!quiet){ wxCrackle(Math.min(1,power)); buzz(8); sv+=.9*power; }
@@ -107,14 +93,29 @@ function waxToy(st,cnt,finish){
   // 그림을 화면 크기에 맞춰 한 번만 줄여 둔다. 매 장면마다 큰 그림을 줄이는 일을 덜어 느린 폰에서도 부드럽다
   const SZ=new Map(); function sized(im){ const n=Math.max(8,Math.round(R*2*dpr)), k=im.src+'|'+n; let c=SZ.get(k); if(c) return c;
     try{ c=document.createElement('canvas'); c.width=c.height=n; c.getContext('2d').drawImage(im,0,0,n,n); }catch(e){ return im; } if(SZ.size>24) SZ.clear(); SZ.set(k,c); return c; }
-  function drawShard(x,f){ x.save(); x.translate(f.x,f.y); x.rotate(f.r);
-    // 두께: 같은 모양을 살짝 아래로 어둡게 깔고, 위에 겉면을 얹는다 (조각이 돌면 두께가 보이는 쪽도 바뀐다)
-    const th=2.6, tx2=Math.sin(f.r)*th*.5, ty2=Math.cos(f.r)*th; x.beginPath(); f.poly.forEach((p,i)=>i?x.lineTo(p[0]+tx2,p[1]+ty2):x.moveTo(p[0]+tx2,p[1]+ty2)); x.closePath(); x.fillStyle=col[4]; x.fill();
-    x.beginPath(); f.poly.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])); x.closePath();
-    const tex=ok(kimg)?kimg:ok(cimg)?cimg:null; if(tex){ x.save(); x.clip(); x.drawImage(sized(tex),-R-f.ox,-R-f.oy,R*2,R*2); x.restore(); }
-    else { const fg=x.createLinearGradient(-14,-14,14,14); fg.addColorStop(0,col[1]); fg.addColorStop(.5,col[0]); fg.addColorStop(1,col[4]); x.fillStyle=fg; x.fill(); }
-    x.lineWidth=1.1; x.strokeStyle=col[1]; x.stroke(); x.lineWidth=.6; x.strokeStyle='rgba(255,255,255,.8)'; x.stroke(); x.restore(); }
-  function ballPath(){ g.beginPath(); shards.forEach(sh=>{ if(!sh.on) return; sh.poly.forEach((p,i)=>{ const X=(p[0]+sh.jit[0]*sh.dmg)*R, Y=(p[1]+sh.jit[1]*sh.dmg)*R; i?g.lineTo(X,Y):g.moveTo(X,Y); }); g.closePath(); }); }
+  /* 조각 그림: 조각 지도에서 그 조각 자리만 오려 낸 실물 그림 세 장(금 없는 겉, 금 간 겉, 어두운 두께). 화면 크기가 바뀌면 다시 오린다 */
+  function sprites(sh){ const S=Math.max(8,Math.round(R*2*dpr)), key=S+'|'+(ok(cimg)?1:0)+(ok(kimg)?1:0); if(sh.sp&&sh.sp.key===key) return sh.sp;
+    const n=LN, [x0,y0,x1,y1]=sh.bb, f=S/n, w=Math.max(1,Math.ceil((x1-x0)*f)), h=Math.max(1,Math.ceil((y1-y0)*f));
+    const m=document.createElement('canvas'); m.width=x1-x0; m.height=y1-y0; const mx=m.getContext('2d'), id=mx.createImageData(m.width,m.height);
+    for(let y=y0;y<y1;y++) for(let x=x0;x<x1;x++) if(lab.L[y*n+x]===sh.k){ const o=((y-y0)*m.width+(x-x0))*4; id.data[o]=id.data[o+1]=id.data[o+2]=255; id.data[o+3]=255; }
+    mx.putImageData(id,0,0);
+    const one=src=>{ const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d'); x.imageSmoothingEnabled=true; x.drawImage(m,0,0,w,h); x.globalCompositeOperation='source-in';
+      if(src) x.drawImage(sized(src),-x0*f,-y0*f,S,S); else { const gr=x.createRadialGradient(S*.32-x0*f,S*.29-y0*f,S*.03,S/2-x0*f,S/2-y0*f,S*.54); gr.addColorStop(0,'#fff'); gr.addColorStop(.16,col[1]); gr.addColorStop(.72,col[0]); gr.addColorStop(1,col[4]); x.fillStyle=gr; x.fillRect(0,0,w,h); }
+      return c; };
+    const dk=one(null); { const x=dk.getContext('2d'); x.globalCompositeOperation='source-in'; x.fillStyle=col[4]; x.fillRect(0,0,w,h); }
+    return sh.sp={key, plain:one(ok(cimg)?cimg:null), crack:ok(kimg)?one(kimg):null, dark:dk, ox:x0/n*2-1, oy:y0/n*2-1, w:w/dpr, h:h/dpr}; }
+  // 껍질 한 장: 금 없는 겉 위에 금 간 겉을 금 번진 만큼 비추고, 떨어진 조각 자리는 오려 낸다. 바뀔 때만 다시 만든다
+  function makeShell(){ const S=Math.max(8,Math.round(R*2*dpr)); if(!shell||shell.width!==S){ shell=document.createElement('canvas'); shade=document.createElement('canvas'); shell.width=shell.height=shade.width=shade.height=S; }
+    const x=shell.getContext('2d'); x.setTransform(1,0,0,1,0,0); x.globalCompositeOperation='source-over'; x.globalAlpha=1; x.clearRect(0,0,S,S);
+    if(ok(cimg)) x.drawImage(sized(cimg),0,0,S,S); else { const gr=x.createRadialGradient(S*.32,S*.29,S*.03,S/2,S/2,S*.54); gr.addColorStop(0,'#fff'); gr.addColorStop(.16,col[1]); gr.addColorStop(.72,col[0]); gr.addColorStop(1,col[4]); x.fillStyle=gr; x.beginPath(); x.arc(S/2,S/2,S/2,0,6.283); x.fill(); }   // 통째로 깔아야 조각 사이에 이음매가 안 보인다
+    shards.forEach(sh=>{ if(!sh.on) return; const p=sprites(sh), v=Math.max(sh.crk,sh.dmg); if(!p.crack||v<=0) return; x.globalAlpha=Math.min(1,.15+v); x.drawImage(p.crack,(p.ox+1)/2*S,(p.oy+1)/2*S); });
+    x.globalAlpha=1; x.globalCompositeOperation='destination-out'; shards.forEach(sh=>{ if(sh.on) return; const p=sprites(sh); for(let i=0;i<3;i++) x.drawImage(p.dark,(p.ox+1)/2*S,(p.oy+1)/2*S); });   // 세 번 지워야 이웃한 빈자리 사이에 흐린 줄이 남지 않는다 x.globalCompositeOperation='source-over';
+    const y=shade.getContext('2d'); y.globalCompositeOperation='source-over'; y.clearRect(0,0,S,S); y.drawImage(shell,0,0); y.globalCompositeOperation='source-in'; y.fillStyle='rgba(26,25,23,.55)'; y.fillRect(0,0,S,S);
+    dirty=false; }
+  function drawShard(x,f){ const p=sprites(f.sh); x.save(); x.translate(f.x,f.y); x.rotate(f.r);
+    const ox=(p.ox-f.sh.c[0])*R, oy=(p.oy-f.sh.c[1])*R, th=2.6;
+    x.drawImage(p.dark,ox+Math.sin(f.r)*th*.5,oy+Math.cos(f.r)*th,p.w,p.h);   // 두께: 어두운 같은 모양을 살짝 비껴 깐다
+    x.drawImage(p.crack||p.plain,ox,oy,p.w,p.h); x.restore(); }
   function frame(now){ if(!st.isConnected||!cv.isConnected) return; requestAnimationFrame(frame);
     const dt=Math.min(.033,(now-(lastT||now))/1000); lastT=now; bobT+=dt;
     if(st.clientWidth&&(Math.abs(cv.width-st.clientWidth*dpr)>2||Math.abs(cv.height-st.clientHeight*dpr)>2)) fit();   // 폰을 돌리면 다시 맞춘다
@@ -136,32 +137,11 @@ function waxToy(st,cnt,finish){
     g.fillStyle='rgba(255,255,255,.8)'; g.beginPath(); g.ellipse(-rc*.38,-rc*.45,rc*.26,rc*.13,-.6,0,6.283); g.fill();
     g.fillStyle='rgba(255,255,255,.55)'; [[.3,.35,.07],[.5,.05,.04],[-.2,.5,.05],[.05,-.1,.03]].forEach(b=>{ g.beginPath(); g.arc(b[0]*rc,b[1]*rc,b[2]*rc,0,6.283); g.fill(); });
     g.restore(); }
-    // 껍질
-    if(gone<total){ g.lineJoin='round';
-      // 껍질이 젤리 위에 떠 있는 두께: 빠진 자리 가장자리에 그림자를 깐다
-      if(gone){ g.save(); g.beginPath(); g.arc(0,0,R-4,0,6.283); g.clip(); [[8,.15],[4,.22]].forEach(([o,a])=>{ g.save(); g.translate(o*.3,o); ballPath(); g.fillStyle=`rgba(26,25,23,${a})`; g.fill(); g.restore(); }); g.restore(); }   // 흐림 효과 대신 두 겹을 비껴 깔아 그림자를 만든다 (느린 폰 배려)
-      if(!ok(cimg)){ ballPath(); g.lineWidth=3.5; g.strokeStyle=col[4]; g.stroke(); }
-      const sg=g.createRadialGradient(-R*.35,-R*.42,R*.06,0,0,R*1.08); sg.addColorStop(0,'#fff'); sg.addColorStop(.16,col[1]); sg.addColorStop(.72,col[0]); sg.addColorStop(1,col[4]);
-      if(ok(cimg)){ g.save(); ballPath(); g.clip(); g.drawImage(sized(cimg),-R,-R,R*2,R*2); g.restore(); } else { ballPath(); g.fillStyle=sg; g.fill(); g.lineWidth=1.2; g.strokeStyle=sg; g.stroke(); }
-      // 맞은 조각에는 금 간 실물 그림이 서서히 비친다
-      if(ok(kimg)) [[0,.45,.55],[.45,9,1]].forEach(([lo,hi,al])=>{ let any=0; g.save(); g.beginPath();   // 한 번에 묶어 그린다 (느린 폰 배려). 얼마나 금이 갔는지는 위의 틈 선이 보여 준다
-        shards.forEach(sh=>{ const v=Math.max(sh.crk,sh.dmg); if(!sh.on||v<=lo||v>hi) return; any=1; sh.poly.forEach((p,i)=>{ const X=(p[0]+sh.jit[0]*sh.dmg)*R, Y=(p[1]+sh.jit[1]*sh.dmg)*R; i?g.lineTo(X,Y):g.moveTo(X,Y); }); g.closePath(); });
-        if(any){ g.clip(); g.globalAlpha=al; g.drawImage(sized(kimg),-R,-R,R*2,R*2); } g.restore(); });
-      g.save(); ballPath(); g.clip();
-      // 갈라진 금: 맞은 쪽 조각의 경계만, 어두운 틈 + 흰 결
-      const sd=seams.map(m=>{ const A=shards[m.s], B=shards[m.t]; return [m, A.on&&B.on?Math.max(A.dmg,B.dmg):0]; }).filter(x=>x[1]>0);
-      for(let pass=0;pass<2;pass++){ sd.forEach(([m,d])=>{ const a=Math.min(1,d*1.6), o=pass?0:.9; g.beginPath(); g.moveTo(m.a[0]*R+o,m.a[1]*R+o); g.lineTo(m.b[0]*R+o,m.b[1]*R+o);
-        g.lineWidth=pass?.8+d*.7:1.3; g.strokeStyle=pass?`rgba(255,255,255,${a*.6})`:`rgba(26,25,23,${a*.4})`; g.stroke(); }); }
-      g.lineWidth=.9; g.strokeStyle='rgba(255,255,255,.55)'; g.beginPath(); hair.forEach(h=>{ h.pts.forEach((p,i)=>{ i?g.lineTo(p[0]*R,p[1]*R):g.moveTo(p[0]*R,p[1]*R); }); }); g.stroke();
-      // 윤기
-      if(!ok(cimg)){ g.fillStyle='rgba(255,255,255,.78)'; g.beginPath(); g.ellipse(-R*.4,-R*.5,R*.3,R*.14,-.62,0,6.283); g.fill();
-      g.fillStyle='rgba(255,255,255,.6)'; g.beginPath(); g.arc(-R*.62,-R*.18,R*.05,0,6.283); g.fill();
-      g.strokeStyle='rgba(255,255,255,.3)'; g.lineWidth=R*.07; g.lineCap='round'; g.beginPath(); g.arc(0,0,R*.8,.5,1.35); g.stroke(); }
-      g.restore();
-      // 깨진 단면: 조각이 빠져나간 자리의 가장자리에 사탕 껍질 두께가 보인다
-      if(gone){ g.beginPath(); seams.forEach(m=>{ const A=shards[m.s], B=shards[m.t]; if(A.on===B.on) return; g.moveTo(m.a[0]*R,m.a[1]*R); g.lineTo(m.b[0]*R,m.b[1]*R); });
-        g.lineCap='round'; g.lineWidth=3; g.strokeStyle=col[4]; g.globalAlpha=.45; g.stroke(); g.lineWidth=1.7; g.strokeStyle=col[1]; g.globalAlpha=.9; g.stroke(); g.globalAlpha=1; g.lineCap='butt'; }
-    }
+    // 껍질 (사진 속 금을 따라 나눈 조각). 빠진 자리 가장자리에는 껍질 그림자가 젤리 위로 진다
+    if(!labOk&&ok(limg)&&phase==='shell'&&!gone&&shards.every(sh=>!sh.dmg&&!sh.crk))build(1);   // 조각 지도가 늦게 왔으면 손대기 전에 다시 나눈다
+    if(gone<total){ const key=Math.round(R*2*dpr)+'|'+(ok(cimg)?1:0)+(ok(kimg)?1:0); if(key!==spK){ spK=key; dirty=true; } if(dirty) makeShell();
+      if(gone){ g.save(); g.beginPath(); g.arc(0,0,R-3,0,6.283); g.clip(); g.drawImage(shade,-R+1.5,-R+4,R*2,R*2); g.restore(); }
+      g.drawImage(shell,-R,-R,R*2,R*2); }
     g.restore();
     // 날아가는 조각. 바닥에 멈춘 조각은 바닥 그림(floor)에 한 번 찍어 두고 목록에서 뺀다 (사라지지 않고 쌓이되, 매 장면 다시 그리지 않는다)
     if(floor) g.drawImage(floor,0,0,W,H);
@@ -267,5 +247,5 @@ Object.keys(SOFT).forEach(k=>{ const O=SOFT[k]; INFO[k]={name:O.name,tag:O.tag,i
 window.WAX={open:waxToy,
   toy(k,st,cnt){ if(k==='wax') waxToy(st,cnt,()=>{}); else softToy(st,cnt,k); },   // 상자에서는 몇 개를 깨든 끝이 없다
   info:k=>INFO[k]||null,
-  preload(k){ if(k&&k!=='wax'){ if(INFO[k]) sqImg(INFO[k].img); return; } for(let i=0;i<4;i++){ sqImg('img/sq-candy-'+i+'.webp'); sqImg('img/sq-crack-'+i+'.webp'); sqImg('img/sq-jelly-'+i+'.webp'); } }};
+  preload(k){ if(k&&k!=='wax'){ if(INFO[k]) sqImg(INFO[k].img); return; } for(let i=0;i<4;i++){ sqImg('img/sq-candy-'+i+'.webp'); sqImg('img/sq-crack-'+i+'.webp'); sqImg('img/sq-lab-'+i+'.png'); sqImg('img/sq-jelly-'+i+'.webp'); } }};
 })();

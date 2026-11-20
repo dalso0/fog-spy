@@ -6,9 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="안개 작전">
+<meta name="apple-mobile-web-app-title" content="평범한 스파이">
 <meta name="theme-color" content="#1f1b18">
-<link rel="manifest" href="stage.webmanifest">
+<link rel="manifest" href="stage.webmanifest?v=1120">
 <script>/* 홈 화면 앱(PWA)용 서비스 워커. 등록만 하고 파일 저장(캐시)이나 알림은 하지 않는다. 범위는 이 페이지(stage.html)뿐이라 index.html·admin.html에는 영향이 없다 */
 try{ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')) addEventListener('load',()=>{ try{ navigator.serviceWorker.register('stage-sw.js',{scope:'./stage.html'}).catch(()=>{}); }catch(e){} }); }catch(e){}
 </script>

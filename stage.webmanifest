@@ -1,6 +1,6 @@
 {
-  "name": "회색 안개 작전",
-  "short_name": "안개 작전",
+  "name": "평범한 스파이",
+  "short_name": "평범한 스파이",
   "start_url": "stage.html",
   "scope": "./stage.html",
   "display": "fullscreen",

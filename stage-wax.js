@@ -36,7 +36,7 @@ function waxToy(st,cnt,finish){
   let W=0,H=0,dpr=1,R=96,cx=0,cy=0,floor=null;
   const fit=()=>{ W=st.clientWidth||320; H=st.clientHeight||240; dpr=Math.min(3,window.devicePixelRatio||1); cv.width=W*dpr; cv.height=H*dpr; R=Math.min(104,W*.3,H*.34); cx=W/2; cy=H*.47; floor=null; };   // 크기가 바뀌면 바닥 조각은 비운다
   fit();
-  let round=0, col, shards, LN=0, lab=null, shell=null, shade=null, dirty=true, spK='', fly, dust, pops, total, gone, phase, sq, s=0, sv=0, jk=0, jv=0, jx=0, jy=0, tx=0, ty=0, shake=0, hold=null, lastT=0, bobT=0, dropY=0, dropV=0;
+  let round=0, labOk=false, col, shards, LN=0, lab=null, shell=null, shade=null, dirty=true, spK='', fly, dust, pops, total, gone, phase, sq, s=0, sv=0, jk=0, jv=0, jx=0, jy=0, tx=0, ty=0, shake=0, hold=null, lastT=0, bobT=0, dropY=0, dropV=0;
 
   /* 조각 지도: 힉스필드 사진 속 금(흰 결)을 따라 공을 30조각쯤으로 나눈 그림. 조각은 사진의 금을 따라 떨어진다.
      지도를 못 받았으면 공을 고르지 않은 크기로 대충 나눈 지도를 만들어 쓴다 */
@@ -45,13 +45,13 @@ function waxToy(st,cnt,finish){
     const n=112, L=new Uint8Array(n*n), seeds=[]; let t=0; while(seeds.length<26&&t++<4000){ const a=Math.random()*6.283, r=Math.sqrt(Math.random())*.95, q=[Math.cos(a)*r,Math.sin(a)*r]; if(seeds.every(o=>Math.hypot(o[0]-q[0],o[1]-q[1])>.2+Math.random()*.14)) seeds.push(q); }
     for(let y=0;y<n;y++) for(let x=0;x<n;x++){ const u=(x+.5)/n*2-1, v=(y+.5)/n*2-1; if(u*u+v*v>1) continue; let b=0,bd=9; seeds.forEach((q,k)=>{ const d=Math.hypot(q[0]-u+.04*Math.sin(v*13),q[1]-v+.04*Math.sin(u*11)); if(d<bd){ bd=d; b=k+1; } }); L[y*n+x]=b; }
     return {n,L}; }
-  function build(){
-    col=COL[(round+Math.floor(Math.random()*COL.length))%COL.length];
+  function build(keep){   // keep: 색과 떨어지는 움직임은 그대로 두고 조각만 다시 나눈다
+    if(!keep) col=COL[(round+Math.floor(Math.random()*COL.length))%COL.length];
     cimg=sqImg(`img/sq-candy-${col[5]}.webp`); kimg=sqImg(`img/sq-crack-${col[5]}.webp`); limg=sqImg(`img/sq-lab-${col[5]}.png`); jimg=sqImg(`img/sq-jelly-${col[5]}.webp`);
-    lab=readLab(); const n=lab.n, L=lab.L, M={};
+    lab=readLab(); labOk=ok(limg); const n=lab.n, L=lab.L, M={};
     for(let y=0;y<n;y++) for(let x=0;x<n;x++){ const k=L[y*n+x]; if(!k) continue; const o=M[k]||(M[k]={k,cnt:0,sx:0,sy:0,x0:n,y0:n,x1:0,y1:0}); o.cnt++; o.sx+=x; o.sy+=y; if(x<o.x0) o.x0=x; if(y<o.y0) o.y0=y; if(x>o.x1) o.x1=x; if(y>o.y1) o.y1=y; }
     shards=Object.values(M).filter(o=>o.cnt>8).map(o=>({k:o.k, c:[(o.sx/o.cnt+.5)/n*2-1,(o.sy/o.cnt+.5)/n*2-1], bb:[o.x0,o.y0,o.x1+1,o.y1+1], dmg:0, crk:0, on:true, tough:.8+Math.random()*.5, sp:null}));
-    LN=n; shell=shade=null; spK=''; dirty=true;
+    LN=n; shell=shade=null; spK=''; dirty=true; total=shards.length; if(keep) return;
     fly=[]; floor=null; dust=[]; pops=[]; total=shards.length; gone=0; phase='shell'; sq=0; s=0; sv=0; jk=0; jv=0; jx=jy=tx=ty=0; hold=null; dropY=-H*.7; dropV=0; again.hidden=true;
     cnt.textContent=`${col[3]}맛 왁뿌볼 · 겉을 두드리거나 문질러서 깨요`;
   }
@@ -138,6 +138,7 @@ function waxToy(st,cnt,finish){
     g.fillStyle='rgba(255,255,255,.55)'; [[.3,.35,.07],[.5,.05,.04],[-.2,.5,.05],[.05,-.1,.03]].forEach(b=>{ g.beginPath(); g.arc(b[0]*rc,b[1]*rc,b[2]*rc,0,6.283); g.fill(); });
     g.restore(); }
     // 껍질 (사진 속 금을 따라 나눈 조각). 빠진 자리 가장자리에는 껍질 그림자가 젤리 위로 진다
+    if(!labOk&&ok(limg)&&phase==='shell'&&!gone&&shards.every(sh=>!sh.dmg&&!sh.crk))build(1);   // 조각 지도가 늦게 왔으면 손대기 전에 다시 나눈다
     if(gone<total){ const key=Math.round(R*2*dpr)+'|'+(ok(cimg)?1:0)+(ok(kimg)?1:0); if(key!==spK){ spK=key; dirty=true; } if(dirty) makeShell();
       if(gone){ g.save(); g.beginPath(); g.arc(0,0,R-3,0,6.283); g.clip(); g.drawImage(shade,-R+1.5,-R+4,R*2,R*2); g.restore(); }
       g.drawImage(shell,-R,-R,R*2,R*2); }

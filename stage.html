@@ -1013,7 +1013,7 @@ function closeCard(){ ov.hidden=true; ov.innerHTML=''; paused=false; last=perfor
 function on(id,fn){ ov.querySelector('#'+id).onclick=fn; }
 const IOS_TAB=/iP(hone|ad|od)/.test(navigator.userAgent)&&!navigator.standalone;
 function startCard(){ syncLevel(0); card(`<div class="hqtop"><div class="eyebrow">평범한 스파이 · 요원 ${agent().code}</div>${fbShow()?'<button class="lnk" id="fb">오류·의견 보내기</button>':''}</div><h1>회색 안개 작전</h1>
-  <p>안개 낀 등교길을 지나 본부 문까지 간다.</p>
+  <p>안개 낀 등굣길을 지나 본부 문까지 간다.</p>
   <p class="note">폰을 가로로 들고 ◀ ▶와 점프·숨 버튼을 써요. 컴퓨터는 방향키, 스페이스(점프), X(숨).</p>
   ${IOS_TAB?'<p class="note">아이폰은 공유 버튼의 「홈 화면에 추가」로 넣어 두고 열면 화면이 꽉 차요.</p>':''}
   ${teacher()?'<p class="note">선생님 모드: 모든 판이 열려 있어요. '+(location.hash==='#all'?'주소 끝의 #all을 지우면 꺼져요.':'「평범한 스파이」를 일곱 번 누르면 꺼져요.')+'</p>':''}

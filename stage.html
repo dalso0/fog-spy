@@ -5,7 +5,7 @@
 <title>회색 안개 작전</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="평범한 스파이">
 <meta name="theme-color" content="#1f1b18">
 <link rel="manifest" href="stage.webmanifest?v=1120">
@@ -71,6 +71,11 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .ov button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .note{font-size:12.5px;color:#5c5348}
 .hqtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.hqr{display:flex;align-items:center;gap:10px;margin-left:auto}
+.agc{display:flex;align-items:baseline;gap:8px;padding:5px 12px;border:3px solid var(--ink);border-radius:6px;background:var(--ocher);box-shadow:0 3px 0 var(--ink);white-space:nowrap}
+.agc small{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--ink)}
+.agc b{font-family:var(--f-display);font-size:22px;line-height:1;color:var(--ink)}
+.hqr .lnk{white-space:nowrap}
 @media (max-width:760px){ .hqtop{padding-right:34px} }   /* 좁은 화면에서는 오른쪽 위 ☎ 버튼이 카드 모서리에 걸친다 (폭 720~760에서는 글씨 단추 끝이 ☎에 닿거나 바짝 붙는다) */
 .raid{display:flex;align-items:center;gap:6px;font-size:12px;color:#5c5348;font-variant-numeric:tabular-nums}
 .raid i{display:block;width:84px;height:9px;border:2px solid var(--ink);background:#fff}
@@ -87,7 +92,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .feel{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .ov .feel button{font-size:17px;padding:9px 4px}
 .ov .feel button.on{background:var(--ink);color:var(--panel)}
-.card p.fm{min-height:3.1em}
+.card p.fm{min-height:3.1em;margin:6px 0 4px}
 .fm b{font-family:var(--f-display);font-weight:400;font-size:17px}
 .ov button.go:disabled{opacity:.45;box-shadow:none}
 .wx{position:relative;border:3px solid var(--ink);overflow:hidden;touch-action:none}
@@ -208,7 +213,9 @@ const safeProbe=document.createElement('div'); safeProbe.style.cssText='position
 let laid='';
 function layout(){
   const w=innerWidth; let h=innerHeight, top=0; rot=h>w;
-  // 세로로 든 폰(홈 화면 앱)은 화면이 상태 막대 밑에서 시작한다. 그 높이만큼 내려서 시계와 겹치지 않게 하고, 화면이 한쪽으로 쏠려 보이지 않게 한다
+  // 실제로 보이는 높이가 innerHeight보다 작게 잡히는 폰이 있어서(홈 화면 앱) 둘 중 작은 쪽을 쓴다
+  try{ const vh=window.visualViewport&&visualViewport.height, ch=document.documentElement.clientHeight; if(vh>0&&vh<h) h=Math.round(vh); if(ch>0&&ch<h) h=ch; }catch(e){}
+  // 세로로 든 폰(홈 화면 앱)은 화면이 상태 막대 밑까지 깔린다(black-translucent). 그 높이만큼 내려서 시계와 겹치지 않게 하고, 화면이 한쪽으로 쏠려 보이지 않게 한다
   if(rot){ top=parseFloat(getComputedStyle(safeProbe).paddingTop)||0; if(top>h*.2) top=0; h-=top; }
   const key=[w,h,top,window.devicePixelRatio].join(); if(key===laid){ topFit(rot?h:w); return; } laid=key;   // 크기는 그대로여도 폰을 반대로 돌리면 안전 여백이 옮겨 가서 위쪽 버튼 자리가 바뀐다
   const sw=rot?h:w, sh=rot?w:h;
@@ -1031,12 +1038,11 @@ function goFull(){ try{ const el=document.documentElement; if(!el.requestFullscr
 function hqCard(){ if(lightsOut()) return sleepCard(); syncLevel(1);
   const sv=loadSave(), cl=sv.clear||{}, bossOk=hasPieces(cl)||teacher();
   const st=DAYS.slice(0,TRAIN).map((d,i)=>!isOpen(i)?'lock':(d.boss&&!bossOk)?'need':'open'), any=st.includes('open');
-  const why=teacher()?' 선생님 모드라 모든 판이 열려 있어요.':Date.now()<LIVE?' 지금은 정식 시작 전이라 모든 판이 열려 있어요. 11.22부터는 그날 판이 오후 5시에 열려요.':' 새 판은 날마다 오후 5시에 열리고, 지난 판은 언제든 다시 할 수 있어요.';
-  card(`<div class="hqtop"><div class="eyebrow">본부 · 1주차 하늘빛</div><div class="raid" id="raid" hidden><span>전교 정화</span><i><b></b></i><span id="raidn"></span></div>${fbShow()?'<button class="lnk" id="fb">오류·의견 보내기</button>':''}</div>
+  card(`<div class="hqtop"><div class="eyebrow">본부 · 1주차 하늘빛</div><div class="raid" id="raid" hidden><span>전교 정화</span><i><b></b></i><span id="raidn"></span></div><div class="hqr"><div class="agc"><small>요원 코드</small><b>${agent().code}</b></div>${agent().fixed||teacher()?'':'<button class="lnk" id="re">다시 뽑기</button>'}${fbShow()?'<button class="lnk" id="fb">오류·의견 보내기</button>':''}</div></div>
   <h2>${st[0]==='lock'?'본 작전은 11.23 월요일 오후 5시에 시작한다':'오늘의 작전을 고른다'}</h2><p class="ntc" id="ntc" hidden></p>
   <div class="days">${DAYS.slice(0,TRAIN).map((d,i)=>`<button data-d="${i}" ${st[i]!=='open'?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${held===i?'이어 하기':cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):st[i]==='lock'?'오후 5시에 열림':st[i]==='need'?'조각 3개 필요':'미완료'}</span></button>`).join('')}</div>
   <div class="row"><button data-d="${TRAIN}"${any?'':' class="go"'}>훈련장 · ${held===TRAIN?'이어 하기':'조작 연습 1분'}</button>${window.WAX&&WAX.toy?`<button id="tb">말랑이 상자 ${ownToys().length}/${TOYS.length}</button>`:''}${rankShow()?'<button id="rb">순위표</button>':''}</div>
-  <p class="note">요원 코드 <b>${agent().code}</b>${agent().fixed||teacher()?'':' <button class="lnk" id="re">다시 뽑기</button>'} · 모은 색 방울 ${sv.coins||0}개. ${weekDone(cl)?'<b>1주차 작전 완료. '+SNACK+'</b>':'목요일 보스는 글자 조각 「하」「늘」「빛」을 다 모으면 열려요.'+why}${saveMem!==null?' 이 폰은 기록을 저장하지 못해요. 창을 닫으면 처음부터 다시 해야 해요.':''}<span id="hs"></span></p>`);
+  <p class="note">${weekDone(cl)?'<b>1주차 작전 완료. '+SNACK+'</b> ':''}${saveMem!==null?'이 폰은 기록을 저장하지 못해요. 창을 닫으면 처음부터 다시 해야 해요.':''}<span id="hs"></span></p>`);
   ov.firstChild.classList.add('wide'); hqInfo(); if(ov.querySelector('#fb')) on('fb',()=>{ SFX.tick(); fbCard('본부'); });
   ov.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ const n=+b.dataset.d; SFX.tick(); goLevel(2);
     if(n===held){ stageNo=n; held=-1; play(); return; }   // 멈춰 둔 판은 그 자리에서 이어 한다
@@ -1290,8 +1296,8 @@ function finish(){ running=false; SFX.clear();
     ov.firstChild.classList.add('wide'); on('f1',()=>{ SFX.tick(); rankDue?rankCard(true):hqCard(); }); if(newToy) on('f2',()=>{ SFX.item(); toyCard(tk,true); }); };
   card(`${head}<h1>${d.done||'글자 조각 「'+d.letter+'」 확보'}</h1>
   <div class="stat"><div><b>${coinsN}</b>색 방울 · 조각 ${pcs}/3</div><div><b>${care.b}</b>끝까지 모은 숨</div><div><b>${care.s}</b>가만히 있기</div><div><b>${care.n}</b>붙인 이름</div></div>
-  <div class="order"><div class="hqtop"><div class="eyebrow">마음 날씨</div><button class="lnk" id="m0">넘어가기</button></div><p>출발할 때 고른 날씨는 <b>「${was}」</b>. 지금은?</p></div>
-  <div class="row">${moodRow()}</div>`);
+  <div class="order"><div class="eyebrow">마음 날씨</div><p>출발할 때 고른 날씨는 <b>「${was}」</b>. 지금은?</p></div>
+  <div class="row">${moodRow()}<button class="lnk" id="m0">넘어가기</button></div>`);
   ov.firstChild.classList.add('wide');
   try{ document.activeElement.blur(); }catch(e){}   // 문에 닿을 때 누르고 있던 키로 날씨가 골라지지 않게 초점을 두지 않는다
   ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ SFX.tick(); second(b.dataset.m); }); on('m0',()=>{ SFX.tick(); second(''); }); }

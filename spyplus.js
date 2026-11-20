@@ -163,18 +163,18 @@ const XP={minigame:20, order:15, door:10, shard:5, safe:15, code:30, daily:10, r
 /* 픽셀 아이콘: 10x10, 글자=색 */
 const PAL={k:'#1c2130',w:'#ffffff',y:'#ffcc33',r:'#e0522f',s:'#4aa6e8',g:'#3dbb5c',p:'#9b82f5',m:'#3cc6b4',o:'#ff7564',b:'#c58b55',n:'#8c6a4a',a:'#a7adb5',d:'#727985',l:'#d7dbe0',c:'#f3c99e'};
 const GEAR=[
- {id:'glasses', name:'평범한 안경', r:0, d:'아무도 의심하지 않는 평범함의 상징.', px:['..........','..........','..........','kkkk..kkkk','kwwk..kwwk','kwwkkkkwwk','kwwk..kwwk','kkkk..kkkk','..........','..........']},
- {id:'memo', name:'요원 수첩', r:0, d:'오늘 본 하늘색을 적어 두는 곳.', px:['.kkkkkkkk.','.kyyyyyyyk','.kywwwwwyk','.kykkkkwyk','.kywwwwwyk','.kykkkkwyk','.kywwwwwyk','.kykkkwwyk','.kyyyyyyyk','.kkkkkkkk.']},
- {id:'earbud', name:'잠입 이어폰', r:0, d:'음악이 아니라 주변 소리를 듣는 데 씀.', px:['...kkkk...','..kwwwwk..','.kw....wk.','.k......k.','kk......kk','kwk....kwk','kwk....kwk','kkk....kkk','..........','..........']},
+ {id:'glasses', name:'평범한 안경', r:0, d:'쓰면 아무도 의심하지 않는다.', px:['..........','..........','..........','kkkk..kkkk','kwwk..kwwk','kwwkkkkwwk','kwwk..kwwk','kkkk..kkkk','..........','..........']},
+ {id:'memo', name:'요원 수첩', r:0, d:'오늘 본 하늘색을 적어 둔다.', px:['.kkkkkkkk.','.kyyyyyyyk','.kywwwwwyk','.kykkkkwyk','.kywwwwwyk','.kykkkkwyk','.kywwwwwyk','.kykkkwwyk','.kyyyyyyyk','.kkkkkkkk.']},
+ {id:'earbud', name:'잠입 이어폰', r:0, d:'음악 말고 주변 소리 듣는 데 쓴다.', px:['...kkkk...','..kwwwwk..','.kw....wk.','.k......k.','kk......kk','kwk....kwk','kwk....kwk','kkk....kkk','..........','..........']},
  {id:'light', name:'손전등', r:0, d:'안개 속 발밑을 비춘다.', px:['..........','.kkk......','.kyykkkkk.','.kyywwwwk.','.kyykkkkk.','.kkk......','..........','..........','..........','..........']},
  {id:'candy', name:'비상 사탕', r:0, d:'천천히 녹여 먹으면 맛이 돌아온다.', px:['..........','..........','k........k','kk.kkkk.kk','kokooooroo','kk.kkkk.kk','k........k','..........','..........','..........']},
  {id:'radio', name:'무전기', r:0, d:'본부와 연결. 지지직.', px:['....k.....','....k.....','..kkkkkk..','..kddddk..','..kdssdk..','..kddddk..','..kdkdkk..','..kdkdkk..','..kddddk..','..kkkkkk..']},
- {id:'scope', name:'접이식 망원경', r:1, d:'먼 곳을 보면 눈이 쉰다.', px:['..........','.........k','.......kkk','.....kkbbk','...kkbbbk.','.kkbbbbk..','kssbbbk...','kssbbk....','.kkkk.....','..........']},
+ {id:'scope', name:'접이식 망원경', r:1, d:'먼 데를 보면 눈이 쉰다.', px:['..........','.........k','.......kkk','.....kkbbk','...kkbbbk.','.kkbbbbk..','kssbbbk...','kssbbk....','.kkkk.....','..........']},
  {id:'plant', name:'위장용 화분', r:1, d:'뒤에 숨으면 아무도 못 알아본다(아마도).', px:['....gg....','..gggggg..','.gg.gg.gg.','..g.gg.g..','....gg....','.kkkkkkkk.','..kbbbbk..','..kbbbbk..','..kbbbbk..','...kkkk...']},
- {id:'badge', name:'늘곰 배지', r:1, d:'Wee클래스 요원의 증표.', px:['...kkkk...','..kyyyyk..','.kycyyyck.','.kyyyyyyk.','.kykyykyk.','.kyyccyyk.','..kyyyyk..','...kkkk...','..kr..rk..','..kr..rk..']},
- {id:'shades', name:'소장의 선글라스', r:2, d:'늘곰 소장이 몰래 빌려준 진짜 요원 장비.', px:['..........','..........','kkkkkkkkkk','kkkkkkkkkk','.kkkk.kkkk','.kkwk.kkwk','.kkkk.kkkk','..kk...kk.','..........','..........']},
- {id:'umbrella', name:'무지개 우산', r:2, d:'회색 비도 이 우산 아래에선 색이 된다.', px:['....k.....','..rrooyy..','.rrrooyyy.','rrrrooyyyy','kkkkkkkkkk','....k.....','....k.....','....k.....','..k.k.....','...k......']},
- {id:'phones', name:'룰루랄라 헤드폰', r:2, d:'늘곰이 매일 부르는 노래가 들린다.', px:['..kkkkkk..','.kppppppk.','kpk....kpk','kk......kk','k........k','kkk....kkk','kmmk..kmmk','kmmk..kmmk','kmmk..kmmk','.kk....kk.']}
+ {id:'badge', name:'늘곰 배지', r:1, d:'Wee클래스 요원이라는 표시.', px:['...kkkk...','..kyyyyk..','.kycyyyck.','.kyyyyyyk.','.kykyykyk.','.kyyccyyk.','..kyyyyk..','...kkkk...','..kr..rk..','..kr..rk..']},
+ {id:'shades', name:'소장의 선글라스', r:2, d:'늘곰 소장이 몰래 빌려줬다. 진짜 요원 장비.', px:['..........','..........','kkkkkkkkkk','kkkkkkkkkk','.kkkk.kkkk','.kkwk.kkwk','.kkkk.kkkk','..kk...kk.','..........','..........']},
+ {id:'umbrella', name:'무지개 우산', r:2, d:'이걸 쓰면 회색 비도 알록달록해 보인다.', px:['....k.....','..rrooyy..','.rrrooyyy.','rrrrooyyyy','kkkkkkkkkk','....k.....','....k.....','....k.....','..k.k.....','...k......']},
+ {id:'phones', name:'룰루랄라 헤드폰', r:2, d:'늘곰이 맨날 부르는 그 노래가 나온다.', px:['..kkkkkk..','.kppppppk.','kpk....kpk','kk......kk','k........k','kkk....kkk','kmmk..kmmk','kmmk..kmmk','kmmk..kmmk','.kk....kk.']}
 ];
 const RNAME=['흔함','희귀','전설'];
 const RCOL=['#d7dbe0','#4aa6e8','#ffcc33'];
@@ -227,7 +227,7 @@ const EMOTES=[{id:'idle',name:'기본',lv:1,img:'base',cls:''},{id:'bounce',name
 function addXP(n,why){ const before=rankOf(S.xp); S.xp+=n; save(); pop('+'+n+' XP'); emit('xp',{n,why,total:S.xp});
   const after=rankOf(S.xp);
   if(after>before){ setTimeout(()=>{ vib([40,60,40]); const em=EMOTES.find(e=>e.lv===after+1);
-    modal(`<span class="chip">계급 상승</span><h3>${RANKS[after][0]}</h3><p class="muted">Lv.${after+1}. 본부가 요원님의 평범함을 인정했습니다.</p>${em?`<p style="font-size:14px">새 이모트 해금: <b>${em.name}</b></p>`:''}`,'계속 작전'); emit('rankup',{lv:after+1}); },700); }
+    modal(`<span class="chip">계급 상승</span><h3>${RANKS[after][0]}</h3><p class="muted">Lv.${after+1}. 본부가 요원의 평범함을 인정했다.</p>${em?`<p style="font-size:14px">새 이모트 해금: <b>${em.name}</b></p>`:''}`,'계속 작전'); emit('rankup',{lv:after+1}); },700); }
 }
 function checkIn(){ const t=today(); if(!S.days[t]){ S.days[t]=1; save(); addXP(XP.daily,'출근'); return true; } return false; }
 function daysCount(){ return Object.keys(S.days).length; }
@@ -333,10 +333,10 @@ function mountSneak(host,opts){
     root.innerHTML=`<div class="card" style="text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center">
       <span class="chip">안개 복도 잠입</span>
       <h3 style="font-size:28px">${run?`${S.door}번 문에서 이어하기`:`${S.ckpt}번 문부터 출발`}</h3>
-      <p class="muted" style="max-width:280px">안개 구름의 시선(회색 줄무늬)을 피해 초록 문까지. 한 칸 움직이면 구름도 한 칸 움직여요. 5번째 문마다 안전가옥에서 숨 고르고 저장.</p>
+      <p class="muted" style="max-width:280px">안개구름의 시선(회색 줄무늬)을 피해 초록 문까지 가요. 한 칸 움직이면 구름도 한 칸 움직여요. 5번째 문마다 안전가옥에서 숨 고르고 저장.</p>
       <div class="sp-stat" style="width:100%"><div><b>${S.best}</b><span>내 최고 기록(문)</span></div><div><b>${e} / ${ENERGY}</b><span>오늘 남은 작전</span></div></div>
       <button class="b g w" id="go" ${(!run&&e<=0)?'disabled':''} style="font-size:22px;padding:13px">${run?'이어서 잠입':'작전 시작 (1회 사용)'}</button>
-      ${(!run&&e<=0)?`<p style="font-size:14px">오늘 잠입 작전은 끝! 내일 다시 3번 열려요.<br>본부 미니게임과 평범지령은 계속 할 수 있어요.</p>`:''}
+      ${(!run&&e<=0)?`<p style="font-size:14px">오늘 잠입 작전은 끝났어요. 내일 다시 3번 할 수 있어요.<br>본부 미니게임과 평범지령은 계속 할 수 있어요.</p>`:''}
       <div class="sp-legend"><span><i style="background:#e3dccb"></i>복도</span><span><i style="background:#8c6a4a"></i>책상</span><span><i style="background:#6f9ec9"></i>사물함(숨기)</span><span><i style="background:repeating-linear-gradient(135deg,#6b717c 0 3px,#9aa0a8 3px 6px)"></i>시선</span><span><i style="background:var(--green)"></i>출구</span></div>
     </div>`;
     root.querySelector('#go').onclick=()=>{ if(!S.run){ if(energyLeft()<=0) return; S.energy.used++; S.run={hearts:3}; S.door=S.ckpt; save(); } start(S.door); };
@@ -389,7 +389,7 @@ function mountSneak(host,opts){
     else root.querySelector('#msg').innerHTML=L.hide[pr][pc]?'<b>사물함에 숨었다.</b> 시선이 지나가도 안전.':'';
   }
   function caughtFx(){ const bd=root.querySelector('#bd'); bd.classList.add('shake'); vib([60,40,90]); S.run.hearts--; save(); render();
-    const lines=['안개 구름: "…저 학생, 너무 수상하게 평범한데?"','들켰다! 하지만 평범하게 지나가는 척 성공.','안개 구름이 하품하는 사이 빠져나왔다. 다시!'];
+    const lines=['안개구름: "…저 학생, 수상할 만큼 평범한데?"','들켰다! 그래도 평범하게 지나가는 척은 성공.','안개구름이 하품하는 사이에 빠져나왔다. 다시!'];
     if(S.run.hearts>0){ const o=el('div','sp-over',`<h3>들켰다!</h3><p>${lines[Math.floor(Math.random()*lines.length)]}<br>위장 하트 ${S.run.hearts}개 남음</p>`); const b=el('button','b y','같은 문 다시'); b.onclick=()=>start(L.n); o.appendChild(b); bd.appendChild(o); }
     else { const reached=L.n; S.run=null; S.door=S.ckpt; save(); emit('runover',{reached});
       const o=el('div','sp-over',`<h3>작전 종료</h3><p>${reached}번 문까지 왔어요. 최고 기록 <b>${S.best}</b>번 문.<br>다음엔 <b>${S.ckpt}</b>번 문(안전가옥 저장 지점)부터 시작해요.</p>`); const b=el('button','b y','본부로'); b.onclick=lobby; o.appendChild(b); bd.appendChild(o); }
@@ -409,9 +409,9 @@ function mountSneak(host,opts){
       st='out'; orb.className='orb out'; sg.textContent='천천히 내쉬고…'; later(()=>{ k++; st='idle'; hold.textContent=`꾹 누르고 들이쉬기 (${k}/${N})`; sg.textContent=k<N?'한 번 더':'좋아요.'; vib(20); if(k>=N) done(); },4200); };
     hold.addEventListener('pointerdown',down); hold.addEventListener('pointerup',up); hold.addEventListener('pointerleave',up); hold.addEventListener('pointercancel',up);
     function done(){ S.ckpt=n+1; S.door=n+1; if(S.run) S.run.hearts=3; save(); report('safe'); addXP(XP.safe,'안전가옥');
-      root.innerHTML=`<div class="card sp-safe"><span class="chip">저장 완료 · 다음엔 ${n+1}번 문부터</span><h3 style="font-size:24px">보급 상자가 도착했다</h3><p class="muted">눌러서 열기. 무엇이 나올지는 몰라요.</p><div class="sp-crate" id="cr" role="button" aria-label="보급 상자 열기"></div><img src="${IMG.agent}" alt="늘곰 소장"></div>`;
+      root.innerHTML=`<div class="card sp-safe"><span class="chip">저장 완료 · 다음엔 ${n+1}번 문부터</span><h3 style="font-size:24px">보급 상자가 도착했다</h3><p class="muted">눌러서 열기. 뭐가 나올지는 몰라요.</p><div class="sp-crate" id="cr" role="button" aria-label="보급 상자 열기"></div><img src="${IMG.agent}" alt="늘곰 소장"></div>`;
       const cr=root.querySelector('#cr'); cr.onclick=()=>{ cr.classList.add('shk'); vib([20,20,20,20,20]); later(()=>{ const res=giveGear(rollGear()); gearModal(res,()=>{
-        root.innerHTML=`<div class="card sp-safe"><h3>위장 하트 3개 회복</h3><p class="muted">계속 가도 되고, 오늘은 여기까지 해도 저장돼 있어요.</p><button class="b g w" id="nx">${n+1}번 문 열기</button><button class="b w" id="st">오늘은 여기까지</button></div>`;
+        root.innerHTML=`<div class="card sp-safe"><h3>위장 하트 3개 회복</h3><p class="muted">계속 가도 되고, 오늘은 여기서 끝내도 돼요. 저장은 돼 있어요.</p><button class="b g w" id="nx">${n+1}번 문 열기</button><button class="b w" id="st">오늘은 여기까지</button></div>`;
         root.querySelector('#nx').onclick=()=>start(n+1); root.querySelector('#st').onclick=()=>{ S.run=null; save(); lobby(); };
       }); },900); }; }
   }
@@ -434,7 +434,7 @@ function mountGear(host,opts){ injectCSS(); opts=opts||{}; const IMG=Object.assi
     <div class="card" style="display:flex;flex-direction:column;gap:10px">
       <div class="sp-prog"><h3 style="font-size:20px">스파이 장비 도감</h3><b>${have} / ${GEAR.length}</b></div>
       <div class="sp-grid">${GEAR.map(g=>S.gear[g.id]?`<button class="sp-slot ${S.equip===g.id?'on':''}" data-g="${g.id}" aria-label="${g.name}"><span class="rd" style="background:${RCOL[g.r]}"></span>${iconSVG(g)}</button>`:`<div class="sp-slot no" aria-label="아직 못 찾은 장비"></div>`).join('')}</div>
-      <p class="muted" id="gi">장비는 안전가옥 보급 상자와 비밀 코드로 모아요. 눌러서 착용. 능력 차이는 없고 멋만 납니다.</p>
+      <p class="muted" id="gi">장비는 안전가옥 보급 상자와 비밀 코드로 모아요. 눌러서 착용. 능력 차이는 없고 멋만 나요.</p>
     </div>`;
     root.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{ S.emote=b.dataset.e; save(); draw(); emit('emote',S.emote); });
     root.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{ const g=GEAR.find(x=>x.id===b.dataset.g); S.equip=S.equip===g.id?null:g.id; save(); draw(); root.querySelector('#gi').innerHTML=`<b>${g.name}</b> <span class="rar r${g.r}">${RNAME[g.r]}</span><br>${g.d}`; emit('equip',S.equip); });
@@ -453,7 +453,7 @@ function mountCode(host){ injectCSS(); const root=el('div','sp sp-code'); host.i
     <button class="b g w" id="cb">확인</button>
     <p class="res" id="cr"></p></div>
     <div class="card"><h4 style="font-size:17px;margin-bottom:4px">코드가 숨어 있는 곳</h4>
-    <ul><li>마음돌봄 부스 6곳 입구 안내판</li><li>3층 Wee클래스 문 앞 늘곰 포스터</li><li>웹앱 본부 라디오 '오늘의 추천곡' 아래 한마디</li><li>전교 정화 작전 100% 달성 시 공개</li></ul></div>`;
+    <ul><li>마음돌봄 부스 6곳 입구 안내판</li><li>3층 Wee클래스 문 앞 늘곰 포스터</li><li>본부 라디오 '오늘의 추천곡' 아래 한마디</li></ul></div>`;
   const ci=root.querySelector('#ci'), cr=root.querySelector('#cr');
   async function go(){ const c=norm(ci.value); if(!c) return; let h=''; try{ h=await sha(c); }catch(e){ cr.textContent='이 기기에서는 코드 확인이 안 돼요'; return; }
     const hit=codeTable&&codeTable[h];
@@ -469,7 +469,6 @@ function mountCode(host){ injectCSS(); const root=el('div','sp sp-code'); host.i
 function bossSVG(p){ return `<svg viewBox="0 0 200 150" style="opacity:${1-p*0.75};transform:scale(${1-p*0.35})"><path d="M30 120 Q0 120 6 92 Q8 66 34 66 Q32 30 70 28 Q90 4 120 22 Q160 14 168 52 Q198 58 192 92 Q192 122 160 120 Z" fill="#6b717c" stroke="#1c2130" stroke-width="6" stroke-linejoin="round"/><ellipse cx="78" cy="78" rx="12" ry="${p>.5?3:12}" fill="#1c2130"/><ellipse cx="128" cy="78" rx="12" ry="${p>.5?3:12}" fill="#1c2130"/><path d="M84 104 Q104 ${p>.5?112:96} 124 104" stroke="#1c2130" stroke-width="6" fill="none" stroke-linecap="round"/></svg>`; }
 function mountRaid(host,opts){ injectCSS(); opts=Object.assign({total:0,goal:900,today:0,name:'회색 거인',week:'1주차'},opts||{}); const root=el('div','sp sp-raid'); host.innerHTML=''; host.appendChild(root);
   function draw(){ const total=opts.total; const p=Math.min(1,total/opts.goal); const left=Math.max(0,opts.goal-total);
-    const MS=[[.25,'늘곰 소장의 새 대사 공개'],[.5,'학교 지도에 무지개가 뜸'],[.75,'하늘 게시판에 비밀 코드 하나 공개'],[1,'전교 보상: 모든 요원에게 무지개 우산 코드']];
     root.innerHTML=`<div class="card" style="display:flex;flex-direction:column;gap:10px">
       <div class="sp-prog"><h3 style="font-size:20px">전교 정화 작전 · ${opts.week}</h3><span class="chip">익명 합계</span></div>
       <div class="sp-boss">${bossSVG(p)}${p>=1?'<div style="position:absolute;font-family:var(--fd);font-size:30px;color:#fff;-webkit-text-stroke:1.5px #1c2130">정화 완료!</div>':''}</div>
@@ -477,14 +476,13 @@ function mountRaid(host,opts){ injectCSS(); opts=Object.assign({total:0,goal:900
       <p class="muted">전교 요원이 문을 통과하거나 미니게임·지령을 마칠 때마다 안개가 1씩 줄어요. 누가 했는지는 기록하지 않고 숫자만 더해요. 반별 순위도 없어요.</p>
       <div class="sp-stat"><div><b>${total}</b><span>전교 정화 횟수(누적)</span></div><div><b>${opts.today}</b><span>오늘 출근한 요원 수</span></div></div>
     </div>
-    <div class="card"><h4 style="font-size:17px;margin-bottom:8px">함께 깨면 열리는 것</h4><ul class="sp-ms">${MS.map(([q,txt])=>`<li class="${p>=q?'ok':''}"><i>${p>=q?'✓':Math.round(q*100)}</i>${Math.round(q*100)}% · ${txt}</li>`).join('')}</ul>
-    <p class="muted" style="margin-top:8px">내가 보탠 정화: ${S.contrib}회</p></div>`; }
+    <div class="card"><p class="muted">내가 보탠 정화: ${S.contrib}회</p></div>`; }
   draw(); return { stop:()=>{host.innerHTML='';}, set:(o)=>{ Object.assign(opts,o); draw(); } };
 }
 
 /* ---------------- 본부 소등 ---------------- */
 function nightGuard(opts){ injectCSS(); opts=opts||{}; const old=document.querySelector('.sp-night'); if(old) old.remove(); if(!isCurfew()) return false;
-  const d=el('div','sp sp-night',`<div class="stars"></div><img src="${(opts.img||'img/yawn.png')}" alt="하품하는 늘곰"><h3>본부 소등</h3><p>밤 10시부터 아침 6시까지는 늘곰 소장도 자요. 요원의 가장 중요한 임무는 잠. 오늘 모은 장비와 기록은 그대로 저장돼 있어요.</p><div class="help" style="margin-top:14px"><p style="margin:0 0 4px;font-weight:700">마음이 너무 힘든 밤이라면 지금 바로 전화해도 된다. 24시간 받는다.</p><a href="tel:109" style="display:block;margin:8px auto 0;max-width:300px;padding:14px 10px;border-radius:14px;border:3px solid #1a1917;font-size:19px;font-weight:800;text-decoration:none;color:#1a1917;background:#f3c744">109 전화하기<br><span style="font-size:13px;font-weight:600">자살예방 상담전화</span></a><a href="tel:1388" style="display:block;margin:8px auto 0;max-width:300px;padding:14px 10px;border-radius:14px;border:3px solid #1a1917;font-size:19px;font-weight:800;text-decoration:none;color:#1a1917;background:#fffaf0">1388 전화하기<br><span style="font-size:13px;font-weight:600">청소년 상담전화 · 문자는 #1388</span></a></div>`);
+  const d=el('div','sp sp-night',`<div class="stars"></div><img src="${(opts.img||'img/yawn.png')}" alt="하품하는 늘곰"><h3>본부 소등</h3><p>밤 10시부터 아침 6시까지는 늘곰 소장도 자요. 요원한테 제일 중요한 임무는 잠이에요. 오늘 모은 장비와 기록은 그대로 있어요.</p><div class="help" style="margin-top:14px"><p style="margin:0 0 4px;font-weight:700">너무 힘든 밤이면 지금 바로 전화해도 된다. 24시간 받는다.</p><a href="tel:109" style="display:block;margin:8px auto 0;max-width:300px;padding:14px 10px;border-radius:14px;border:3px solid #1a1917;font-size:19px;font-weight:800;text-decoration:none;color:#1a1917;background:#f3c744">109 전화하기<br><span style="font-size:13px;font-weight:600">자살예방 상담전화</span></a><a href="tel:1388" style="display:block;margin:8px auto 0;max-width:300px;padding:14px 10px;border-radius:14px;border:3px solid #1a1917;font-size:19px;font-weight:800;text-decoration:none;color:#1a1917;background:#fffaf0">1388 전화하기<br><span style="font-size:13px;font-weight:600">청소년 상담전화 · 문자는 #1388</span></a></div>`);
   if(opts.demo){ const b=el('button','b y','시연: 다시 켜기'); b.onclick=()=>{ demoTime=null; d.remove(); opts.onWake&&opts.onWake(); }; d.appendChild(b); }
   document.body.appendChild(d); return true; }
 

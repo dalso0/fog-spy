@@ -261,7 +261,7 @@ let coins,pieces,mungs,swarms,curtains,walls,flags,says,items,door,decor,nook,ro
    끝까지 모은 바람이 여섯 번 막히면 병아리가 한 겹 걷어 주겠다고 묻는다 (죽지는 않는데 멀리 서서 헛도는 학생을 위해).
    멀리서는 다음 떼가 나오기 전에 불 수 없어서 다가가야 하고, 다가갈수록 뭉치가 빨리 닿는다. 마지막 겹은 두 마리씩 두 번 나오는데, 그 사이의 짧은 틈은 숨을 모으기에 모자라다.
    2주차부터의 보스는 이보다 어렵게 만든다 (선생님 의견 2026-11-17: 1주차 보스가 너무 쉽다) */
-const WAVES=[null,{t:[0,.5,1.7,2.2],v:76,rest:4},{t:[0,.56,1.12],v:70,rest:4.2},{t:[0,.62],v:64,rest:4.6}];
+const WAVES=[null,{t:[0,.5,1.7,2.2],v:76,rest:4},{t:[0,.56,1.12],v:70,rest:4.2},{t:[0,.62],v:64,rest:7.5}];
 const LEVELS=[
 // 월: 등굣길
 (L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
@@ -275,7 +275,7 @@ const LEVELS=[
   coin(47,6); coin(48,5); coin(49,5); coin(50,5); coin(51,6);
   // 2구간: 발판과 벽돌
   ground(52,82); hard(55,56,R1); crate(57,R1,'coat'); hard(58,59,R1); hard(61,63,6); piece(62,5);
-  say(65,'벽돌 위의 뭉치는 아래에서 벽돌을 쳐서 날려라 삐약.'); brick(66,70,R1); mung(66,71,R1);
+  say(45,'회색 안개는 나쁜 기분이 아니다 삐약. 아무 느낌도 못 알아차리게 무뎌지는 것이다 삐약.'); say(65,'벽돌 위의 뭉치는 아래에서 벽돌을 쳐서 날려라 삐약.'); brick(66,70,R1); mung(66,71,R1);
   mung(73,81); coin(83,7); coin(84,6); coin(85,7);
   // 3구간: 숨 바람
   ground(86,123); flag(87); say(90,'안개 장막이다 삐약. 숨 버튼을 꾹 눌렀다가 떼라 삐약.'); curtain(97);
@@ -349,7 +349,7 @@ const LEVELS=[
   hard(123,125,10); coinRow(123,125,8); hard(128,130,9); coinRow(128,130,7); hard(133,135,10); coinRow(133,135,8);
   ground(138,192); flag(139); coinRow(142,150,10); brick(153,157,R1); crate(155,R2,'coins'); mung(160,170);
   pad(174); hard(177,180,6); piece(178,4); coinRow(177,180,4); stairs(185,4); coin(193,6); coin(194,5); coin(195,6);
-  ground(196,281); flag(198); coinRow(202,212,10); crate(216,R1,'coat'); mung(220,230); coinRow(234,240,10); door(248);
+  ground(196,281); flag(198); coinRow(202,212,10); crate(216,R1,'coat'); mung(220,230); coinRow(234,240,10); wall(243); door(248);
 },
 // 훈련장: 조작을 하나씩 익히는 1분짜리 판. 본편 기록에는 들어가지 않는다
 (L)=>{ const {ground,hard,crate,coin,coinRow,piece,mung,swarm,curtain,flag,say,door}=L;
@@ -367,14 +367,16 @@ const LEVELS=[
 // 지령 순서와 문구는 기존 앱의 것이다. "바람 세 번"은 선생님 답을 기다리는 중이라 건너뛰었다
 const DAYS=[
   {d:'11.23 월',date:'2026-11-23',name:'등굣길',letter:'하',next:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기. 사진은 찍지 않기.'],feel:'mon'},
-  {d:'11.24 화',date:'2026-11-24',name:'운동장',letter:'늘',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.'],next:['다른 길','평소와 다른 길로 한번 걸어 보기.'],feel:'tue'},
+  {d:'11.24 화',date:'2026-11-24',name:'운동장',letter:'늘',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.','폰을 내려놓고 창밖 하늘을 10초 동안 올려다본다.'],next:['다른 길','평소와 다른 길로 한번 걸어 보기.'],feel:'tue'},
   {d:'11.25 수',date:'2026-11-25',name:'뒷산 길',letter:'빛',report:['다른 길','평소와 다른 길로 한번 걸어 보기.'],next:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기. 아무도 눈치채지 못하게.'],feel:'wed'},
   {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,toy:'apple',done:'1주차 암호 「하늘빛」 완성',report:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기.'],next:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디. 평범하게, 티 안 나게.'],feel:'thu'},
-  {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,toy:'mandarin',done:'쉬어 가는 판 완료',report:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.'],nl:'월요일의 지령'},
+  {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,toy:'mandarin',done:'쉬어 가는 판 완료',report:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.'],nl:'월요일의 지령',feel:'fri'},
   {d:'언제든',name:'훈련장',train:true} ];
 // 한 주 다섯 판을 다 깨면 본부와 금요일 완료 카드에 간식 안내가 나온다. 미션 단어는 그 주의 암호
 const SNACK='월요일에 위클래스에 와서 암호 「하늘빛」을 말하면 활동 간식을 받아요.', weekDone=c=>!!c&&DAYS.slice(0,TRAIN).every((d,i)=>c[i]);
 let stageNo=0;
+// 이 판에서 한 마음돌봄 행동: b = 끝까지 모은 숨, s = 가만히 있기(띵띵이, 하늘 방, 가만히 방), n = 감정 벽에 붙인 이름. 완료 카드에 걸린 시간 대신 이 숫자를 보여 준다. 어디에도 남기지 않는다
+let care={b:0,s:0,n:0};
 /* ---------- 날짜 잠금과 소등 ----------
    학생은 모두 한국에 있으니 기기 시간대와 상관없이 한국 시간으로 센다. 그날 판은 오후 5시에 열리고 지난 판은 계속 열려 있다.
    밤 10시부터 아침 6시까지는 본부가 소등한다. LIVE 전은 미리 해 보는 기간이라 잠금도 소등도 없다.
@@ -456,7 +458,7 @@ function reset(){
   build();
   P={x:2*T,y:GTOP-22,w:12,h:22,vx:0,vy:0,face:1,ground:true,coy:0,grey:0,inv:0,shield:bonus?1:0,coins:bonus?5:0,pcs:0,
      charge:0,charging:false,full:false,glide:false,jumpHeld:false,boost:false,runT:0,airT:0,coat:false,puffCd:0,bHold:0};
-  BGM.rewind();
+  BGM.rewind(); care={b:0,s:0,n:0};
   held=-1; cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; bq=[]; msg=null; deaths=0; shake=0; bolt=null; boltNext=2.5; freeze=0; chickX=P.x+30; chickY=P.y-20; warp=null; stuck=0; lift=null;
   say('금주의 표어다 삐약. 「'+sign.t+'」',4.6,1);   // 판마다 첫 말은 간판의 표어. 다음 말이 오면 1초 뒤에 자리를 내준다 (첫 판의 조작 안내가 늦지 않게)
 }
@@ -564,9 +566,12 @@ function headHit(c,r){ const v=at(c,r), key=c+','+r;
   else { if(v===4||v===2) bumps[key]=tNow-.08; SFX.bump(); }
 }
 // 장막에 끝까지 모은 숨 바람이 닿았을 때. 보스 장막은 한 겹씩 걷히며 뒤로 물러나고, 보통 장막과 보스의 마지막 겹은 한 번에 걷힌다
+// 보스 장막의 마지막 한 겹 앞에서는 숨이 천천히(4초) 모인다. 판마다 한 번은 버튼이 아니라 진짜 숨을 쉬어 보게 하려는 것이다
+const deep=()=>!!(bossC&&bossC.alive&&bossC.hp===1&&bossC.x>=bossC.tx&&bossC.x>P.x&&bossC.x-P.x<236);
 function blow(c){
   if(c.boss&&c.hp>1){ c.hp--; c.w=14+c.hp*8; c.tx=Math.max(c.x,c.tx)+22*T; c.cd=.8; c.i=0; c.nap=false; c.blk=c.wk=c.hits=0; shake=.25; freeze=.06; for(let i=0;i<26;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',90,2);
-    for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); note(c.hp===2?'한 겹 걷혔다. 장막이 물러난다':'이제 한 겹 남았다'); SFX.calm(); }
+    for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); note(c.hp===2?'한 겹 걷혔다. 장막이 물러난다':'이제 한 겹 남았다'); SFX.calm();
+    if(c.hp===1) say('마지막 겹이다 삐약. 이번에는 숨이 천천히 모인다 삐약. 고리가 차는 동안 진짜로 같이 들이쉬어라 삐약.',7); }
   else { c.alive=false; for(let i=0;i<34;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',80,2); for(let i=0;i<(c.boss?6:2);i++) popCoin(c.x+6+i*9,GTOP-40,i+2);
     if(c.boss){ for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); shake=.3; say('「회색 장막」이 걷혔다 삐약. 본부 문이 보인다 삐약.'); } note(c.boss?'「회색 장막」이 걷혔다':'안개 장막이 걷혔다'); SFX.calm(); } }
 function popMung(m,flung){ m.sq=flung?.01:.32; m.vx=0; popCoin(m.x+8,m.y,1); SFX.stomp(); puff(m.x+8,m.y+8,6,'#ffffff',40); }
@@ -580,8 +585,8 @@ function step(dt){
   if(K.b&&!prevB&&P.coat&&P.puffCd<=0){ gusts.push({x:P.x+6+P.face*8,y:P.y+9,dir:P.face,left:84,pow:.3,puff:true}); P.puffCd=.38; SFX.gust(.3); } prevB=K.b;
   // 숨 모으기
   const wantB=K.b&&P.ground&&(!P.coat||P.bHold>.16);
-  if(wantB){ if(!P.charging){ P.charging=true; P.charge=0; P.full=false; } P.charge=Math.min(1,P.charge+dt/1.5); if(P.charge>=1&&!P.full){ P.full=true; SFX.full(); } }
-  else if(P.charging){ P.charging=false; if(P.charge>.12){ gusts.push({x:P.x+6+P.face*8,y:P.y+9,dir:P.face,left:46+128*P.charge,pow:P.charge}); SFX.gust(P.charge); } P.charge=0; }
+  if(wantB){ if(!P.charging){ P.charging=true; P.charge=0; P.full=false; } P.charge=Math.min(1,P.charge+dt/(deep()?4:1.5)); if(P.charge>=1&&!P.full){ P.full=true; SFX.full(); } }
+  else if(P.charging){ P.charging=false; if(P.charge>.12){ gusts.push({x:P.x+6+P.face*8,y:P.y+9,dir:P.face,left:46+128*P.charge,pow:P.charge}); SFX.gust(P.charge); if(P.charge>=1) care.b++; } P.charge=0; }
   // 좌우
   const maxV=P.grey>0?66:MAXV; let ax=0;
   if(!P.charging){ if(K.l) ax-=1; if(K.r) ax+=1; }
@@ -662,7 +667,7 @@ function step(dt){
         const dx=tx-b.x, dy=ty-b.y, d=Math.hypot(dx,dy)||1, sp=active?132:85; b.x+=dx/d*Math.min(sp*dt,d); b.y+=dy/d*Math.min(sp*dt,d);
         if(active&&Math.abs(b.x-P.x-6)<8&&Math.abs(b.y-P.y-11)<12){ hurt(Math.sign(dx)||1); b.x-=dx/d*28; b.y-=28; } }
       if(Math.abs(P.x-sx)>300){ s.state='idle'; s.calm=0; }
-      if(s.calm>=2.1){ s.state='leave'; s.t=0; for(let i=0;i<3;i++) popCoin(P.x+6+(i-1)*9,P.y-4,i+1); SFX.calm(); note('반응하지 않으니 지나갔다'); } }
+      if(s.calm>=2.1){ s.state='leave'; s.t=0; for(let i=0;i<3;i++) popCoin(P.x+6+(i-1)*9,P.y-4,i+1); SFX.calm(); care.s++; note('반응하지 않으니 지나갔다'); } }
     else { s.t+=dt; for(const b of s.bugs){ b.x+=(Math.cos(b.ph)*40+50)*dt; b.y-=100*dt; } if(s.t>2.2) s.state='gone'; } }
   // 숨 바람
   for(const g of gusts){ const d=220*dt; g.x+=g.dir*d; g.left-=d; if(Math.random()<.5){ const t=.3; parts.push({x:g.x,y:g.y+(Math.random()-.5)*18,vx:g.dir*30,vy:(Math.random()-.5)*20,t,T0:t,col:'#ffffff',s:1+Math.round(g.pow),g:0}); }
@@ -705,7 +710,7 @@ function step(dt){
     if(!room.done){
       if(room.kind==='sky'){ if(still&&hands&&P.y+P.h<=8*T+1) room.p+=dt/7; }
       else if(still&&hands) room.p+=dt/8;
-      if(room.p>=1){ room.p=1; room.done=true; roomCount(); for(let i=0;i<5;i++) popCoin(P.x+6+(i-2)*9,P.y-6,i); SFX.calm();
+      if(room.p>=1){ room.p=1; room.done=true; care.s++; roomCount(); for(let i=0;i<5;i++) popCoin(P.x+6+(i-2)*9,P.y-6,i); SFX.calm();
         note({sky:'먼 데를 보니 눈과 머리가 쉰다',still:'아무것도 안 해도 불은 켜진다'}[room.kind]); say('잘했다 삐약. 오른쪽 통로 위에 서 있으면 밖으로 나간다 삐약.'); } }
     if(still&&!P.charging&&onPipe(ex)){ room.et+=dt; if(room.et>=1) warpIn(ex+10,()=>{ leaveRoom(); warpOut(); },()=>{ shutPipe(); note('다시 길 위로'); }); } else room.et=0; }
   if(P.ground&&!room&&P.x+P.w>door.x+10&&P.x<door.x+door.w-6) finish();
@@ -714,7 +719,7 @@ function step(dt){
 function camTarget(){ const lo=room?room.x0:0, hi=(room?room.x1:LW)-W; return hi<lo?(lo+hi)/2:Math.max(lo,Math.min(hi,P.x-W*.36+P.face*12)); }
 function enterRoom(){ room={kind:nook.kind,x0:RX*T,x1:(RX+30)*T,ret:nook.x+10,t:0,p:0,et:0,done:false};
   P.x=RA*T+10; P.y=GTOP-32-P.h; P.vx=P.vy=0; P.face=1; cam=camTarget(); chickX=P.x; chickY=P.y-20; }
-function roomHello(){ say({sky:'하늘 방이다 삐약. 계단 꼭대기에 올라가서 먼 하늘을 가만히 봐라 삐약.',still:'가만히 방이다 삐약. 손을 떼고 아무것도 하지 마라 삐약. 불이 하나씩 켜진다 삐약.'}[room.kind],6); }
+function roomHello(){ say({sky:'하늘 방이다 삐약. 계단 꼭대기에 올라가서 먼 하늘을 가만히 봐라 삐약.',still:'가만히 방이다 삐약. 손을 떼고 아무것도 하지 마라 삐약. 눈을 감아도 불은 켜진다 삐약.'}[room.kind],6); }
 function leaveRoom(){ P.x=room.ret; P.y=GTOP-32-P.h; P.vx=P.vy=0; room=null; cam=camTarget(); chickX=P.x; chickY=P.y-20; }
 // 왁뿌볼 방은 가까이 보는 카드로 띄운다. 곰이 통로로 내려간 뒤(화면이 어두워진 뒤)에 열리고, 닫으면 같은 통로로 올라온다
 function waxCard(){ if(!window.WAX){ warp.after=()=>{ shutPipe(); note('다시 길 위로'); }; warpOut(); return; }   // 왁뿌볼 파일을 못 받았으면 그냥 올라온다
@@ -944,7 +949,7 @@ function draw(){
     if(warp) pipes();
     const px=Math.round(P.x+6-cx), py=Math.round(P.y-cy);
     if(P.shield&&!warp) for(let i=0;i<8;i++){ const a=i/8*6.283+tNow*2.5; bx.fillStyle=i%2?'#69b4e6':'#ffffff'; bx.fillRect(Math.round(px+Math.cos(a)*12),Math.round(py+10+Math.sin(a)*15),1,1); }
-    if(P.charging){ ring(px,py-12,P.charge,P.charge>=.8?'#d9512c':'#ffffff','#5c6269'); texts.push({t:P.charge>=1?'후—':'스읍',x:px,y:py-23,s:8,c:'#1f1b18',a:'center',f:DISP}); }
+    if(P.charging){ ring(px,py-12,P.charge,P.charge>=.8?'#d9512c':'#ffffff','#5c6269'); texts.push({t:deep()?(P.charge>=1?'후— 내쉰다':'들이쉰다'):P.charge>=1?'후—':'스읍',x:px,y:py-23,s:8,c:'#1f1b18',a:'center',f:DISP}); }
     for(const s of swarms) if(s.state==='alert'&&s.calm>0) ring(px,py-12,s.calm/2.1,'#69b4e6','#5c6269');
     if(!warp){ if(nook&&!room&&!nook.used&&nook.t>0) ring(px,py-12,nook.t,'#d9512c','#5c6269');
       if(room&&room.et>0) ring(px,py-12,room.et,'#d9512c','#5c6269'); else if(room&&!room.done&&room.p>0) ring(px,py-12,room.p,'#d9512c','#5c6269'); } }
@@ -958,6 +963,7 @@ function draw(){
   // 방에서 나가는 통로 표지 (병아리에 가리지 않게 맨 위에)
   if(room&&!warp){ const e=RE*T-cx; box(e-6,hz-88,44,13,'#fff8e8','#1f1b18'); texts.push({t:'나가는 곳',x:e+16,y:hz-78.3,s:7.5,c:'#1f1b18',a:'center',f:DISP}); if(!over(RE*T)) arrowDn(e+16,hz-72+bob,'#d9512c'); }
   // 비
+  if(mood==='fog'&&!room){ bx.fillStyle='#eef1f0'; for(let i=0;i<9;i++){ const x=((i*97+Math.floor(tNow*(70+i%3*25)))%(W+60))-30, y=18+(i*37)%Math.max(40,H-70); bx.fillRect(x,y,14+i%3*8,1); } }
   if(mood==='rain'||mood==='storm'){ bx.fillStyle='#e6eef3'; for(let i=0;i<34;i++){ const x=((i*41-Math.floor(tNow*30))%W+W)%W, y=(i*53+Math.floor(tNow*260))%H; bx.fillRect(x,y,1,3); } }
   // 번개가 칠 때 화면 전체가 잠깐 밝아진다
   if(mood==='storm'&&!room&&bolt){ const a=tNow-bolt.t0; if(a<.3){ bx.globalAlpha=a<.06?.22:.22*(1-(a-.06)/.24); bx.fillStyle='#f4f1e6'; bx.fillRect(0,0,W,H); bx.globalAlpha=1; } }
@@ -1052,7 +1058,7 @@ function toyCard(k,fresh){ if(!(window.WAX&&WAX.toy)) return hqCard();
     if(own.includes(t)){ WAX.toy(t,st,cn); return; }
     const i=WAX.info(t); st.style.background='#efe3c8'; st.innerHTML=`<img class="tlock" src="${i.img}" alt="">`; cn.textContent=i.name+' · '+TOYS.find(x=>x[0]===t)[1]; };
   ov.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ if(b.dataset.t!==k){ SFX.tick(); show(b.dataset.t); } });
-  show(k); on('t1',()=>{ SFX.tick(); if(fresh&&rankDue) rankCard(rankDue==='final'); else hqCard(); });
+  show(k); on('t1',()=>{ SFX.tick(); if(fresh&&rankDue) rankCard(true); else hqCard(); });
   try{ ov.querySelector('[data-t].on').focus({preventScroll:true}); }catch(e){} }   // 키보드로 고를 때는 지금 고른 말랑이 버튼에서 시작한다
 // 본부 서버에서 받은 소식: 전교 정화 합계, 공지 한 줄, 오늘의 추천곡. 연결이 없으면 아무것도 보이지 않는다 (연결이 없을 때의 추천곡은 본부 문 앞 라디오에만 나온다)
 function hqInfo(){ const put=s=>{ const r=ov.querySelector('#raid'); if(!r||!s||!s.ok) return;
@@ -1066,17 +1072,50 @@ function hqInfo(){ const put=s=>{ const r=ov.querySelector('#raid'); if(!r||!s||
    미리 해 보는 기간과 선생님 모드에서는 앞 판만 깼으면 매번 묻는다 (카드를 언제든 확인할 수 있게) */
 function briefing(){ const sv=loadSave(), cl=sv.clear||{}, rp=(sv.rep||{})[stageNo];
   if(stageNo>0&&cl[stageNo-1]&&(free()||(!rp&&!cl[stageNo]&&(sv.day||{})[stageNo-1]!==today()))) return reportCard();
-  bonus=stageNo===0||(!!rp&&rp!=='no'); bonusNote=stageNo===0?'첫 작전 지원. 색 방패 1개와 색 방울 5개':'보고 완료. 색 방패 1개와 색 방울 5개'; moodCard(); }
+  bonus=stageNo===0||!!rp; bonusNote=stageNo===0?'첫 작전 지원. 색 방패 1개와 색 방울 5개':'보고 완료. 색 방패 1개와 색 방울 5개'; moodCard(); }
+/* 지원 물자(색 방패와 색 방울)는 「했다」든 「안 했다」든 똑같이 준다: 지령을 한 값이 아니라 있는 그대로 보고한 값이다 (「했다」에만 주면 안 하고도 누르게 된다).
+   「했다」 뒤에는 해 보니 어땠는지 한 번 더 묻고, 「안 했다」 뒤에는 집에서 바로 할 수 있는 지령(DAYS의 report 셋째 칸)이면 지금 해 보겠느냐고 묻는다.
+   어땠는지 고른 것과 지금 해 본 것은 어디에도 남기지 않는다. 서버에는 예전처럼 그 판의 첫 보고(했다/안 했다)만 간다 */
 function reportCard(){ const o=DAYS[stageNo].report, yest=new Date(kst()-864e5).toISOString().slice(0,10);
   card(`<div class="eyebrow">${(loadSave().day||{})[stageNo-1]===yest?'어제의':'지난'} 지령 보고</div><h2>「${o[0]}」</h2><p>${o[1]} 해 봤나?</p>
   <div class="row"><button id="r1">했다</button><button id="r2">안 했다</button></div>
-  <p class="note">안 했어도 작전은 그대로 나간다.</p>`);
+  <p class="note">안 했어도 작전은 그대로 나간다. 지원 물자도 똑같이 준다.</p>`);
   // 서버에는 그 판의 첫 보고만 센다
-  const pick=k=>{ const sv=loadSave(); sv.rep=sv.rep||{}; if(!sv.rep[stageNo]){ sv.rep[stageNo]=k; putSave(sv); hq('add','ord_'+k,1); } bonus=k!=='no'; bonusNote='보고 완료. 색 방패 1개와 색 방울 5개'; moodCard(); };
+  const pick=k=>{ const sv=loadSave(); sv.rep=sv.rep||{}; if(!sv.rep[stageNo]){ sv.rep[stageNo]=k; putSave(sv); hq('add','ord_'+k,1); } bonus=true; bonusNote='보고 완료. 색 방패 1개와 색 방울 5개'; SFX.tick();
+    if(k==='done') howCard(o); else if(o[2]) nowCard(o); else moodCard('보고 받았다. 안 했다는 것도 정확한 보고다.'); };
   on('r1',()=>pick('done')); on('r2',()=>pick('no')); }
-function moodCard(){ card(`<div class="eyebrow">마음 날씨</div><h2>지금 기분은 어떤 날씨인가</h2><p class="note">고른 날씨가 오늘 판의 하늘이 돼요.</p>
-  <div class="row"><button data-m="sun">맑음</button><button data-m="cloud">구름</button><button data-m="fog">안개</button><button data-m="rain">비</button><button data-m="storm">번개</button></div>`);
-  ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mood=b.dataset.m; hq('mood',mood); reset(); play(); if(bonus) note(bonusNote); }); }
+const HOW=[['할 만했다','할 만한 것은 또 해도 된다.'],['별 느낌 없었다','별 느낌 없었다는 것도 정확한 보고다.'],['좀 어색했다','처음 하는 일은 원래 어색하다.'],['딴생각이 났다','딴생각이 난 걸 알아챈 것이 요령이다.']];
+function howCard(o){ card(`<div class="eyebrow">지령 보고 · 「${o[0]}」</div><h2>해 보니 어땠나</h2>
+  <div class="row">${HOW.map((h,i)=>`<button data-h="${i}">${h[0]}</button>`).join('')}</div>
+  <p class="note">정답은 없다. 고른 것은 어디에도 남기지 않는다.</p>`);
+  ov.firstChild.classList.add('wide');
+  ov.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ SFX.tick(); moodCard('보고 받았다. '+HOW[+b.dataset.h][1]); }); }
+function nowCard(o){ card(`<div class="eyebrow">지령 「${o[0]}」</div><h2>지금 10초만 해 볼까</h2><p>${o[2]}</p>
+  <div class="row"><button class="go" id="n1">해 본다</button><button id="n2">그냥 나간다</button></div>`);
+  on('n2',()=>{ SFX.tick(); moodCard('보고 받았다. 안 했다는 것도 정확한 보고다.'); });
+  on('n1',()=>{ SFX.tick(); card(`<div class="eyebrow">지령 「${o[0]}」 · 지금</div><h1 id="nc">10</h1><p>${o[2]}</p><div class="row"><button class="go" id="n3" hidden>돌아왔다</button></div>`);
+    const box=ov.firstChild, t0=Date.now(), iv=setInterval(()=>{ if(ov.firstChild!==box){ clearInterval(iv); return; }
+      const left=10-Math.floor((Date.now()-t0)/1000); box.querySelector('#nc').textContent=Math.max(0,left);
+      if(left<=0){ clearInterval(iv); SFX.calm(); const b=box.querySelector('#n3'); b.hidden=false; try{ b.focus({preventScroll:true}); }catch(e){} } },200);
+    on('n3',()=>{ SFX.tick(); moodCard('10초면 된다. 내일은 학교에서 한 번 더 해 본다.'); }); }); }
+/* 마음 날씨: 판을 시작할 때 한 번, 판을 끝낸 완료 카드에서 한 번 더 고른다 (3분 사이에 달라졌는지 스스로 견주어 보게).
+   「바람」의 기록 이름은 예전 그대로 fog다 (예전에는 「안개」였다. 게임의 적이 회색 안개라서, 안개를 고른 학생의 기분이 걷어 내야 할 적처럼 들리지 않게 바꿨다). 운영 시트의 「안개」 칸이 「바람」이다.
+   폰 안에만 최근 사흘의 날씨를 적어 둔다(fogspy2.md, 하루에 처음 고른 것 하나). 사흘 내리 비나 번개면 본부가 한 번 Wee클래스와 도움전화를 알려 준다. 서버에는 예전처럼 그날 합계만 간다 */
+const MOODS=[['sun','맑음'],['cloud','구름'],['fog','바람'],['rain','비'],['storm','번개']], MOODN=Object.fromEntries(MOODS);
+const moodRow=()=>MOODS.map(m=>`<button data-m="${m[0]}">${m[1]}</button>`).join('');
+function moodLog(m){ if(teacher()) return false; const sv=loadSave(), ymd=today(), bad=x=>x==='rain'||x==='storm';
+  let md=Array.isArray(sv.md)?sv.md.filter(e=>Array.isArray(e)&&typeof e[0]==='string'&&typeof e[1]==='string'):[];
+  if(md.some(e=>e[0]===ymd)) return false;
+  md.push([ymd,m]); md=md.slice(-3); sv.md=md; if(!bad(m)) sv.mdT=false;
+  const due=md.length===3&&md.every(e=>bad(e[1]))&&!sv.mdT; if(due) sv.mdT=true; putSave(sv); return due; }
+function rainCard(go){ card(`<div class="eyebrow">본부에서 한마디</div><h2>요즘 날씨가 계속 궂다</h2>
+  <p>궂은 날이 이어질 때도 있다. Wee클래스는 학교 3층이다. 쉬는 시간이나 점심시간에 와도 된다.</p>
+  <div class="row"><button class="go" id="w1">작전 나간다</button><button id="w2">도움전화 보기</button></div>`);
+  on('w1',()=>{ SFX.tick(); go(); }); on('w2',()=>{ SFX.tick(); helpCard(); }); }
+function moodCard(lead){ card(`<div class="eyebrow">마음 날씨</div><h2>지금 기분은 어떤 날씨인가</h2><p class="note">${lead?lead+' ':''}고른 날씨가 오늘 판의 하늘이 돼요.</p>
+  <div class="row">${moodRow()}</div>`);
+  const go=()=>{ reset(); play(); if(bonus) note(bonusNote); };
+  ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ mood=b.dataset.m; hq('mood',mood); if(moodLog(mood)) rainCard(go); else go(); }); }
 /* 감정 벽: 벽에 닿으면 익숙한 상황 하나와 감정 낱말 여섯 개가 뜬다. 낱말을 누르면 뜻이 보이고, 그럴 때의 내 마음에 가까운 이름을 붙이면 벽이 무너진다.
    정답은 없다. 「다른 낱말 보기」를 누르면 같은 상황에 어울릴 수 있는 다른 낱말 여섯 개로 바뀐다 (감정카드와 무드미터에 나오는 낱말들).
    상황과 낱말은 stage-feel.js에 있다. 판마다 상황이 여러 개라서, 그 판의 벽을 무너뜨릴 때마다 다음 상황으로 넘어간다 (fogspy2.fw에 판별 횟수만 적는다).
@@ -1088,22 +1127,22 @@ function feelCase(){ const ids=((FEEL.days||{})[DAYS[stageNo].feel]||[]).filter(
   return FEEL.cases[all[n%all.length]]||FEEL.cases[all[0]]; }
 // 마음을 모르겠는 학생은 아무 낱말이나 누르지 않고 「잘 모르겠다」를 고를 수 있다 (눈에 덜 띄게 카드 위쪽 구석에 둔다)
 const FEEL_DK='잘 모르겠다', FEEL_DKM='아직 이름을 못 붙인 마음. 그것도 이름이다.';
-function feel(w){ const [sit,a,b]=feelCase(), more=!!(b&&b.length), dk=!(a||[]).concat(b||[]).includes(FEEL_DK); let alt=false, pick='';
+function feel(w){ const fc=feelCase(), sit=fc[0], sets=fc.slice(1).filter(x=>Array.isArray(x)&&x.length), more=sets.length>1, dk=![].concat(...sets).includes(FEEL_DK); let alt=0, pick='';
   card(`<div class="hqtop"><div class="eyebrow">감정 벽</div>${dk?'<button class="lnk" id="e3">'+FEEL_DK+'</button>':''}</div><h2>${sit}</h2><div class="feel" id="fw"></div><p class="fm" id="fm"></p>
   <div class="row">${more?'<button id="e2"></button>':''}<button class="go" id="e1" disabled>이 이름을 붙인다</button></div>`);
   ov.firstChild.classList.add('wide');
   const fw=ov.querySelector('#fw'), fm=ov.querySelector('#fm'), go=ov.querySelector('#e1');
   const choose=(t,x)=>{ pick=t; SFX.tick(); fw.querySelectorAll('[data-e]').forEach(y=>y.classList.toggle('on',y===x));
     fm.innerHTML='<b>「'+t+'」</b> '+(FEEL.words[t]||(t===FEEL_DK?FEEL_DKM:'')); go.disabled=false; };
-  const show=()=>{ pick=''; go.disabled=true; fm.textContent=FEEL_ASK; if(more) ov.querySelector('#e2').textContent=alt?'처음 낱말 보기':'다른 낱말 보기';
-    fw.innerHTML=(alt?b:a).map(t=>`<button data-e="${t}">${t}</button>`).join('');
+  const show=()=>{ pick=''; go.disabled=true; fm.textContent=FEEL_ASK; if(more) ov.querySelector('#e2').textContent=alt===sets.length-1?'처음 낱말 보기':'다른 낱말 보기';
+    fw.innerHTML=(sets[alt]||[]).map(t=>`<button data-e="${t}">${t}</button>`).join('');
     fw.querySelectorAll('[data-e]').forEach(x=>x.onclick=()=>choose(x.dataset.e,x)); };
   show(); focusCard();
   if(dk) on('e3',()=>choose(FEEL_DK,null));
-  if(more) on('e2',()=>{ alt=!alt; SFX.tick(); show(); });
+  if(more) on('e2',()=>{ alt=(alt+1)%sets.length; SFX.tick(); show(); });
   on('e1',()=>{ if(!pick) return; const sv=loadSave(), first=!sv.fw; if(!sv.fw||typeof sv.fw!=='object') sv.fw={};
     sv.fw[stageNo]=(Math.abs(Math.floor(+sv.fw[stageNo]))||0)+1; putSave(sv);
-    w.alive=false; closeCard(); SFX.brk();
+    w.alive=false; care.n++; closeCard(); SFX.brk();
     for(let r=0;r<GY;r++) for(let i=0;i<2;i++) parts.push({deb:true,x:w.x+i*16+4,y:r*T+4,vx:(i?1:-1)*(20+Math.random()*50),vy:-60-Math.random()*90,t:.9,T0:.9,g:600,sx:0,sy:0});
     for(let i=0;i<3;i++) popCoin(w.x+8+i*8,GTOP-50,i);
     note(pick===FEEL_DK?'모르겠다는 것도 이름이다. 벽이 무너진다':'「'+pick+'」 이름을 붙이니 벽이 무너진다');
@@ -1225,20 +1264,35 @@ function finish(){ running=false; SFX.clear();
   // 목요일 보스와 금요일 판을 처음 끝내면 말랑이를 하나 받는다. 받기를 누르지 않아도 본부 말랑이 상자에 들어가 있다
   const tk=DAYS[stageNo].toy, newToy=!!tk&&addToy(tk)&&!!(window.WAX&&WAX.toy);
   if(newToy) WAX.preload(tk);
-  card(`<div class="eyebrow">작전 완료 · 본부 도착</div><h1>${DAYS[stageNo].done||'글자 조각 「'+DAYS[stageNo].letter+'」 확보'}</h1>
-  <div class="stat"><div><b>${P.coins}</b>색 방울</div><div><b>${P.pcs}/3</b>숨은 색 조각</div><div><b>${mm}:${ss}</b>걸린 시간</div><div><b>${deaths}</b>깃발에서 다시</div></div>
-  <div class="order"><div class="eyebrow">${DAYS[stageNo].nl||'내일의 지령'}</div><p><b>「${DAYS[stageNo].next[0]}」</b> ${DAYS[stageNo].next[1]}</p></div>
-  <p class="note" id="fr" hidden></p>
-  <div class="row">${newToy?'<button class="go" id="f2">말랑이 받기</button><button id="f1">본부로</button>':'<button class="go" id="f1">본부로</button>'}</div>`);
+  /* 완료 카드는 두 장이다. 첫 장: 오늘 한 마음돌봄 행동(끝까지 모은 숨, 가만히 있기, 붙인 이름)과 마음 날씨 다시 고르기. 둘째 장: 날씨가 어떻게 됐는지 한 줄과 내일의 지령.
+     걸린 시간과 깃발에서 다시 한 횟수는 보여 주지 않는다 (빨리, 안 틀리고 가는 것이 목표가 아니다). 다시 고른 날씨는 어디에도 남기지 않는다.
+     순위표는 판 뒤에 저절로 띄우지 않고 본부의 「순위표」 버튼으로만 본다 (2026-11-20 선생님 확인). 마지막 판(final)의 최종 순위표만 예전처럼 이어서 보여 준다 */
+  const d=DAYS[stageNo], head=`<div class="eyebrow">작전 완료 · 본부 도착</div>`, was=MOODN[mood]||'맑음';
+  let fr=[];
   // 처음 깬 판만 센다: 전교 정화 +1, 글자 조각, 보스 통과, 그리고 그날 판을 그날 깼으면 '오늘 판 통과'
-  { const sv=loadSave(), d=DAYS[stageNo]; sv.clear=sv.clear||{}; const first=!sv.clear[stageNo]; sv.clear[stageNo]=true; sv.coins=(sv.coins||0)+P.coins;
+  { const sv=loadSave(); sv.clear=sv.clear||{}; const first=!sv.clear[stageNo]; sv.clear[stageNo]=true; sv.coins=(sv.coins||0)+P.coins;
     if(!teacher()){ sv.best=sv.best||{}; sv.best[stageNo]=Math.max(+sv.best[stageNo]||0,P.coins); sv.agent=Object.assign({},agent(),{fixed:true}); }   // 순위는 판마다 가장 많이 모은 수의 합. 첫 판을 깨면 요원 코드가 굳는다
     if(first){ sv.day=sv.day||{}; sv.day[stageNo]=today(); } putSave(sv);   // 깬 날짜: 다음 판에서 지령 보고를 물을지 정할 때 쓴다
     if(first){ hq('add','raid',1); if(d.letter) hq('add','piece',1); if(d.boss) hq('once','decode'); if(d.date===today()) hq('once','brief'); }
-    const n=ov.querySelector('#fr'), cnt=first&&HQ.on&&!teacher(), sg=songEl(), sn=weekDone(sv.clear)||(teacher()&&!!d.rest); if(sn){ const b=document.createElement('b'); b.textContent=SNACK; n.append(b); if(cnt||sg) n.append(' '); ov.firstChild.classList.add('sn'); }
-    if(cnt) n.append('전교 정화 합계에 1을 보탰어요.'); if(cnt&&sg) n.append(' '); if(sg) n.append(sg); n.hidden=!(cnt||sg||sn); }
-  rankDue=rankShow()&&(DAYS[stageNo].final?'final':true); if(rankDue) rankSend();   // 깬 기록을 바로 보내 두고, 「본부로」를 누르면 순위표부터 보여 준다
-  ov.firstChild.classList.add('wide'); on('f1',()=>rankDue?rankCard(rankDue==='final'):hqCard()); if(newToy) on('f2',()=>{ SFX.item(); toyCard(tk,true); }); }
+    const cnt=first&&HQ.on&&!teacher(), sn=weekDone(sv.clear)||(teacher()&&!!d.rest);
+    fr=[sn,cnt]; }
+  rankDue=rankShow()&&!!d.final&&'final'; if(rankShow()) rankSend();   // 깬 기록은 바로 보내 둔다
+  const pcs=P.pcs, coinsN=P.coins;
+  const second=now=>{ const same=now===mood, t=now?(same?'그대로 「'+was+'」':'「'+was+'」에서 「'+MOODN[now]+'」'+(/[가-힣]/.test(MOODN[now])&&(MOODN[now].charCodeAt(MOODN[now].length-1)-44032)%28?'으로':'로')):(d.done||'글자 조각 「'+d.letter+'」 확보');
+    card(`${head}<h2>${t}</h2>${now?`<p>${same?'그대로여도 된다. 알아차린 것으로 충분하다.':'3분 사이에도 날씨는 바뀐다.'}</p>`:''}
+    <div class="order"><div class="eyebrow">${d.nl||'내일의 지령'}</div><p><b>「${d.next[0]}」</b> ${d.next[1]}</p></div>
+    <p class="note" id="fr" hidden></p>
+    <div class="row">${newToy?'<button class="go" id="f2">말랑이 받기</button><button id="f1">본부로</button>':'<button class="go" id="f1">본부로</button>'}</div>`);
+    { const n=ov.querySelector('#fr'), sg=songEl(), [sn,cnt]=fr; if(sn){ const b=document.createElement('b'); b.textContent=SNACK; n.append(b); if(cnt||sg) n.append(' '); ov.firstChild.classList.add('sn'); }
+      if(cnt) n.append('전교 정화 합계에 1을 보탰어요.'); if(cnt&&sg) n.append(' '); if(sg) n.append(sg); n.hidden=!(cnt||sg||sn); }
+    ov.firstChild.classList.add('wide'); on('f1',()=>{ SFX.tick(); rankDue?rankCard(true):hqCard(); }); if(newToy) on('f2',()=>{ SFX.item(); toyCard(tk,true); }); };
+  card(`${head}<h1>${d.done||'글자 조각 「'+d.letter+'」 확보'}</h1>
+  <div class="stat"><div><b>${coinsN}</b>색 방울 · 조각 ${pcs}/3</div><div><b>${care.b}</b>끝까지 모은 숨</div><div><b>${care.s}</b>가만히 있기</div><div><b>${care.n}</b>붙인 이름</div></div>
+  <div class="order"><div class="hqtop"><div class="eyebrow">마음 날씨</div><button class="lnk" id="m0">넘어가기</button></div><p>출발할 때 고른 날씨는 <b>「${was}」</b>. 지금은?</p></div>
+  <div class="row">${moodRow()}</div>`);
+  ov.firstChild.classList.add('wide');
+  try{ document.activeElement.blur(); }catch(e){}   // 문에 닿을 때 누르고 있던 키로 날씨가 골라지지 않게 초점을 두지 않는다
+  ov.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ SFX.tick(); second(b.dataset.m); }); on('m0',()=>{ SFX.tick(); second(''); }); }
 /* ---------- 요원 코드와 색 방울 순위 ----------
    요원 코드: 처음 열 때 색+동물로 제비뽑기 (예전 앱과 같은 목록). 첫 판을 깨기 전까지는 본부에서 「다시 뽑기」를 할 수 있다.
    이름이나 반은 받지 않는다. 같은 폰의 기록을 서버에서 이어 붙이려고 아무 뜻 없는 기록 번호(id)를 함께 만든다.
@@ -1280,7 +1334,7 @@ function rankCard(final){ rankDue=false;
     let t='';
     if(teacher()) t='선생님 모드라 순위에 들어가지 않아요. 순위에 오른 요원 '+(+j.total||0)+'명.';
     else if(j.hidden) t='이 기록은 본부가 순위에서 뺐어요.';
-    else if(j.r) t='요원 '+j.code+' · 내 순위 '+j.r+'위 (요원 '+(+j.total||0)+'명 가운데) · 색 방울 '+(+j.sum||0)+'개'+(j.gap>0?'. 10위까지 '+j.gap+'개 남았어요.':'.');
+    else if(j.r) t=j.r<=10?'요원 '+j.code+' · 내 순위 '+j.r+'위 · 색 방울 '+(+j.sum||0)+'개.':'요원 '+j.code+' · 모은 색 방울 '+(+j.sum||0)+'개.';   // 10위 밖은 등수와 남은 개수를 보여 주지 않는다
     else t='요원 '+(j.code||agent().code)+' · 색 방울을 모으면 순위에 올라가요.';
     if(j.changed) t+=' 코드가 다른 요원과 겹쳐서 「'+j.code+'」로 바뀌었어요.';
     me.textContent=t; me.hidden=false; }); }

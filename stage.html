@@ -364,13 +364,14 @@ const LEVELS=[
 } ];
 // 1주차 하루치 정보. next = 판을 깨면 받는 지령, report = 앞 판에서 받아 이 판을 시작할 때 보고하는 지령 (그래서 첫 판에는 report가 없다), toy = 판을 끝내면 받는 말랑이,
 // feel = 그 판의 감정 벽에 나오는 상황 묶음 (stage-feel.js의 days)
-// 지령 순서와 문구는 기존 앱의 것이다. "바람 세 번"은 선생님 답을 기다리는 중이라 건너뛰었다
+// 지령은 3주가 12.10 팝업 부스로 이어지게 다시 짰다 (2026-11-20). 1주차는 바깥을 보는 주: 하늘 10초, 다른 길, 초록 세 개, 발바닥 수사 (걷기 명상), 금요일은 2주차 숨소리의 예고인 소리 세기.
+// report의 셋째 칸 = 집에서 바로 할 수 있는 지령일 때 「안 했다」 뒤에 보여 주는 「지금 10초만」 문장
 const DAYS=[
   {d:'11.23 월',date:'2026-11-23',name:'등굣길',letter:'하',next:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기. 사진은 찍지 않기.'],feel:'mon'},
-  {d:'11.24 화',date:'2026-11-24',name:'운동장',letter:'늘',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.','폰을 내려놓고 창밖 하늘을 10초 동안 올려다본다.'],next:['다른 길','평소와 다른 길로 한번 걸어 보기.'],feel:'tue'},
-  {d:'11.25 수',date:'2026-11-25',name:'뒷산 길',letter:'빛',report:['다른 길','평소와 다른 길로 한번 걸어 보기.'],next:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기. 아무도 눈치채지 못하게.'],feel:'wed'},
-  {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,toy:'apple',done:'1주차 암호 「하늘빛」 완성',report:['첫 입 열 번','점심 첫 숟가락을 열 번 씹고 삼키기.'],next:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디. 평범하게, 티 안 나게.'],feel:'thu'},
-  {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,toy:'mandarin',done:'쉬어 가는 판 완료',report:['조용한 인사','친구 한 명에게 먼저 "안녕" 한마디.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.'],nl:'월요일의 지령',feel:'fri'},
+  {d:'11.24 화',date:'2026-11-24',name:'운동장',letter:'늘',report:['하늘 10초','쉬는 시간에 창밖 하늘을 10초 동안 올려다보기.','폰을 내려놓고 창밖 하늘을 10초 동안 올려다본다.'],next:['다른 길','평소와 다른 길로 한번 걸어 보기. 처음 보는 것 하나 찾기.'],feel:'tue'},
+  {d:'11.25 수',date:'2026-11-25',name:'뒷산 길',letter:'빛',report:['다른 길','평소와 다른 길로 걸으며 처음 보는 것 하나 찾기.'],next:['초록 세 개','복도나 창밖에서 초록색 세 개 찾기. 아무도 눈치채지 못하게.'],feel:'wed'},
+  {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,toy:'apple',done:'1주차 암호 「하늘빛」 완성',report:['초록 세 개','복도나 창밖에서 초록색 세 개 찾기.','폰을 내려놓고 방 안이나 창밖에서 초록색 세 개를 찾는다.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.'],feel:'thu'},
+  {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,toy:'mandarin',done:'쉬어 가는 판 완료',report:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 확인하기.','폰을 내려놓고 일어서서 발바닥이 바닥에 닿는 느낌을 10초 동안 확인한다.'],next:['소리 세기','10초 동안 가만히 있으면서 들리는 소리 세 가지 세기.'],nl:'주말의 지령',feel:'fri'},
   {d:'언제든',name:'훈련장',train:true} ];
 // 한 주 다섯 판을 다 깨면 본부와 금요일 완료 카드에 간식 안내가 나온다. 미션 단어는 그 주의 암호
 const SNACK='월요일에 위클래스에 와서 암호 「하늘빛」을 말하면 활동 간식을 받아요.', weekDone=c=>!!c&&DAYS.slice(0,TRAIN).every((d,i)=>c[i]);
@@ -791,7 +792,7 @@ function ring(cx,cy,frac,on,off){ for(let i=0;i<12;i++){ const a=-Math.PI/2+i/12
    표어는 주마다 하나(11.23~, 11.30~, 12.7~), 곡은 요일마다 하나가 게임에 들어 있다. 본부 서버가 표어나 그날 곡을 주면 그것을 쓴다.
    판의 글자는 화면 글자(texts)로 또렷하게 올린다. 화면 글자는 곰보다 앞에 그려지니, 곰이 판 앞을 지날 때는 글자를 옅게 한다 */
 const MOTTOS=['오늘 하늘, 한 번 올려다봤나요?','멈추면 들린다','천천히 먹어도 괜찮아'];
-const SONGS=[['Love wins all','아이유'],['주저하는 연인들을 위해','잔나비'],['여행','볼빨간사춘기'],['산책','백예린'],['Square (2017)','백예린']];
+const SONGS=[['가을 아침','아이유'],['하늘바라기','정은지'],['길','god'],['한숨','이하이'],['수고했어, 오늘도','옥상달빛']];   // 월~금. 1주차 지령에 맞춘 곡 (월요일은 선생님이 고름, 2026-11-20)
 const tiny=()=>k/dprU<1.5?7.5:6.5;   // 게임 점 하나가 1.5px보다 작게 찍히는 화면(주소창이 보이는 안드로이드 가로 화면)에서는 작은 글자를 한 단계 키운다
 const cut=(t,n)=>{ t=String(t==null?'':t).replace(/\s+/g,' ').trim(); return t.length>n?t.slice(0,n-1)+'…':t; };
 function mottoNow(){ const t=Date.now(), w=t>=Date.parse('2026-12-07T00:00:00+09:00')?2:t>=Date.parse('2026-11-30T00:00:00+09:00')?1:0, st=HQ.cached();
@@ -1090,14 +1091,14 @@ function howCard(o){ card(`<div class="eyebrow">지령 보고 · 「${o[0]}」</
   <p class="note">정답은 없다. 고른 것은 어디에도 남기지 않는다.</p>`);
   ov.firstChild.classList.add('wide');
   ov.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ SFX.tick(); moodCard('보고 받았다. '+HOW[+b.dataset.h][1]); }); }
-function nowCard(o){ card(`<div class="eyebrow">지령 「${o[0]}」</div><h2>지금 10초만 해 볼까</h2><p>${o[2]}</p>
+function nowCard(o){ card(`<div class="eyebrow">지령 「${o[0]}」</div><h2>지금 해 볼까</h2><p>${o[2]}</p>
   <div class="row"><button class="go" id="n1">해 본다</button><button id="n2">그냥 나간다</button></div>`);
   on('n2',()=>{ SFX.tick(); moodCard('보고 받았다. 안 했다는 것도 정확한 보고다.'); });
   on('n1',()=>{ SFX.tick(); card(`<div class="eyebrow">지령 「${o[0]}」 · 지금</div><h1 id="nc">10</h1><p>${o[2]}</p><div class="row"><button class="go" id="n3" hidden>돌아왔다</button></div>`);
     const box=ov.firstChild, t0=Date.now(), iv=setInterval(()=>{ if(ov.firstChild!==box){ clearInterval(iv); return; }
       const left=10-Math.floor((Date.now()-t0)/1000); box.querySelector('#nc').textContent=Math.max(0,left);
       if(left<=0){ clearInterval(iv); SFX.calm(); const b=box.querySelector('#n3'); b.hidden=false; try{ b.focus({preventScroll:true}); }catch(e){} } },200);
-    on('n3',()=>{ SFX.tick(); moodCard('10초면 된다. 내일은 학교에서 한 번 더 해 본다.'); }); }); }
+    on('n3',()=>{ SFX.tick(); moodCard('방금 한 것으로 됐다. 내일은 학교에서 한 번 더 해 본다.'); }); }); }
 /* 마음 날씨: 판을 시작할 때 한 번, 판을 끝낸 완료 카드에서 한 번 더 고른다 (3분 사이에 달라졌는지 스스로 견주어 보게).
    「바람」의 기록 이름은 예전 그대로 fog다 (예전에는 「안개」였다. 게임의 적이 회색 안개라서, 안개를 고른 학생의 기분이 걷어 내야 할 적처럼 들리지 않게 바꿨다). 운영 시트의 「안개」 칸이 「바람」이다.
    폰 안에만 최근 사흘의 날씨를 적어 둔다(fogspy2.md, 하루에 처음 고른 것 하나). 사흘 내리 비나 번개면 본부가 한 번 Wee클래스와 도움전화를 알려 준다. 서버에는 예전처럼 그날 합계만 간다 */

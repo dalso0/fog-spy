@@ -274,31 +274,31 @@ const LEVELS=[
 // 월: 등굣길
 (L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
   // 1구간: 익히기
-  ground(0,48); say(2,'오른쪽으로 가라 삐약. 점프는 길게 누를수록 높이 뛴다 삐약.');
+  ground(0,48); say(2,'오른쪽으로 가라. 점프는 길게 누를수록 높이 뛴다 삐약.');
   coinRow(8,11,10); say(11,'머리 위 상자는 아래에서 머리로 쳐라 삐약.');
   crate(15,R1,'coin'); brick(19,19,R1); crate(20,R1,'shield'); brick(21,22,R1); crate(21,R2,'coins');
-  say(24,'뭉치다 삐약. 위에서 밟아라 삐약.'); mung(27,35);
+  say(24,'뭉치다. 위에서 밟아라 삐약.'); mung(27,35);
   hard(37,38,11); hard(37,38,10); coinRow(37,38,8); mung(39,44);
   hard(44,45,11); hard(44,45,10); hard(44,45,9);
   coin(47,6); coin(48,5); coin(49,5); coin(50,5); coin(51,6);
   // 2구간: 발판과 벽돌
   ground(52,82); hard(55,56,R1); crate(57,R1,'coat'); hard(58,59,R1); hard(61,63,6); piece(62,5);
-  say(45,'회색 안개는 나쁜 기분이 아니다 삐약. 아무 느낌도 못 알아차리게 무뎌지는 것이다 삐약.'); say(65,'벽돌 위의 뭉치는 아래에서 벽돌을 쳐서 날려라 삐약.'); brick(66,70,R1); mung(66,71,R1);
+  say(45,'회색 안개는 나쁜 기분이 아니다. 아무 느낌도 못 알아차리게 무뎌지는 것이다 삐약.'); say(65,'벽돌 위의 뭉치는 아래에서 벽돌을 쳐서 날려라 삐약.'); brick(66,70,R1); mung(66,71,R1);
   mung(73,81); coin(83,7); coin(84,6); coin(85,7);
   // 3구간: 숨 바람
-  ground(86,123); flag(87); say(90,'안개 장막이다 삐약. 숨 버튼을 꾹 눌렀다가 떼라 삐약.'); curtain(97);
+  ground(86,123); flag(87); say(90,'안개 장막이다. 숨 버튼을 꾹 눌렀다가 떼라 삐약.'); curtain(97);
   crate(101,R1,'shield'); brick(102,103,R1); mung(105,112); mung(110,118);
   for(let i=0;i<4;i++) for(let h=0;h<=i;h++) hard(120+i,120+i,11-h);
   coin(124,5); coin(125,4); coin(126,5);
   // 4구간: 가만히 있기
-  ground(127,172); flag(128); say(129,'말랑 발판이다 삐약. 밟으면 높이 튄다 삐약.'); pad(131); piece(135,5);
-  say(138,'띵띵이 떼다 삐약. 쫓아오면 손을 떼고 가만히 있어라 삐약.'); coinRow(141,144,10); swarm(150);
+  ground(127,172); flag(128); say(129,'말랑 발판이다. 밟으면 높이 튄다 삐약.'); pad(131); piece(135,5);
+  say(138,'띵띵이 떼다. 쫓아오면 손을 떼고 가만히 있어라 삐약.'); coinRow(141,144,10); swarm(150);
   brick(155,156,R1); crate(157,R1,'coins'); brick(158,158,R1); mung(160,168);
   flag(170); say(170,'공중에서 점프를 한 번 더 누르고 있으면 코트를 펴고 천천히 내려온다 삐약.');
   // 5구간: 건너뛰기
   hard(175,177,10); coinRow(175,177,8); hard(180,182,8); coinRow(180,182,6);
   coin(185,4); coin(187,5); coin(189,6);
-  ground(190,212); say(190,'감정 벽이다 삐약. 다가가서 마음에 이름을 붙여라 삐약.'); wall(195);
+  ground(190,212); say(190,'감정 벽이다. 다가가서 마음에 이름을 붙여라 삐약.'); wall(195);
   crate(198,R1,'coat'); mung(199,207); mung(203,211); coin(213,7); coin(214,6); coin(215,7);
   // 6구간: 섞어서
   ground(216,246); flag(217); curtain(221); swarm(229); mung(233,239);
@@ -308,7 +308,7 @@ const LEVELS=[
 },
 // 화: 운동장
 (L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
-  ground(0,40); say(2,'오늘은 운동장을 가로지른다 삐약. 띵띵이가 많으니 서두르지 마라 삐약.');
+  ground(0,40); say(2,'오늘은 운동장을 가로지른다. 띵띵이가 많으니 서두르지 마라 삐약.');
   coinRow(6,9,10); crate(12,R1,'coin'); brick(13,14,R1); mung(16,24);
   pad(27); hard(30,33,6); coinRow(30,31,4); piece(32,4); mung(34,40);
   coin(41,7); coin(42,6); coin(43,7);
@@ -325,7 +325,7 @@ const LEVELS=[
 },
 // 수: 뒷산 길
 (L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
-  ground(0,30); say(2,'뒷산 길은 낭떠러지가 넓다 삐약. 높은 데서 뛰어 코트를 펴라 삐약.');
+  ground(0,30); say(2,'뒷산 길은 낭떠러지가 넓다. 높은 데서 뛰어 코트를 펴라 삐약.');
   coinRow(5,8,10); crate(11,R1,'coat'); mung(14,22); stairs(27,4);
   coin(32,5); coin(34,6); coin(36,7);
   ground(38,75); flag(39); curtain(46); mung(50,58); brick(60,63,R1); crate(61,R2,'coins'); mung(60,64,R1); swarm(68);
@@ -341,15 +341,15 @@ const LEVELS=[
 // 목: 주간 보스 「회색 장막」. 세 겹 장막을 숨 바람으로 한 겹씩 걷는다. 장막이 떼로 내보내는 뭉치가 숨 바람을 막아서, 떼가 지나간 틈을 읽어야 한다 (WAVES).
 // 겹 사이에 띵띵이(가만히)와 감정 벽(이름 붙이기)이 있다
 (L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
-  ground(0,130); say(2,'주간 보스 「회색 장막」이다 삐약. 세 겹이라 숨을 끝까지 모아 세 번 불어야 한다 삐약.');
+  ground(0,130); say(2,'주간 보스 「회색 장막」이다. 세 겹이라 숨을 끝까지 모아 세 번 불어야 한다 삐약.');
   coinRow(6,9,10); crate(12,R1,'shield'); brick(13,14,R1); crate(15,R1,'coat'); mung(19,27); piece(23,6);
-  say(29,'장막이 뭉치 떼를 내보낸다 삐약. 넘긴 뒤 장막이 눈을 감으면 숨을 모아라 삐약.'); flag(31); boss(46);
+  say(29,'장막이 뭉치 떼를 내보낸다. 넘긴 뒤 장막이 눈을 감으면 숨을 모아라 삐약.'); flag(31); boss(46);
   flag(49); swarm(57); piece(60,7); flag(71); wall(79); piece(84,7);
   coinRow(93,99,10); coinRow(94,98,8); door(104);
 },
 // 금: 쉬어 가는 판. 빌런은 조금, 색 방울은 많이
 (L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
-  ground(0,61); say(2,'오늘은 쉬어 가는 판이다 삐약. 급할 것 없다. 색 방울이나 넉넉히 모아라 삐약.');
+  ground(0,61); say(2,'오늘은 쉬어 가는 판이다. 급할 것 없다. 색 방울이나 넉넉히 모아라 삐약.');
   coinRow(6,12,10); crate(15,R1,'coins'); crate(17,R1,'coat'); coinRow(20,26,10); pad(30); hard(33,37,6); coinRow(33,37,4); piece(35,3);
   mung(42,52); coinRow(44,50,10); stairs(56,4); coin(62,5); coin(63,5); coin(64,6); coin(65,7);
   ground(66,120); flag(68); nook(74,'sky'); crate(80,R1,'coins'); brick(81,82,R1); crate(83,R1,'shield'); coinRow(88,94,10); curtain(98);
@@ -361,14 +361,14 @@ const LEVELS=[
 },
 // 훈련장: 조작을 하나씩 익히는 1분짜리 판. 본편 기록에는 들어가지 않는다
 (L)=>{ const {ground,hard,crate,coin,coinRow,piece,mung,swarm,curtain,flag,say,door}=L;
-  ground(0,44); say(2,'훈련장이다 삐약. ▶를 눌러 오른쪽으로 가라 삐약.'); coinRow(7,10,10);
-  say(13,'점프는 길게 누를수록 높이 뛴다 삐약. 계단 위의 색 조각을 잡아라 삐약.'); hard(18,19,11); hard(22,23,11); hard(22,23,10); piece(23,7);
+  ground(0,44); say(2,'훈련장이다. ▶를 눌러 오른쪽으로 가라 삐약.'); coinRow(7,10,10);
+  say(13,'점프는 길게 누를수록 높이 뛴다. 계단 위의 색 조각을 잡아라 삐약.'); hard(18,19,11); hard(22,23,11); hard(22,23,10); piece(23,7);
   say(27,'머리 위 상자는 아래에서 머리로 쳐라 삐약.'); crate(31,R1,'coin'); crate(33,R1,'coins');
-  say(38,'낭떠러지는 달려와서 뛰어넘어라 삐약. 떨어져도 깃발에서 다시 한다 삐약.'); coin(45,7); piece(46,6); coin(47,7);
-  ground(48,118); flag(49); say(52,'뭉치다 삐약. 위에서 밟아라 삐약.'); mung(56,64);
-  say(67,'안개 장막이다 삐약. 숨 버튼을 꾹 눌렀다가 떼라 삐약.'); curtain(74);
-  flag(78); say(80,'띵띵이 떼다 삐약. 쫓아오면 손을 떼고 가만히 있어라 삐약.'); swarm(90);
-  coinRow(96,100,10); piece(98,8); say(101,'훈련은 여기까지다 삐약. 문으로 들어가라 삐약.'); door(106);
+  say(38,'낭떠러지는 달려와서 뛰어넘어라. 떨어져도 깃발에서 다시 한다 삐약.'); coin(45,7); piece(46,6); coin(47,7);
+  ground(48,118); flag(49); say(52,'뭉치다. 위에서 밟아라 삐약.'); mung(56,64);
+  say(67,'안개 장막이다. 숨 버튼을 꾹 눌렀다가 떼라 삐약.'); curtain(74);
+  flag(78); say(80,'띵띵이 떼다. 쫓아오면 손을 떼고 가만히 있어라 삐약.'); swarm(90);
+  coinRow(96,100,10); piece(98,8); say(101,'훈련은 여기까지다. 문으로 들어가라 삐약.'); door(106);
 } ];
 // 1주차 하루치 정보. next = 판을 깨면 받는 지령, report = 앞 판에서 받아 이 판을 시작할 때 보고하는 지령 (그래서 첫 판에는 report가 없다), toy = 판을 끝내면 받는 말랑이,
 // feel = 그 판의 감정 벽에 나오는 상황 묶음 (stage-feel.js의 days)
@@ -559,7 +559,7 @@ function hurt(dir,bm){   // bm: 보스가 내보낸 뭉치에 맞았다
   // 같은 겹에서 세 번째 물들면 병아리가 귀띔하고, 여섯 번째에는 한 겹 걷어 주겠다고 묻는다
   if(bm&&bossC&&bossC.alive){ const b=bossC; b.hits=(b.hits||0)+1;
     if(b.hits>=6){ b.hits=0; offerLift('hit'); }
-    else if(b.hits===3){ b.hint=tNow+6; say('뭉치 떼는 뛰어넘어라 삐약. 떼가 지나가면 장막이 눈을 감는다 삐약.'); } }
+    else if(b.hits===3){ b.hint=tNow+6; say('뭉치 떼는 뛰어넘어라. 떼가 지나가면 장막이 눈을 감는다 삐약.'); } }
 }
 function respawn(){ deaths++; P.x=cp.x; P.y=cp.y; P.vx=P.vy=0; P.grey=0; P.coat=false; P.inv=1.6; P.charge=0; P.charging=false; P.glide=false; cam=Math.max(0,Math.min(LW-W,P.x-W*.36)); note('깃발에서 다시'); SFX.die();
   // 되살아나면 보스의 떼도 처음부터 다시 나온다 (남아 있던 뭉치가 깃발까지 걸어와서 가만히 선 곰을 치지 않게)
@@ -580,9 +580,9 @@ const deep=()=>!!(bossC&&bossC.alive&&bossC.hp===1&&bossC.x>=bossC.tx&&bossC.x>P
 function blow(c){
   if(c.boss&&c.hp>1){ c.hp--; c.w=14+c.hp*8; c.tx=Math.max(c.x,c.tx)+22*T; c.cd=.8; c.i=0; c.nap=false; c.blk=c.wk=c.hits=0; shake=.25; freeze=.06; for(let i=0;i<26;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',90,2);
     for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); note(c.hp===2?'한 겹 걷혔다. 장막이 물러난다':'이제 한 겹 남았다'); SFX.calm();
-    if(c.hp===1) say('마지막 겹이다 삐약. 이번에는 숨이 천천히 모인다 삐약. 고리가 차는 동안 진짜로 같이 들이쉬어라 삐약.',7); }
+    if(c.hp===1) say('마지막 겹이다. 이번에는 숨이 천천히 모인다. 고리가 차는 동안 진짜로 같이 들이쉬어라 삐약.',7); }
   else { c.alive=false; for(let i=0;i<34;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',80,2); for(let i=0;i<(c.boss?6:2);i++) popCoin(c.x+6+i*9,GTOP-40,i+2);
-    if(c.boss){ for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); shake=.3; say('「회색 장막」이 걷혔다 삐약. 본부 문이 보인다 삐약.'); } note(c.boss?'「회색 장막」이 걷혔다':'안개 장막이 걷혔다'); SFX.calm(); } }
+    if(c.boss){ for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); shake=.3; say('「회색 장막」이 걷혔다. 본부 문이 보인다 삐약.'); } note(c.boss?'「회색 장막」이 걷혔다':'안개 장막이 걷혔다'); SFX.calm(); } }
 function popMung(m,flung){ m.sq=flung?.01:.32; m.vx=0; popCoin(m.x+8,m.y,1); SFX.stomp(); puff(m.x+8,m.y+8,6,'#ffffff',40); }
 function step(dt){
   tNow+=dt; playT+=dt;
@@ -617,7 +617,7 @@ function step(dt){
     else if(P.vx<0){ const c=Math.floor(P.x/T); for(let r=r0;r<=r1;r++) if(solidT(at(c,r))){ P.x=(c+1)*T+.01; P.vx=0; break; } }
     for(const d of dyn) if(hit(P,d)){ if(P.x+P.w/2<d.x+d.w/2) P.x=d.x-P.w-.01; else P.x=d.x+d.w+.01; P.vx=0;
       if(d.wall&&ov.hidden) feel(d.wall);
-      if(d.cur&&tNow>d.cur.hint){ d.cur.hint=tNow+6; say('장막은 넘을 수 없다 삐약. 숨을 끝까지 모아서 불어라 삐약.'); } } }
+      if(d.cur&&tNow>d.cur.hint){ d.cur.hint=tNow+6; say('장막은 넘을 수 없다. 숨을 끝까지 모아서 불어라 삐약.'); } } }
   // 세로
   const wasG=P.ground, vy0=P.vy; P.ground=false; P.y+=P.vy*dt;
   { const c0=Math.floor(P.x/T), c1=Math.floor((P.x+P.w-.01)/T);
@@ -644,7 +644,7 @@ function step(dt){
     else { it.t+=dt; it.vy+=620*dt; it.x+=it.vx*dt; const cc=Math.floor((it.x+(it.vx>0?6:-6))/T), rr=Math.floor(it.y/T); if(solidT(at(cc,rr))) it.vx=-it.vx;
       it.y+=it.vy*dt; const r=Math.floor((it.y+6)/T), c=Math.floor(it.x/T); if(it.vy>0&&solidT(at(c,r))){ it.y=r*T-6; it.vy=0; } if(it.y>WH+30) it.got=true; }
     if(Math.abs(it.x-P.x-6)<12&&Math.abs(it.y-P.y-11)<16&&it.t>.3){ it.got=true; SFX.item();
-      if(it.kind==='coat'){ P.coat=true; P.grey=0; freeze=.12; note('주홍 코트를 입었다'); puff(P.x+6,P.y+11,18,'#d9512c',80); say('주홍 코트다 삐약. 숨 버튼을 톡 누르면 바람이 나간다 삐약.'); }
+      if(it.kind==='coat'){ P.coat=true; P.grey=0; freeze=.12; note('주홍 코트를 입었다'); puff(P.x+6,P.y+11,18,'#d9512c',80); say('주홍 코트다. 숨 버튼을 톡 누르면 바람이 나간다 삐약.'); }
       else { P.shield=1; note('색 방패를 얻었다'); } } }
   // 깃발, 말풍선
   if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; stuck=0; if(bossC) bossC.blk=bossC.wk=bossC.hits=0; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
@@ -682,14 +682,14 @@ function step(dt){
   for(const g of gusts){ const d=220*dt; g.x+=g.dir*d; g.left-=d; if(Math.random()<.5){ const t=.3; parts.push({x:g.x,y:g.y+(Math.random()-.5)*18,vx:g.dir*30,vy:(Math.random()-.5)*20,t,T0:t,col:'#ffffff',s:1+Math.round(g.pow),g:0}); }
     const gb={x:g.x-7,y:g.y-14,w:14,h:28}, bo=bossC&&bossC.alive&&bossC.x>=bossC.tx&&g.dir>0&&bossC.x>g.x?bossC:null;
     // 끝까지 모은 바람이 보스 장막에 못 미치고 사그라지면 병아리가 더 다가가라고 알려 준다
-    if(g.left<=0&&bo&&g.pow>=.8&&bo.x-g.x>8&&bo.x-g.x<150&&tNow>bo.hint){ bo.hint=tNow+6; say('숨 바람이 장막까지 안 닿는다 삐약. 조금 더 다가가서 불어라 삐약.'); }
+    if(g.left<=0&&bo&&g.pow>=.8&&bo.x-g.x>8&&bo.x-g.x<150&&tNow>bo.hint){ bo.hint=tNow+6; say('숨 바람이 장막까지 안 닿는다. 조금 더 다가가서 불어라 삐약.'); }
     // 보스가 내보낸 뭉치(tmp)는 숨 바람을 한 번 막는다. 끝까지 모은 바람은 그 뭉치를 날리고 거기서 멎는다.
     // 덜 모은 바람과 주홍 코트의 짧은 바람은 뭉치를 못 날리고 멎는다 (숨 버튼을 톡톡 눌러 떼를 다 날려 버리면 뛰어넘을 일이 없어진다).
     // 코트 바람은 숨을 모으려고 누를 때마다 나가므로 막혀도 알림을 띄우지 않고, 병아리가 한 번만 말해 준다. 덜 모은 숨은 세 번 막힐 때마다 알려 준다
     for(const m of mungs) if(m.alive&&m.sq<=0&&hit(gb,m)){
       if(m.tmp&&g.pow<.8){ g.left=0; puff(g.x+g.dir*6,g.y,5,'#c9cfd5',40,1);
-        if(g.puff){ if(bo&&!bo.pf){ bo.pf=1; bo.hint=tNow+6; say('장막의 뭉치는 짧은 바람으로 못 날린다 삐약. 뛰어넘어라 삐약.'); } }
-        else { note('약한 숨은 뭉치에 막힌다'); if(bo){ bo.wk=(bo.wk||0)+1; if(bo.wk%3===0&&tNow>bo.hint){ bo.hint=tNow+6; say('덜 모은 숨은 뭉치에 막힌다 삐약. 떼를 넘긴 뒤 고리가 다 찰 때까지 모아라 삐약.'); } } }
+        if(g.puff){ if(bo&&!bo.pf){ bo.pf=1; bo.hint=tNow+6; say('장막의 뭉치는 짧은 바람으로 못 날린다. 뛰어넘어라 삐약.'); } }
+        else { note('약한 숨은 뭉치에 막힌다'); if(bo){ bo.wk=(bo.wk||0)+1; if(bo.wk%3===0&&tNow>bo.hint){ bo.hint=tNow+6; say('덜 모은 숨은 뭉치에 막힌다. 떼를 넘긴 뒤 고리가 다 찰 때까지 모아라 삐약.'); } } }
         break; }
       popMung(m,true);
       if(m.tmp){ g.left=0; puff(g.x+g.dir*6,g.y,6,'#ffffff',50,1);
@@ -697,14 +697,14 @@ function step(dt){
         // (죽지 않고 멀찍이 서서 불기만 하는 학생은 세 번 돌아오는 일이 없어서 도움 카드가 영영 안 떴다)
         if(bo&&g.pow>=.8){ bo.blk=(bo.blk||0)+1;
           if(bo.blk>=6){ bo.blk=0; offerLift(true); }
-          else if(bo.blk===3||tNow>bo.hint){ bo.hint=tNow+6; say(bo.blk>=3?'바람이 자꾸 막힌다 삐약. 장막 가까이 가서, 눈을 감자마자 불어라 삐약.':bo.x-P.x>122?'멀리서 불면 뭉치에 막힌다 삐약. 더 다가가서 떼를 넘긴 다음에 불어라 삐약.':'뭉치가 숨 바람을 막았다 삐약. 떼가 지나가고 장막이 눈을 감으면 불어라 삐약.'); } }
+          else if(bo.blk===3||tNow>bo.hint){ bo.hint=tNow+6; say(bo.blk>=3?'바람이 자꾸 막힌다. 장막 가까이 가서, 눈을 감자마자 불어라 삐약.':bo.x-P.x>122?'멀리서 불면 뭉치에 막힌다. 더 다가가서 떼를 넘긴 다음에 불어라 삐약.':'뭉치가 숨 바람을 막았다. 떼가 지나가고 장막이 눈을 감으면 불어라 삐약.'); } }
         break; } }
     // 숨 바람은 서 있는 감정 벽을 못 넘는다 (벽 앞에 서서 벽 너머 장막을 불 수 없게)
     if(g.left>0) for(const w of walls) if(w.alive&&g.x+7>w.x&&g.x-7<w.x+w.w){ g.left=0; puff(g.x,g.y,5,'#efe6d2',40,1); }
     if(g.left>0) for(const c of curtains) if(c.alive&&g.x+7>c.x&&g.x-7<c.x+c.w){
       if(c.boss&&c.x<c.tx){ g.left=0; }
       else if(g.pow>=.8){ if(c.boss&&c.hp>1) g.left=0; blow(c); }
-      else { g.left=0; if(!g.puff) say('조금 약하다 삐약. 고리가 다 찰 때까지 들이쉬어라 삐약.'); else if(tNow>c.hint){ c.hint=tNow+6; say('장막은 짧은 바람으로 안 걷힌다 삐약. 숨 버튼을 꾹 눌러 모아라 삐약.'); } } } }
+      else { g.left=0; if(!g.puff) say('조금 약하다. 고리가 다 찰 때까지 들이쉬어라 삐약.'); else if(tNow>c.hint){ c.hint=tNow+6; say('장막은 짧은 바람으로 안 걷힌다. 숨 버튼을 꾹 눌러 모아라 삐약.'); } } } }
   gusts=gusts.filter(g=>g.left>0);
   tickParts(dt);
   for(const c of clouds){ c.y-=14*dt; c.x+=5*dt; c.a+=dt; } clouds=clouds.filter(c=>c.y>-30);
@@ -712,7 +712,7 @@ function step(dt){
   // 통로: 위에 올라가 1초 가만히 서 있으면 곰이 통로를 타고 마음돌봄 방으로 내려간다. 방 안에서는 실패가 없고, 오른쪽 통로로 돌아온다
   const onPipe=x=>P.ground&&Math.abs(P.y+P.h-(GTOP-32))<1&&P.x+6>x+5&&P.x+6<x+27;
   if(nook&&!nook.used&&!room){
-    if(!nook.hint&&P.x>nook.x-70){ nook.hint=true; say('통로가 있다 삐약. 위에 올라가서 1초만 가만히 서 있으면 내려간다 삐약. 그냥 지나가도 된다 삐약.',5.5); }
+    if(!nook.hint&&P.x>nook.x-70){ nook.hint=true; say('통로가 있다. 위에 올라가서 1초만 가만히 서 있으면 내려간다. 그냥 지나가도 된다 삐약.',5.5); }
     if(still&&!P.charging&&onPipe(nook.x)){ nook.t+=dt; if(nook.t>=1){ nook.used=true; nook.t=0;
       if(nook.kind==='wax') warpIn(nook.x+10,waxCard); else warpIn(nook.x+10,()=>{ enterRoom(); warpOut(); },roomHello); } } else nook.t=0; }
   else if(room){ const hands=!K.l&&!K.r&&!K.j&&!K.b, ex=RE*T; room.t+=dt;
@@ -720,7 +720,7 @@ function step(dt){
       if(room.kind==='sky'){ if(still&&hands&&P.y+P.h<=8*T+1) room.p+=dt/7; }
       else if(still&&hands) room.p+=dt/8;
       if(room.p>=1){ room.p=1; room.done=true; care.s++; roomCount(); for(let i=0;i<5;i++) popCoin(P.x+6+(i-2)*9,P.y-6,i); SFX.calm();
-        note({sky:'먼 데를 보니 눈과 머리가 쉰다',still:'아무것도 안 해도 불은 켜진다'}[room.kind]); say('잘했다 삐약. 오른쪽 통로 위에 서 있으면 밖으로 나간다 삐약.'); } }
+        note({sky:'먼 데를 보니 눈과 머리가 쉰다',still:'아무것도 안 해도 불은 켜진다'}[room.kind]); say('잘했다. 오른쪽 통로 위에 서 있으면 밖으로 나간다 삐약.'); } }
     if(still&&!P.charging&&onPipe(ex)){ room.et+=dt; if(room.et>=1) warpIn(ex+10,()=>{ leaveRoom(); warpOut(); },()=>{ shutPipe(); note('다시 길 위로'); }); } else room.et=0; }
   if(P.ground&&!room&&P.x+P.w>door.x+10&&P.x<door.x+door.w-6) finish();
   cam+=(camTarget()-cam)*Math.min(1,dt*6);
@@ -728,7 +728,7 @@ function step(dt){
 function camTarget(){ const lo=room?room.x0:0, hi=(room?room.x1:LW)-W; return hi<lo?(lo+hi)/2:Math.max(lo,Math.min(hi,P.x-W*.36+P.face*12)); }
 function enterRoom(){ room={kind:nook.kind,x0:RX*T,x1:(RX+30)*T,ret:nook.x+10,t:0,p:0,et:0,done:false};
   P.x=RA*T+10; P.y=GTOP-32-P.h; P.vx=P.vy=0; P.face=1; cam=camTarget(); chickX=P.x; chickY=P.y-20; }
-function roomHello(){ say({sky:'하늘 방이다 삐약. 계단 꼭대기에 올라가서 먼 하늘을 가만히 봐라 삐약.',still:'가만히 방이다 삐약. 손을 떼고 아무것도 하지 마라 삐약. 눈을 감아도 불은 켜진다 삐약.'}[room.kind],6); }
+function roomHello(){ say({sky:'하늘 방이다. 계단 꼭대기에 올라가서 먼 하늘을 가만히 봐라 삐약.',still:'가만히 방이다. 손을 떼고 아무것도 하지 마라. 눈을 감아도 불은 켜진다 삐약.'}[room.kind],6); }
 function leaveRoom(){ P.x=room.ret; P.y=GTOP-32-P.h; P.vx=P.vy=0; room=null; cam=camTarget(); chickX=P.x; chickY=P.y-20; }
 // 왁뿌볼 방은 가까이 보는 카드로 띄운다. 곰이 통로로 내려간 뒤(화면이 어두워진 뒤)에 열리고, 닫으면 같은 통로로 올라온다
 function waxCard(){ if(!window.WAX){ warp.after=()=>{ shutPipe(); note('다시 길 위로'); }; warpOut(); return; }   // 왁뿌볼 파일을 못 받았으면 그냥 올라온다
@@ -738,7 +738,7 @@ function waxCard(){ if(!window.WAX){ warp.after=()=>{ shutPipe(); note('다시 �
   WAX.open(ov.querySelector('#wx'),ov.querySelector('#wxc'),()=>{ got=true; const b=ov.querySelector('#w1'); b.textContent='색 방울 받고 나가기'; b.classList.add('go'); });
   on('w1',()=>{ closeCard(); const fresh=got&&addToy('wax')&&!!(window.WAX&&WAX.toy); if(got) roomCount();
     const after=()=>{ shutPipe(); if(got){ for(let i=0;i<8;i++) popCoin(P.x+6+(i-3.5)*7,P.y-6,i); note('바삭하게 깨고 나니 손에 힘이 풀린다'); SFX.calm();
-      if(fresh) say('왁뿌볼은 본부 말랑이 상자에 넣어 뒀다 삐약. 생각날 때 또 깨라 삐약.',5); } else note('다시 길 위로'); };
+      if(fresh) say('왁뿌볼은 본부 말랑이 상자에 넣어 뒀다. 생각날 때 또 깨라 삐약.',5); } else note('다시 길 위로'); };
     if(warp){ warp.after=after; warpOut(); } else after(); }); }
 /* 병아리의 도움 (막힌 곳 건너뛰기): 같은 깃발로 세 번 돌아오면 병아리가 다음 깃발까지 데려다주겠다고 묻는다.
    한 곳에서 막혀 그날 판을 못 끝내는 학생이 없게 하려는 것이다. 싫다고 하면 세 번 더 돌아왔을 때 다시 묻는다.
@@ -749,12 +749,12 @@ function offerLift(why){ stuck=0; const f=flags.filter(f=>f.x>cp.x+4).sort((a,b)
   <p>${b?'병아리가 숨을 보태서 장막 한 겹을 걷어 줄 수 있다.':f?'병아리가 다음 깃발까지 데려다줄 수 있다.':'병아리가 본부 문 앞까지 데려다줄 수 있다.'} 직접 한 번 더 해 봐도 된다.</p>
   <div class="row"><button id="l1">${b?'한 겹 걷어 달라고 한다':'데려다 달라고 한다'}</button><button id="l2">한 번 더 해 본다</button></div>
   <p class="note">도움을 받아도 작전 기록은 똑같이 남는다.</p>`);
-  on('l1',()=>{ closeCard(); if(b&&bossC.alive){ blow(bossC); if(bossC.alive) say('한 겹은 내가 걷었다 삐약. 남은 건 직접 불어라 삐약.'); } else startLift(f); });
+  on('l1',()=>{ closeCard(); if(b&&bossC.alive){ blow(bossC); if(bossC.alive) say('한 겹은 내가 걷었다. 남은 건 직접 불어라 삐약.'); } else startLift(f); });
   // 뛰려고 누르던 스페이스·엔터가 곧바로 이 단추를 눌러 카드가 읽기도 전에 닫히지 않게, 카드가 뜬 뒤 0.6초 동안의 키 누름과 누르고 있던 키를 떼는 한 번은 넘긴다
   { const t0=performance.now(), btn=ov.querySelector('#l2'); let rep=false;
     const kd=e=>{ if(ov.hidden||!document.body.contains(btn)) removeEventListener('keydown',kd,true); else if(e.repeat) rep=true; }; addEventListener('keydown',kd,true);
     on('l2',e=>{ if(e&&e.isTrusted&&e.detail===0&&(performance.now()-t0<600||rep)){ rep=false; return; }
-      closeCard(); say('좋다 삐약. 급할 것 없다. 천천히 다시 해 봐라 삐약.'); }); }
+      closeCard(); say('좋다. 급할 것 없다. 천천히 다시 해 봐라 삐약.'); }); }
   // 판 한가운데에서 뜨는 카드라, 뛰려고 누르던 스페이스나 엔터가 도움을 받는 단추로 들어가지 않게 「한 번 더 해 본다」에 초점을 둔다
   try{ ov.querySelector('#l2').focus({preventScroll:true}); }catch(e){} }
 // 들어 올리기(up) → 병아리가 곰을 들고 다음 깃발까지 날아가기(fly, 지나는 길에 색이 번진다) → 내려놓기(down). 그동안 판은 멈춰 있다.
@@ -1154,7 +1154,7 @@ function feel(w){ const fc=feelCase(), sit=fc[0], sets=fc.slice(1).filter(x=>Arr
     for(let r=0;r<GY;r++) for(let i=0;i<2;i++) parts.push({deb:true,x:w.x+i*16+4,y:r*T+4,vx:(i?1:-1)*(20+Math.random()*50),vy:-60-Math.random()*90,t:.9,T0:.9,g:600,sx:0,sy:0});
     for(let i=0;i<3;i++) popCoin(w.x+8+i*8,GTOP-50,i);
     note(pick===FEEL_DK?'모르겠다는 것도 이름이다. 벽이 무너진다':'「'+pick+'」 이름을 붙이니 벽이 무너진다');
-    if(first) say('같은 일에도 붙이는 이름은 사람마다 다르다 삐약. 그래서 정답이 없다 삐약.',5); }); }
+    if(first) say('같은 일에도 붙이는 이름은 사람마다 다르다. 그래서 정답이 없다 삐약.',5); }); }
 // 도움전화는 어느 화면에서든 그 위에 겹쳐 열린다. 밑에 있던 카드나 게임은 그대로 두고, 닫으면 하던 데로 돌아간다
 let hvUnder=false, hvT=0;
 const TEL='<div class="tel"><b>Wee클래스</b><span>학교 3층. 쉬는 시간이나 점심시간에 와도 돼요.</span><b>1388</b><span>청소년상담전화. 24시간, 문자는 #1388</span><b>109</b><span>자살예방 상담전화. 24시간</span><b>117</b><span>학교폭력 신고·상담. 24시간</span></div>';

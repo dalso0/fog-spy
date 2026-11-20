@@ -71,7 +71,7 @@ thead th{background:var(--paper);font-size:12px}
         <button role="tab" data-t="fb" aria-selected="false">오류·의견 <span id="fbN"></span></button>
         <button role="tab" data-t="rank" aria-selected="false">방울 순위</button>
         <button role="tab" data-t="stats" aria-selected="false">참여 숫자</button>
-        <button role="tab" data-t="notice" aria-selected="false">공지</button>
+        <button role="tab" data-t="notice" aria-selected="false">공지·표어</button>
       </div>
       <div class="row"><button id="reload">새로고침</button><a class="btn" id="sheetLink" target="_blank" rel="noopener">구글 시트 열기</a></div>
     </div>
@@ -121,6 +121,14 @@ thead th{background:var(--paper);font-size:12px}
         <p class="note">한 줄(60자까지). 비우면 공지가 사라져요. 바꾸면 1분 안에 학생 앱에 반영돼요.</p>
         <input id="notice" maxlength="60" placeholder="예) 이번 주 목요일 저녁은 암호 해독의 날!">
         <div class="row" style="margin-top:8px"><button class="ok" id="saveNotice">저장</button><button id="clearNotice">공지 내리기</button><span id="nmsg" class="note"></span></div></div>
+      <div class="card"><h2>금주의 표어</h2>
+        <p class="note">수사보드 맨 위에 뜨는 그 주의 표어예요(30자까지). 비워 두면 회색 글씨로 보이는 기본 표어가 나와요. 저장하면 1분 안에 반영돼요.</p>
+        <div style="display:grid;gap:8px">
+          <label>1주차 (11.23~) <input id="motto1" maxlength="30" placeholder="오늘 하늘, 한 번 올려다봤나요?"></label>
+          <label>2주차 (11.30~) <input id="motto2" maxlength="30" placeholder="멈추면 들린다"></label>
+          <label>3주차 (12.7~) <input id="motto3" maxlength="30" placeholder="천천히 먹어도 괜찮아"></label>
+        </div>
+        <div class="row" style="margin-top:8px"><button class="ok" id="saveMotto">표어 저장</button><span id="mmsg" class="note"></span></div></div>
       <div class="card"><h2>오늘의 곡 바꾸기</h2>
         <p class="note">구글 시트 '음악' 탭에 날짜(2026-11-16 형식)·곡 제목·가수·늘곰 한마디를 적으면 그날 라디오에 나와요. 비워 두면 앱에 들어 있는 곡이 순서대로 나와요.</p></div>
     </section>
@@ -180,14 +188,17 @@ function render(){
   document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{ b.disabled=true; load({op:'sky',id:+b.dataset.id,status:b.dataset.s}); });
   /* 공지 */
   $('#notice').value=D.notice||'';
+  if(D.mottos){ [1,2,3].forEach(i=>{ $('#motto'+i).value=D.mottos[i-1]||''; }); $('#saveMotto').disabled=false; }
+  else { $('#saveMotto').disabled=true; $('#mmsg').innerHTML='<span class="err">서버 코드가 예전 버전이에요. 운영 안내의 "서버 코드 새로 올리기"를 하면 쓸 수 있어요.</span>'; }
   renderStats();
 }
 $('#saveNotice').onclick=()=>{ $('#nmsg').textContent='저장 중…'; load({op:'notice',notice:$('#notice').value.trim()}).then(()=>$('#nmsg').textContent='저장했어요.'); };
+$('#saveMotto').onclick=()=>{ $('#mmsg').textContent='저장 중…'; load({op:'motto',mottos:[1,2,3].map(i=>$('#motto'+i).value.trim())}).then(()=>{ if(D&&D.mottos) $('#mmsg').textContent='저장했어요.'; }); };
 $('#clearNotice').onclick=()=>{ $('#notice').value=''; $('#saveNotice').onclick(); };
 $('#total').oninput=()=>{ try{localStorage.setItem('fog-admin-total',$('#total').value)}catch(e){} if(D) renderStats(); };
 
 /* ---- 참여 숫자 ---- */
-const WEEKS=[['1주차','2026-11-16','2026-11-22'],['2주차','2026-11-23','2026-11-29'],['3주차','2026-11-30','2026-12-06']];
+const WEEKS=[['안내 주간','2026-11-16','2026-11-22'],['1주차','2026-11-23','2026-11-29'],['2주차','2026-11-30','2026-12-06'],['3주차','2026-12-07','2026-12-13']];
 function sum(rows,k){ return rows.reduce((a,r)=>a+(+r[k]||0),0); }
 function renderStats(){
   const R=D.stats.slice().sort((a,b)=>a.date<b.date?-1:1), M=D.metrics, N=Math.max(1,+$('#total').value||180);
@@ -211,7 +222,7 @@ function renderStats(){
   $('#kpis').innerHTML=K.map(([v,l])=>`<div class="kpi"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join('');
   /* 주차별 */
   const wk=WEEKS.map(([n,a,b])=>({n,rows:R.filter(r=>r.date>=a&&r.date<=b)}));
-  const rest=R.filter(r=>r.date<WEEKS[0][1]||r.date>WEEKS[2][2]);
+  const rest=R.filter(r=>r.date<WEEKS[0][1]||r.date>WEEKS[WEEKS.length-1][2]);
   if(rest.length) wk.push({n:'기간 밖',rows:rest});
   $('#weekly').innerHTML=`<table><thead><tr><th>항목</th>${wk.map(w=>`<th>${w.n}</th>`).join('')}<th>전체</th></tr></thead><tbody>${M.map(([k,l])=>`<tr><td>${esc(l)}</td>${wk.map(w=>`<td>${sum(w.rows,k)}</td>`).join('')}<td><b>${sum(R,k)}</b></td></tr>`).join('')}</tbody></table>`;
   /* 날짜별 */

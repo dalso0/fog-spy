@@ -100,7 +100,8 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .ov .tpick button.on{background:var(--ink);color:var(--panel)}
 .ov .tpick button.off{border-style:dashed;color:#7d7264}
 .ov .tpick button.on.off{color:var(--panel)}
-.tlock{position:absolute;left:50%;top:50%;height:78%;max-width:70%;object-fit:contain;transform:translate(-50%,-50%);filter:brightness(0);opacity:.16;pointer-events:none}
+.tlock{position:absolute;left:50%;top:50%;height:78%;max-width:70%;object-fit:contain;transform:translate(-50%,-50%);filter:brightness(0);opacity:.2;pointer-events:none}
+.tlockt{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:6px 12px;border:2px solid #2a2622;border-radius:6px;background:#fff8ea;color:#2a2622;font-weight:700;font-size:14px;white-space:nowrap;pointer-events:none}
 .card.wide{max-width:640px;gap:9px;padding:13px 18px}
 .card.wide h1{font-size:25px}
 /* 키가 낮은 화면(가로로 눕힌 작은 폰, 주소창이 보이는 사파리)에서는 넓은 카드를 조금 조여 「본부로」 버튼까지 한 화면에 들어오게 한다.
@@ -1057,7 +1058,7 @@ function toyCard(k,fresh){ if(!(window.WAX&&WAX.toy)) return hqCard();
   const st=ov.querySelector('#wx'), cn=ov.querySelector('#wxc');
   const show=t=>{ k=t; ov.querySelectorAll('[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
     if(own.includes(t)){ WAX.toy(t,st,cn); return; }
-    const i=WAX.info(t); st.style.background='#efe3c8'; st.innerHTML=`<img class="tlock" src="${i.img}" alt="">`; cn.textContent=i.name+' · '+TOYS.find(x=>x[0]===t)[1]; };
+    const i=WAX.info(t); st.style.background='#efe3c8'; st.innerHTML=`<img class="tlock" src="${i.img}" alt=""><div class="tlockt">🔒 아직 못 받은 말랑이</div>`; cn.textContent=i.name+' · '+TOYS.find(x=>x[0]===t)[1]; };
   ov.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ if(b.dataset.t!==k){ SFX.tick(); show(b.dataset.t); } });
   show(k); on('t1',()=>{ SFX.tick(); if(fresh&&rankDue) rankCard(true); else hqCard(); });
   try{ ov.querySelector('[data-t].on').focus({preventScroll:true}); }catch(e){} }   // 키보드로 고를 때는 지금 고른 말랑이 버튼에서 시작한다

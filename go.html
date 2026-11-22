@@ -37,6 +37,10 @@ h1{font-family:var(--f-display);font-weight:400;font-size:30px;line-height:1.1;m
 
 /* 구겨진 종이 더미 */
 .pile{position:relative;width:100%;height:min(80vw,330px);margin-top:14px}
+.pile.three{height:min(112vw,500px)}
+/* 누르는 자리는 구겨진 종이 둘레만(투명한 빈 곳을 눌러도 펴지지 않게) */
+.ball{pointer-events:none}
+.ball .hit{position:absolute;left:14%;top:18%;width:72%;height:64%;border-radius:50%;pointer-events:auto}
 .ball{position:absolute;width:46%;aspect-ratio:3/4;padding:0;border:0;background:none;cursor:pointer;touch-action:manipulation;
   transition:transform .18s ease}
 .ball:active{transform:scale(.95) rotate(var(--r))!important}
@@ -85,7 +89,7 @@ footer{margin-top:auto;padding-top:18px;font-size:12px;color:#4a3a22;text-align:
     <div class="face"><img src="img/neulgom-head.webp" alt="" width="240" height="240"></div>
     <div><span class="tag">본부 → 요원</span><h1>지령이 도착했다.</h1></div>
   </div>
-  <p class="sub">들키지 않게 구겨서 보냈다. <b>「작전 시작」은 누르면 바로 접속</b>한다. 영상 지령은 눌러서 펴고, <b>한 번 더 누르면</b> 재생된다.</p>
+  <p class="sub">들키지 않게 구겨서 보냈다. <b>종이를 눌러 펴고</b>, 펴진 지령을 <b>한 번 더 누르면</b> 접속한다.</p>
   <div class="pile" id="pile"></div>
   <footer>합천중학교 마음돌봄 작전 · 늘곰 본부</footer>
 </main>
@@ -109,14 +113,14 @@ footer{margin-top:auto;padding-top:18px;font-size:12px;color:#4a3a22;text-align:
    type:"locked" 는 아직 비워 둔 지령(펴지기만 함). off:true 면 더미에서 빠진다.
    href : 접속할 주소. 공지·설문을 붙일 땐 세 번째 지령의 off를 지우고 type 대신 href를 넣으면 된다. */
 const ORDERS = [
-  { stamp:"▶ 작전 시작", red:true, code:"지령 01", title:"작전 시작", direct:true,
+  { stamp:"▶ 작전 시작", red:true, code:"지령 01", title:"작전 시작",
     lines:["회색 안개 속으로 들어가","오늘의 글자 조각을 찾아라.","","하루 한 판, 3분이면 충분."],
     button:"게임 접속", href:"stage.html" },
   { stamp:"세계관 영상", film:true, code:"지령 02", title:"기밀 영상",
     lines:["학교의 색이 사라진 날,","무슨 일이 있었는지","먼저 확인하고 출동하라."],
     button:"영상 보기", type:"video",
     href:"https://d2ol7oe51mr4n9.cloudfront.net/user_3L0PVa2SvrCt0LjjzuaEuAargjS/9ee9787e-45dd-42b9-9953-0e06e4fbda06.mp4" },
-  { off:true, stamp:"?", q:true, code:"지령 03", title:"? ? ?", type:"locked",
+  { stamp:"?", q:true, code:"지령 03", title:"? ? ?", type:"locked",
     lines:["아직 해독되지 않은 지령.","","때가 되면 본부가","이 종이를 채운다."],
     button:"공개 예정" },
 ];
@@ -226,7 +230,7 @@ function drawMesh(g, tex, mesh, t){
 const pile = document.getElementById('pile');
 const papers = [];
 function buildPile(){
-  pile.innerHTML = ''; papers.length = 0;
+  pile.innerHTML = ''; papers.length = 0; pile.classList.toggle('three', LIVE.length > 2);
   LIVE.forEach((o, i) => {
     const s = SPOTS[i % SPOTS.length];
     const b = document.createElement('button');
@@ -237,6 +241,7 @@ function buildPile(){
     b.setAttribute('aria-label', o.code + ' ' + o.title + ' 펴기');
     const cv = document.createElement('canvas');
     b.appendChild(cv);
+    b.insertAdjacentHTML('beforeend', '<span class="hit"></span>');
     b.insertAdjacentHTML('beforeend', `<span class="num">${esc(o.code)}</span><span class="stamp${o.red ? ' red' : ''}${o.q ? ' q' : ''}">${o.film ? FILM : ''}${esc(o.stamp)}</span>`);
     b.onclick = () => openOrder(i);
     pile.appendChild(b);

@@ -22,7 +22,7 @@
 html,body{margin:0;-webkit-text-size-adjust:100%}
 body{min-height:100vh;min-height:100dvh;background:var(--paper);color:var(--ink);font-family:var(--f-body);
   display:flex;justify-content:center;padding:max(20px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
-main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center}
+main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;justify-content:center}   /* 세로 화면에서 아래가 비지 않게 가운데로 */
 .tag{font-family:var(--f-display);font-size:15px;letter-spacing:.08em;background:var(--ink);color:var(--panel);padding:5px 12px;border-radius:4px;margin-top:6px}
 h1{font-family:var(--f-display);font-weight:400;font-size:38px;line-height:1.1;margin:12px 0 4px;text-align:center}
 .sub{margin:0 0 6px;font-size:15px;color:#5c5348;text-align:center}
@@ -39,7 +39,17 @@ h1{font-family:var(--f-display);font-weight:400;font-size:38px;line-height:1.1;m
 .btn.main .t{font-size:32px}
 .btn.main .d{color:#ffe9d6}
 .btn.main .ico{background:var(--panel);color:var(--red);width:52px;height:52px;font-size:26px}
-footer{margin-top:auto;padding-top:28px;font-size:12px;color:#8a7f70;text-align:center}
+footer{padding-top:28px;font-size:12px;color:#8a7f70;text-align:center}
+.btn .ico svg{display:block}
+/* 폰을 가로로 든 채 키링을 대도 「작전 시작」이 첫 화면에 보이게: 곰은 왼쪽, 글과 버튼은 오른쪽 */
+@media (orientation:landscape) and (max-height:540px){
+  body{padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom));align-items:center}
+  main{max-width:720px;display:grid;grid-template-columns:minmax(110px,170px) 1fr;column-gap:24px;align-items:center;justify-items:start}
+  .bear{grid-column:1;grid-row:1 / span 4;width:100%;margin:0;align-self:center}
+  .tag,h1,.sub,.links{grid-column:2} h1{font-size:30px;margin:8px 0 2px;text-align:left} .sub{text-align:left;margin-bottom:10px}
+  .links{gap:10px} .btn{padding:10px 14px} .btn.main{padding:12px 16px} .btn.main .t{font-size:26px}
+  footer{grid-column:1 / -1;justify-self:center;padding-top:10px}
+}
 /* 영상 창 */
 #vbox{position:fixed;inset:0;background:rgba(31,27,24,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;z-index:9}
 #vbox[hidden]{display:none}
@@ -69,12 +79,14 @@ footer{margin-top:auto;padding-top:28px;font-size:12px;color:#8a7f70;text-align:
    - 공지나 설문을 붙일 땐 한 줄을 복사해 아래에 추가하면 된다. 숨기려면 off:true. */
 const LINKS = [
   { main:true, ico:"▶", title:"작전 시작", desc:"게임으로 들어가기", href:"stage.html" },
-  { type:"video", ico:"🎬", title:"세계관 영상", desc:"회색 안개는 어떻게 시작됐나",
+  { type:"video", ico:"film", title:"세계관 영상", desc:"회색 안개는 어떻게 시작됐나",
     href:"https://d2ol7oe51mr4n9.cloudfront.net/user_3L0PVa2SvrCt0LjjzuaEuAargjS/9ee9787e-45dd-42b9-9953-0e06e4fbda06.mp4" },
   // { ico:"📢", title:"본부 공지", desc:"이번 주 알림", href:"https://..." },
   // { ico:"📝", title:"작전 설문", desc:"1분이면 끝", href:"https://forms.gle/..." },
 ];
 
+// 영상 버튼 그림: 컬러 이모지 대신 먹색 필름 한 칸 (게임처럼 각진 점 그림)
+const FILM = '<svg viewBox="0 0 10 8" width="24" height="20" shape-rendering="crispEdges" aria-hidden="true"><path fill="#1f1b18" d="M0 0h10v8H0z"/><path fill="#fff8e8" d="M1 1h1v1H1zM3 1h1v1H3zM6 1h1v1H6zM8 1h1v1H8zM1 6h1v1H1zM3 6h1v1H3zM6 6h1v1H6zM8 6h1v1H8z"/><path fill="#d9512c" d="M4 3h1v2H4zM5 3h1v1H5zM5 4h1v1H5z"/></svg>';
 const nav = document.getElementById('links');
 const vbox = document.getElementById('vbox'), vid = document.getElementById('vid');
 for (const l of LINKS) {
@@ -84,7 +96,7 @@ for (const l of LINKS) {
   if (l.type === 'video') { a.type = 'button'; a.onclick = () => openVideo(l.href); }
   else a.href = l.href;
   a.innerHTML = '<span class="ico" aria-hidden="true"></span><span><span class="t"></span><span class="d"></span></span>';
-  a.querySelector('.ico').textContent = l.ico || '›';
+  if (l.ico === 'film') a.querySelector('.ico').innerHTML = FILM; else a.querySelector('.ico').textContent = l.ico || '›';
   a.querySelector('.t').textContent = l.title;
   a.querySelector('.d').textContent = l.desc || '';
   nav.appendChild(a);

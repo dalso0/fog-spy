@@ -25,19 +25,21 @@ html,body{margin:0;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:tra
 body{min-height:100vh;min-height:100dvh;color:var(--ink);font-family:var(--f-body);overflow-x:hidden;
   background:#c9993f linear-gradient(180deg,#d6aa52 0%,#c9993f 55%,#b98a35 100%);  /* 황토 책상 위에 크림 지령지 */
   word-break:keep-all;overflow-wrap:break-word;
-  display:flex;justify-content:center;padding:max(18px,env(safe-area-inset-top)) 16px max(20px,env(safe-area-inset-bottom))}
-main{width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center}
+  display:flex;justify-content:center;align-items:center;padding:max(18px,env(safe-area-inset-top)) 16px max(20px,env(safe-area-inset-bottom))}
+main{width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center}  /* 화면 높이 가운데에 모아 둔다(위로 쏠리지 않게) */
 .top{display:flex;align-items:center;gap:12px;width:100%}
 .face{width:66px;height:66px;flex:none;border-radius:50%;overflow:hidden;background:var(--panel);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
 .face img{width:118%;height:auto;display:block;margin:-2px 0 0 -6%}
 .tag{display:inline-block;font-family:var(--f-display);font-size:13px;letter-spacing:.08em;background:var(--red);color:var(--panel);padding:3px 9px;border-radius:3px}
-h1{font-family:var(--f-display);font-weight:400;font-size:30px;line-height:1.1;margin:6px 0 0;color:var(--ink)}
+h1{font-family:var(--f-display);font-weight:400;font-size:34px;line-height:1.1;margin:6px 0 0;color:var(--ink)}
 .sub{margin:14px 0 0;font-size:15px;line-height:1.55;color:#2e2419;width:100%}
-.sub b{color:var(--red-d);font-weight:700}
+.sub b{color:var(--red-d);font-weight:700;white-space:nowrap}
+.sub{text-wrap:pretty}
 
 /* 구겨진 종이 더미 */
 .pile{position:relative;width:100%;height:min(80vw,330px);margin-top:14px}
-.pile.three{height:min(112vw,500px)}
+/* 세 장일 때: 폭에 맞는 최소 높이는 지키고, 키 큰 폰에서는 남는 높이만큼 더미를 늘려 아래가 비지 않게 */
+.pile.three{height:max(min(114vw,470px),min(calc(100dvh - 290px),620px))}
 /* 누르는 자리는 구겨진 종이 둘레만(투명한 빈 곳을 눌러도 펴지지 않게) */
 .ball{pointer-events:none}
 .ball .hit{position:absolute;left:14%;top:18%;width:72%;height:64%;border-radius:50%;pointer-events:auto}
@@ -49,29 +51,35 @@ h1{font-family:var(--f-display);font-weight:400;font-size:30px;line-height:1.1;m
   font-family:var(--f-display);font-size:19px;line-height:1;white-space:nowrap;color:var(--panel);background:var(--ink);
   border:2px solid var(--panel);border-radius:6px;padding:7px 10px 6px;box-shadow:0 3px 0 rgba(0,0,0,.35);pointer-events:none}
 .ball .stamp.red{background:var(--red)}
-.ball .stamp.q{background:var(--ocher);color:var(--ink);font-size:26px;padding:5px 14px}
+.ball .stamp.q{background:var(--ink);color:var(--panel);font-size:26px;padding:5px 14px}
 .ball .num{position:absolute;left:50%;top:22%;transform:translateX(-50%);font-family:var(--f-display);font-size:13px;color:var(--ink);
   opacity:.8;letter-spacing:.1em;pointer-events:none}
 .ball.gone{visibility:hidden}
 .ball.wiggle{animation:wig .5s}
 @keyframes wig{20%{transform:rotate(calc(var(--r) - 8deg))}50%{transform:rotate(calc(var(--r) + 7deg))}80%{transform:rotate(calc(var(--r) - 3deg))}}
-footer{margin-top:auto;padding-top:18px;font-size:12px;color:#4a3a22;text-align:center}
+footer{padding-top:22px;font-size:12px;color:#4a3a22;text-align:center}
 .stamp svg{display:inline-block;vertical-align:-3px;margin-right:6px}
 /* 폰을 가로로 든 채 키링을 대도 한 화면에: 글은 왼쪽, 지령지는 오른쪽 */
 @media (orientation:landscape) and (max-height:540px){
   body{padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(10px,env(safe-area-inset-bottom))}
   main{max-width:780px;display:grid;grid-template-columns:minmax(220px,1fr) 1.2fr;column-gap:24px;align-items:center}
-  .top,.sub{grid-column:1} .pile{grid-column:2;grid-row:1 / span 3;height:min(84vh,380px);margin:0}
+  .top,.sub{grid-column:1;align-self:center} .pile,.pile.three{grid-column:2;grid-row:1 / span 3;height:min(calc(100dvh - 24px),380px);margin:0}
   footer{grid-column:1;padding-top:10px;text-align:left}
+  /* 가로에서는 세 장을 한 줄로 */
+  .pile.three .ball{width:35%!important}
+  .pile.three .ball:nth-child(1){left:-2%!important;top:20%!important}
+  .pile.three .ball:nth-child(2){left:32%!important;top:8%!important}
+  .pile.three .ball:nth-child(3){left:66%!important;top:24%!important}
 }
 
 /* 펴진 지령지 */
-#veil{position:fixed;inset:0;background:rgba(20,17,14,.72);opacity:0;pointer-events:none;transition:opacity .35s;z-index:5}
+#veil{position:fixed;inset:0;background:rgba(20,17,14,.9);opacity:0;pointer-events:none;transition:opacity .35s;z-index:5}
 #veil.on{opacity:1;pointer-events:auto}
+body.open main{visibility:hidden}  /* 펼친 종이 둘레로 뒤 글자가 비치지 않게 */
 #sheet{position:fixed;inset:0;width:100%;height:100%;z-index:6;display:none;cursor:pointer;touch-action:manipulation}
 #hint{position:fixed;left:0;right:0;z-index:7;text-align:center;color:var(--panel);font-family:var(--f-display);font-size:17px;opacity:0;transition:opacity .3s;pointer-events:none}
 #hint.on{opacity:1}
-#back{position:fixed;left:50%;transform:translateX(-50%);z-index:7;font-family:var(--f-display);font-size:17px;background:transparent;color:#e7dcc4;
+#back{position:fixed;left:50%;transform:translateX(-50%);z-index:7;font-family:var(--f-display);font-size:17px;background:#14110e;color:#e7dcc4;
   border:2px solid #e7dcc4;border-radius:999px;padding:8px 18px;opacity:0;pointer-events:none;transition:opacity .3s;cursor:pointer}
 #back.on{opacity:1;pointer-events:auto}
 
@@ -89,7 +97,7 @@ footer{margin-top:auto;padding-top:18px;font-size:12px;color:#4a3a22;text-align:
     <div class="face"><img src="img/neulgom-head.webp" alt="" width="240" height="240"></div>
     <div><span class="tag">본부 → 요원</span><h1>지령이 도착했다.</h1></div>
   </div>
-  <p class="sub">들키지 않게 구겨서 보냈다. <b>종이를 눌러 펴고</b>, 펴진 지령을 <b>한 번 더 누르면</b> 접속한다.</p>
+  <p class="sub">들키지 않게 구겨서 보냈다. <b>종이를 눌러 펴고</b>, 펴진 종이를 <b>한 번 더 누르면</b> 접속한다.</p>
   <div class="pile" id="pile"></div>
   <footer>합천중학교 마음돌봄 작전 · 늘곰 본부</footer>
 </main>
@@ -113,14 +121,14 @@ footer{margin-top:auto;padding-top:18px;font-size:12px;color:#4a3a22;text-align:
    type:"locked" 는 아직 비워 둔 지령(펴지기만 함). off:true 면 더미에서 빠진다.
    href : 접속할 주소. 공지·설문을 붙일 땐 세 번째 지령의 off를 지우고 type 대신 href를 넣으면 된다. */
 const ORDERS = [
-  { stamp:"▶ 작전 시작", red:true, code:"지령 01", title:"작전 시작",
+  { stamp:"▶ 작전 시작", red:true, title:"작전 시작",
     lines:["회색 안개 속으로 들어가","오늘의 글자 조각을 찾아라.","","하루 한 판, 3분이면 충분."],
     button:"게임 접속", href:"stage.html" },
-  { stamp:"세계관 영상", film:true, code:"지령 02", title:"기밀 영상",
+  { stamp:"세계관 영상", film:true, title:"기밀 영상",
     lines:["학교의 색이 사라진 날,","무슨 일이 있었는지","먼저 확인하고 출동하라."],
     button:"영상 보기", type:"video",
     href:"https://d2ol7oe51mr4n9.cloudfront.net/user_3L0PVa2SvrCt0LjjzuaEuAargjS/9ee9787e-45dd-42b9-9953-0e06e4fbda06.mp4" },
-  { stamp:"?", q:true, code:"지령 03", title:"? ? ?", type:"locked",
+  { stamp:"?", q:true, title:"? ? ?", type:"locked",
     lines:["아직 해독되지 않은 지령.","","때가 되면 본부가","이 종이를 채운다."],
     button:"공개 예정" },
 ];
@@ -129,7 +137,7 @@ const ORDERS = [
 const W = 300, H = 400;
 /* 더미 속 위치: 왼쪽·위(%), 기울기 */
 const SPOTS2 = [ {x:2,y:2,r:-8}, {x:52,y:16,r:7} ];
-const SPOTS3 = [ {x:2,y:0,r:-9}, {x:52,y:10,r:8}, {x:27,y:46,r:-3} ];
+const SPOTS3 = [ {x:2,y:0,r:-9}, {x:52,y:10,r:8}, {x:27,y:50,r:-3} ];
 const LIVE = ORDERS.filter(o => !o.off);
 const SPOTS = LIVE.length <= 2 ? SPOTS2 : SPOTS3;
 // 영상 딱지 그림: 컬러 이모지 대신 먹색 필름 한 칸(게임처럼 각진 점 그림)
@@ -149,13 +157,13 @@ function drawPaper(o){
   for (let i = 0; i < 900; i++){ g.fillStyle = r() < .5 ? '#7a5a2a' : '#ffffff'; g.fillRect(r() * W, r() * H, 1.2, 1.2); }
   g.globalAlpha = 1;
   g.setLineDash([6, 5]); g.strokeStyle = '#c9993f'; g.lineWidth = 2; g.strokeRect(14, 14, W - 28, H - 28); g.setLineDash([]);
-  g.fillStyle = '#a03a1c'; g.font = '16px "Do Hyeon", sans-serif'; g.fillText(o.code + '  ·  1급 기밀', 34, 60);
+  g.fillStyle = '#a03a1c'; g.font = '16px "Do Hyeon", sans-serif'; g.fillText('본부 → 요원  ·  1급 기밀', 34, 60);
   g.fillStyle = '#1f1b18'; g.font = '44px "Do Hyeon", sans-serif'; g.fillText(o.title, 34, 110);
   g.fillRect(34, 127, W - 68, 3);
   g.fillStyle = '#3a332c'; g.font = '700 18px "Gothic A1", sans-serif';
   let y = 168; for (const ln of o.lines){ g.fillText(ln, 34, y); y += 30; }
   const locked = o.type === 'locked';
-  g.save(); g.translate(W / 2, H - 66); g.rotate(-.07);
+  g.save(); g.translate(W / 2, H - 78); g.rotate(-.07);
   g.beginPath(); g.roundRect ? g.roundRect(-92, -26, 184, 52, 8) : g.rect(-92, -26, 184, 52);
   if (locked){ g.setLineDash([7, 6]); g.strokeStyle = '#8a7f70'; g.lineWidth = 3; g.stroke(); g.setLineDash([]); }
   else { g.fillStyle = '#d9512c'; g.fill(); g.strokeStyle = '#1f1b18'; g.lineWidth = 3; g.stroke(); }
@@ -238,11 +246,11 @@ function buildPile(){
     b.style.left = s.x + '%'; b.style.top = s.y + '%';
     b.style.setProperty('--r', s.r + 'deg'); b.style.transform = `rotate(${s.r}deg)`;
     b.style.setProperty('--sr', (-s.r * .6) + 'deg');
-    b.setAttribute('aria-label', o.code + ' ' + o.title + ' 펴기');
+    b.setAttribute('aria-label', o.stamp + ' 종이 펴기');
     const cv = document.createElement('canvas');
     b.appendChild(cv);
     b.insertAdjacentHTML('beforeend', '<span class="hit"></span>');
-    b.insertAdjacentHTML('beforeend', `<span class="num">${esc(o.code)}</span><span class="stamp${o.red ? ' red' : ''}${o.q ? ' q' : ''}">${o.film ? FILM : ''}${esc(o.stamp)}</span>`);
+    b.insertAdjacentHTML('beforeend', `<span class="stamp${o.red ? ' red' : ''}${o.q ? ' q' : ''}">${o.film ? FILM : ''}${esc(o.stamp)}</span>`);
     b.onclick = () => openOrder(i);
     pile.appendChild(b);
     papers.push({ b, cv, tex: drawPaper(o), mesh: makeMesh(17 + i * 31) });
@@ -269,7 +277,7 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function target(){
   const vw = innerWidth, vh = innerHeight;
-  const w = Math.min(vw - 40, (vh - 150) * W / H, 400);
+  const w = Math.min(vw - 40, (vh - 170) * W / H, 400);
   return { x:(vw - w) / 2, y:Math.max(24, (vh - w * H / W) / 2 - 16), w, r:0 };
 }
 function ballBox(i){
@@ -304,13 +312,13 @@ function showHint(){
   const to = target(), bottom = to.y + to.w * H / W;
   hint.style.top = (bottom + 14) + 'px'; back.style.top = (bottom + 46) + 'px';
   const o = LIVE[cur];
-  hint.textContent = o.direct ? '접속 중…' : o.type === 'locked' ? '아직 열리지 않은 지령이다' : o.type === 'video' ? '종이를 한 번 더 누르면 재생' : '종이를 한 번 더 누르면 접속';
+  hint.textContent = o.direct ? '접속 중…' : o.type === 'locked' ? '아직 공개되지 않은 종이다' : o.type === 'video' ? '종이를 한 번 더 누르면 재생' : '종이를 한 번 더 누르면 접속';
   if (o.direct) { hint.classList.add('on'); return; }
   hint.classList.add('on'); back.classList.add('on');
 }
 function openOrder(i){
   if (busy || cur >= 0) return;
-  busy = true; cur = i; sizeSheet();
+  busy = true; cur = i; sizeSheet(); document.body.classList.add('open');
   const from = ballBox(i);
   sheet.setAttribute('aria-label', LIVE[i].title + (LIVE[i].type === 'locked' ? ' (공개 예정)' : ' 접속하기'));
   sheet.style.display = 'block'; papers[i].b.classList.add('gone'); veil.classList.add('on');
@@ -324,7 +332,7 @@ function openOrder(i){
 }
 function closeOrder(){
   if (busy || cur < 0) return;
-  busy = true; hint.classList.remove('on'); back.classList.remove('on'); veil.classList.remove('on');
+  busy = true; hint.classList.remove('on'); back.classList.remove('on'); veil.classList.remove('on'); document.body.classList.remove('open');
   const i = cur;
   animate(target(), ballBox(i), 0, 1, 700, () => {
     sheet.style.display = 'none'; papers[i].b.classList.remove('gone'); cur = -1; busy = false;
@@ -341,13 +349,15 @@ sheet.onclick = e => {
 };
 veil.onclick = closeOrder; back.onclick = closeOrder;
 // 접속했다가 뒤로 가기로 돌아오면 다시 구겨진 더미로
-addEventListener('pageshow', e => { if (e.persisted && cur >= 0) { sheet.style.display = 'none'; papers[cur].b.classList.remove('gone'); veil.classList.remove('on'); hint.classList.remove('on'); back.classList.remove('on'); cur = -1; busy = false; } });
+addEventListener('pageshow', e => { if (e.persisted && cur >= 0) { sheet.style.display = 'none'; papers[cur].b.classList.remove('gone'); veil.classList.remove('on'); hint.classList.remove('on'); back.classList.remove('on'); document.body.classList.remove('open'); cur = -1; busy = false; } });
 addEventListener('resize', () => { drawBalls(); if (cur >= 0 && !busy){ sizeSheet(); drawSheet(target(), 0); showHint(); } });
 
 /* 글꼴이 다 내려온 뒤에 종이를 그린다(늦어도 1.5초 뒤엔 그린다) */
+/* 구글 글꼴은 글자별 조각으로 나뉘어 있어서, 종이에 쓰는 글자를 모두 알려 줘야 빠짐없이 받아진다(「밀」만 다른 글꼴로 나오던 문제) */
+const PAPER_TEXT = '본부 → 요원 · 1급 기밀' + LIVE.map(o => o.title + o.button + o.lines.join('')).join('');
 let built = false;
 const build = () => { if (!built){ built = true; buildPile(); } };
-(document.fonts ? Promise.race([document.fonts.load('44px "Do Hyeon"').then(() => document.fonts.load('700 18px "Gothic A1"')), new Promise(r => setTimeout(r, 1500))]) : Promise.resolve()).then(build, build);
+(document.fonts ? Promise.race([document.fonts.load('44px "Do Hyeon"', PAPER_TEXT).then(() => document.fonts.load('700 18px "Gothic A1"', PAPER_TEXT)), new Promise(r => setTimeout(r, 1500))]) : Promise.resolve()).then(build, build);
 
 /* 영상 */
 const vbox = document.getElementById('vbox'), vid = document.getElementById('vid');

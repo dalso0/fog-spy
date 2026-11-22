@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f1b18">
+<title>늘곰 요원 본부</title>
+<link rel="icon" href="img/stage-icon-192.png">
+<link rel="apple-touch-icon" href="img/stage-icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gothic+A1:wght@500;700&display=swap">
+<style>
+/* 키링(NFC)을 찍으면 처음 열리는 시작 페이지. 링크는 아래 <script>의 LINKS 한 곳에서만 고친다. */
+:root{
+  --ink:#1f1b18; --paper:#f6ead0; --panel:#fff8e8;
+  --red:#d9512c; --red-d:#a03a1c; --ocher:#c9993f;
+  --f-display:"Do Hyeon","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;-webkit-text-size-adjust:100%}
+body{min-height:100vh;min-height:100dvh;background:var(--paper);color:var(--ink);font-family:var(--f-body);
+  display:flex;justify-content:center;padding:max(20px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center}
+.tag{font-family:var(--f-display);font-size:15px;letter-spacing:.08em;background:var(--ink);color:var(--panel);padding:5px 12px;border-radius:4px;margin-top:6px}
+h1{font-family:var(--f-display);font-weight:400;font-size:38px;line-height:1.1;margin:12px 0 4px;text-align:center}
+.sub{margin:0 0 6px;font-size:15px;color:#5c5348;text-align:center}
+.bear{width:50%;max-width:190px;height:auto;margin:4px 0 14px;filter:drop-shadow(0 6px 0 rgba(31,27,24,.12))}
+.links{width:100%;display:flex;flex-direction:column;gap:14px}
+.btn{display:flex;align-items:center;gap:14px;width:100%;text-decoration:none;color:var(--ink);background:var(--panel);
+  border:3px solid var(--ink);border-radius:14px;box-shadow:0 5px 0 var(--ink);padding:16px 18px;font:inherit;text-align:left;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn .ico{flex:none;width:44px;height:44px;border-radius:10px;border:3px solid var(--ink);display:grid;place-items:center;font-size:22px;background:var(--ocher)}
+.btn .t{display:block;font-family:var(--f-display);font-size:24px;line-height:1.15}
+.btn .d{display:block;font-size:13.5px;color:#5c5348;margin-top:2px}
+.btn.main{background:var(--red);color:var(--panel);padding:22px 20px}
+.btn.main .t{font-size:32px}
+.btn.main .d{color:#ffe9d6}
+.btn.main .ico{background:var(--panel);color:var(--red);width:52px;height:52px;font-size:26px}
+footer{margin-top:auto;padding-top:28px;font-size:12px;color:#8a7f70;text-align:center}
+/* 영상 창 */
+#vbox{position:fixed;inset:0;background:rgba(31,27,24,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;z-index:9}
+#vbox[hidden]{display:none}
+#vbox video{width:100%;max-width:720px;max-height:78vh;border:3px solid var(--panel);border-radius:10px;background:#000}
+#vclose{margin-top:16px;font-family:var(--f-display);font-size:20px;background:var(--panel);color:var(--ink);border:3px solid var(--ink);border-radius:10px;padding:10px 26px;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+  <div class="tag">합천중 비밀 본부</div>
+  <h1>요원, 접속 확인.</h1>
+  <p class="sub">오늘의 작전으로 바로 들어가자.</p>
+  <img class="bear" src="img/neulgom.webp" alt="트렌치코트를 입은 늘곰 요원" width="520" height="591">
+  <nav class="links" id="links"></nav>
+  <footer>합천중학교 마음돌봄 작전 · 늘곰 본부</footer>
+</main>
+
+<div id="vbox" hidden>
+  <video id="vid" controls playsinline preload="none"></video>
+  <button id="vclose" type="button">닫기</button>
+</div>
+
+<script>
+/* ===== 링크 목록: 여기만 고치면 된다 =====
+   - 순서대로 위에서 아래로 나온다. 첫 번째(main:true)가 가장 큰 버튼.
+   - type:"video" 는 이 페이지 안에서 영상이 열린다(mp4 주소). 그 밖은 그냥 링크로 이동.
+   - 공지나 설문을 붙일 땐 한 줄을 복사해 아래에 추가하면 된다. 숨기려면 off:true. */
+const LINKS = [
+  { main:true, ico:"▶", title:"작전 시작", desc:"게임으로 들어가기", href:"stage.html" },
+  { type:"video", ico:"🎬", title:"세계관 영상", desc:"회색 안개는 어떻게 시작됐나",
+    href:"https://d2ol7oe51mr4n9.cloudfront.net/user_3L0PVa2SvrCt0LjjzuaEuAargjS/9ee9787e-45dd-42b9-9953-0e06e4fbda06.mp4" },
+  // { ico:"📢", title:"본부 공지", desc:"이번 주 알림", href:"https://..." },
+  // { ico:"📝", title:"작전 설문", desc:"1분이면 끝", href:"https://forms.gle/..." },
+];
+
+const nav = document.getElementById('links');
+const vbox = document.getElementById('vbox'), vid = document.getElementById('vid');
+for (const l of LINKS) {
+  if (l.off) continue;
+  const a = document.createElement(l.type === 'video' ? 'button' : 'a');
+  a.className = 'btn' + (l.main ? ' main' : '');
+  if (l.type === 'video') { a.type = 'button'; a.onclick = () => openVideo(l.href); }
+  else a.href = l.href;
+  a.innerHTML = '<span class="ico" aria-hidden="true"></span><span><span class="t"></span><span class="d"></span></span>';
+  a.querySelector('.ico').textContent = l.ico || '›';
+  a.querySelector('.t').textContent = l.title;
+  a.querySelector('.d').textContent = l.desc || '';
+  nav.appendChild(a);
+}
+function openVideo(src){ vid.src = src; vbox.hidden = false; vid.play().catch(()=>{}); }
+function closeVideo(){ vid.pause(); vbox.hidden = true; }
+document.getElementById('vclose').onclick = closeVideo;
+vbox.addEventListener('click', e => { if (e.target === vbox) closeVideo(); });
+</script>
+</body>
+</html>

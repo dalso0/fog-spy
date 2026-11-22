@@ -381,8 +381,8 @@ const DAYS=[
   {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,toy:'apple',done:'1주차 암호 「하늘빛」 완성',report:['초록 세 개','복도나 창밖에서 초록색 세 개 찾기.','폰을 내려놓고 방 안이나 창밖에서 초록색 세 개를 찾는다.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 느껴 보기.'],feel:'thu'},
   {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,toy:'mandarin',done:'쉬어 가는 판 완료',report:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 느낌 느껴 보기.','폰을 내려놓고 일어서서, 발바닥이 바닥에 닿는 느낌을 10초 동안 느껴 본다.'],next:['소리 세기','10초 동안 가만히 귀 기울이고 들리는 소리 세 가지 세기.'],nl:'주말의 지령',feel:'fri'},
   {d:'언제든',name:'훈련장',train:true} ];
-// 한 주 다섯 판을 다 깨면 본부와 금요일 완료 카드에 간식 안내가 나온다. 미션 단어는 그 주의 암호
-const SNACK='월요일에 위클래스에 와서 암호 「하늘빛」을 말하면 활동 간식을 받아요.', weekDone=c=>!!c&&DAYS.slice(0,TRAIN).every((d,i)=>c[i]);
+// 월~목 네 판(암호 글자 셋 + 목요일 보스)을 깨면 본부와 완료 카드에 간식 안내가 나온다 (금요일 쉬어 가는 판은 선택). 미션 단어는 그 주의 암호
+const SNACK='다음 월요일에 Wee클래스에서 암호 「하늘빛」을 말하면 활동 간식을 받아요.', weekDone=c=>!!c&&DAYS.slice(0,TRAIN).every((d,i)=>d.rest||c[i]);   // 쉬어 가는 판(금)은 깨지 않아도 된다: 월~목(암호 글자 셋 + 보스)만 깨면 간식 안내
 let stageNo=0;
 // 이 판에서 한 마음돌봄 행동: b = 끝까지 모은 숨, s = 가만히 있기(띵띵이, 하늘 방, 가만히 방), n = 감정 벽에 붙인 이름. 완료 카드에 걸린 시간 대신 이 숫자를 보여 준다. 어디에도 남기지 않는다
 let care={b:0,s:0,n:0};
@@ -1042,7 +1042,7 @@ function hqCard(){ if(lightsOut()) return sleepCard(); syncLevel(1);
   <h2>${st[0]==='lock'?'작전은 11월 23일(월) 오후 3시에 시작한다':'작전 고르기'}</h2><p class="ntc" id="ntc" hidden></p>
   <div class="days">${DAYS.slice(0,TRAIN).map((d,i)=>`<button data-d="${i}" ${st[i]!=='open'?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${held===i?'이어 하기':cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):st[i]==='lock'?'오후 3시에 열림':st[i]==='need'?'조각 3개면 열림':'아직'}</span></button>`).join('')}</div>
   <div class="row"><button data-d="${TRAIN}"${any?'':' class="go"'}>훈련장 · ${held===TRAIN?'이어 하기':'조작 연습 1분'}</button>${window.WAX&&WAX.toy?`<button id="tb">말랑이 상자 ${ownToys().length}/${TOYS.length}</button>`:''}${rankShow()?'<button id="rb">순위표</button>':''}</div>
-  <p class="note">${weekDone(cl)?'<b>1주차 작전 완료. '+SNACK+'</b> ':''}${saveMem!==null?'이 폰은 기록을 저장하지 못해요. 창을 닫으면 처음부터 다시 해야 해요.':''}<span id="hs"></span></p>`);
+  <p class="note">${weekDone(cl)?'<b>1주차 암호 완성. '+SNACK+'</b> ':''}${saveMem!==null?'이 폰은 기록을 저장하지 못해요. 창을 닫으면 처음부터 다시 해야 해요.':''}<span id="hs"></span></p>`);
   ov.firstChild.classList.add('wide'); hqInfo(); if(ov.querySelector('#fb')) on('fb',()=>{ SFX.tick(); fbCard('본부'); });
   ov.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ const n=+b.dataset.d; SFX.tick(); goLevel(2);
     if(n===held){ stageNo=n; held=-1; play(); return; }   // 멈춰 둔 판은 그 자리에서 이어 한다
@@ -1282,7 +1282,7 @@ function finish(){ running=false; SFX.clear();
     if(!teacher()){ sv.best=sv.best||{}; sv.best[stageNo]=Math.max(+sv.best[stageNo]||0,P.coins); sv.agent=Object.assign({},agent(),{fixed:true}); }   // 순위는 판마다 가장 많이 모은 수의 합. 첫 판을 깨면 요원 코드가 굳는다
     if(first){ sv.day=sv.day||{}; sv.day[stageNo]=today(); } putSave(sv);   // 깬 날짜: 다음 판에서 지령 보고를 물을지 정할 때 쓴다
     if(first){ hq('add','raid',1); if(d.letter) hq('add','piece',1); if(d.boss) hq('once','decode'); if(d.date===today()) hq('once','brief'); }
-    const cnt=first&&HQ.on&&!teacher(), sn=weekDone(sv.clear)||(teacher()&&!!d.rest);
+    const cnt=first&&HQ.on&&!teacher(), sn=weekDone(sv.clear)||(teacher()&&!!(d.boss||d.rest));
     fr=[sn,cnt]; }
   rankDue=rankShow()&&!!d.final&&'final'; if(rankShow()) rankSend();   // 깬 기록은 바로 보내 둔다
   const pcs=P.pcs, coinsN=P.coins;

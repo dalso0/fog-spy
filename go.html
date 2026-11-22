@@ -129,7 +129,7 @@ const ORDERS = [
     button:"영상 보기", type:"video",
     href:"https://d2ol7oe51mr4n9.cloudfront.net/user_3L0PVa2SvrCt0LjjzuaEuAargjS/9ee9787e-45dd-42b9-9953-0e06e4fbda06.mp4" },
   { stamp:"?", q:true, title:"? ? ?", type:"locked",
-    lines:["아직 해독되지 않은 지령.","","때가 되면 본부가","이 종이를 채운다."],
+    lines:["아직 제시되지 않은 메시지.","","때가 되면 본부가","이 종이를 채운다."],
     button:"공개 예정" },
 ];
 
@@ -312,7 +312,7 @@ function showHint(){
   const to = target(), bottom = to.y + to.w * H / W;
   hint.style.top = (bottom + 14) + 'px'; back.style.top = (bottom + 46) + 'px';
   const o = LIVE[cur];
-  hint.textContent = o.direct ? '접속 중…' : o.type === 'locked' ? '아직 공개되지 않은 종이다' : o.type === 'video' ? '종이를 한 번 더 누르면 재생' : '종이를 한 번 더 누르면 접속';
+  hint.textContent = o.direct ? '접속 중…' : o.type === 'locked' ? '아직 제시되지 않은 메시지다' : o.type === 'video' ? '종이를 한 번 더 누르면 재생' : '종이를 한 번 더 누르면 접속';
   if (o.direct) { hint.classList.add('on'); return; }
   hint.classList.add('on'); back.classList.add('on');
 }

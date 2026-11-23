@@ -285,7 +285,9 @@ function renderStats(){
     [sum(R,'finale'),'최종 작전 완료'],
     [sum(R,'phone'),'도움전화 화면 열람'],
     [sum(R,'risk'),'걱정되는 말 감지'],
-    [sum(R,'sky'),'하늘 게시판 글']
+    [sum(R,'sky'),'하늘 게시판 글'],
+    [sum(R,'vid'),'세계관 영상 연 폰 (폰·일)'],
+    [sum(R,'vid_end'),'영상 끝까지 본 폰 (폰·일)']
   ];
   $('#kpis').innerHTML=K.map(([v,l])=>`<div class="kpi"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join('');
   /* 주차별 */
@@ -331,7 +333,8 @@ function renderLive(){
   $('#moods').innerHTML=msum?hbars(mv,Math.max(...mv.map(x=>x.v)))+'<p class="note" style="margin:8px 0 0">모두 '+msum+'대</p>':'<p class="empty">오늘 고른 날씨가 아직 없어요.</p>';
   const pend=(D.posts||[]).filter(p=>p.status!=='공개'&&p.status!=='숨김').length, phone=+T.phone||0, risk=+T.risk||0;
   const care=[[(+T.ord_done||0)+(+T.ord_alt||0),'지령 했다고 보고'],[+T.ord_no||0,'지령 못 했다고 보고'],[+T.game||0,'마음돌봄 방 들른 판'],
-    [phone,'도움전화 화면 연 폰',phone>0],[risk,'걱정되는 말 감지',risk>0],[pend,'확인 기다리는 하늘 글',false,'sky']];
+    [phone,'도움전화 화면 연 폰',phone>0],[risk,'걱정되는 말 감지',risk>0],[pend,'확인 기다리는 하늘 글',false,'sky'],
+    [+T.vid||0,'세계관 영상 연 폰'],[+T.vid_end||0,'영상 끝까지 본 폰']];
   $('#care').innerHTML=care.map(([v,l,a,t])=>t?`<button data-go="${t}"${a?' class="alert"':''}><b>${v}</b><span>${esc(l)} →</span></button>`:`<div${a?' class="alert"':''}><b>${v}</b><span>${esc(l)}</span></div>`).join('');
   document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>tab(b.dataset.go));
   const DR=(D.stats||[]).filter(r=>r.date>='2026-11-23').sort((a,b)=>a.date<b.date?-1:1), wd=d=>'일월화수목금토'[new Date(d+'T12:00:00+09:00').getUTCDay()];

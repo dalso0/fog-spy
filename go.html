@@ -115,6 +115,10 @@ body.open main{visibility:hidden}  /* 펼친 종이 둘레로 뒤 글자가 비�
   <button id="vclose" type="button">닫기</button>
 </div>
 
+<!-- 세계관 영상을 연 횟수만 운영 시트 「통계」에 보낸다. 이 페이지를 연 것은 「접속」으로 세지 않고, 본부 소식도 받지 않는다 -->
+<script src="config.js" charset="utf-8"></script>
+<script>window.HQ_NEWS=false; window.HQ_VISIT=false;</script>
+<script src="hq.js?v=1124" charset="utf-8"></script>
 <script>
 /* ===== 지령 목록: 여기만 고치면 된다 =====
    stamp : 구겨진 종이 위에 붙는 딱지(구겨져 있어도 무엇인지 알 수 있게)
@@ -364,7 +368,9 @@ const build = () => { if (!built){ built = true; buildPile(); } };
 
 /* 영상 */
 const vbox = document.getElementById('vbox'), vid = document.getElementById('vid');
-function openVideo(src){ vid.src = src; vbox.hidden = false; vid.play().catch(()=>{}); }
+/* 영상을 연 폰·끝까지 본 폰을 하루 한 번씩 센다 (이름 없는 합계, hq.js) */
+function openVideo(src){ vid.src = src; vbox.hidden = false; vid.play().catch(()=>{}); if (window.HQ) HQ.once('vid'); }
+vid.addEventListener('ended', () => { if (window.HQ) { HQ.once('vid_end'); HQ.flush(); } });
 function closeVideo(){ vid.pause(); vbox.hidden = true; }
 document.getElementById('vclose').onclick = closeVideo;
 vbox.addEventListener('click', e => { if (e.target === vbox) closeVideo(); });

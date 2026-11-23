@@ -49,5 +49,6 @@
   }
 
   window.HQ={on:ON, once, add, mood, state, cached, sky, flush};
-  if(ON){ once('visit'); if(NEWS) state(); }
+  /* window.HQ_VISIT=false 이면 이 페이지를 연 것은 「접속」으로 세지 않는다 (시작 페이지 go.html) */
+  if(ON){ if(window.HQ_VISIT!==false) once('visit'); if(NEWS) state(); }
 })();

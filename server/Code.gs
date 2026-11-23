@@ -47,7 +47,9 @@ var METRICS = [
   ['heart', '라디오 좋아요'],
   ['raid', '정화 기여'],
   ['game', '미니게임 완료'],
-  ['breath', '호흡실 이용']
+  ['breath', '호흡실 이용'],
+  ['vid', '세계관 영상 연 폰'],
+  ['vid_end', '영상 끝까지 본 폰']
 ];
 /* 하루에 한 휴대폰이 한 번만 올릴 수 있는 항목의 1회 최대치 (부풀리기 방지) */
 var MAX_INC = { piece: 4, raid: 10, game: 6, breath: 5, heart: 1 };

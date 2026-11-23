@@ -87,7 +87,9 @@ body.open main{visibility:hidden}  /* 펼친 종이 둘레로 뒤 글자가 비�
 #vbox{position:fixed;inset:0;background:rgba(20,17,14,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;z-index:9}
 #vbox[hidden]{display:none}
 #vbox video{width:100%;max-width:720px;max-height:78vh;border:3px solid var(--panel);border-radius:10px;background:#000}
-#vclose{margin-top:16px;font-family:var(--f-display);font-size:20px;background:var(--panel);color:var(--ink);border:3px solid var(--ink);border-radius:10px;padding:10px 26px;cursor:pointer}
+#vcredit{margin:10px 0 0;max-width:720px;text-align:center;font-size:11px;line-height:1.5;color:#e7dcc4;opacity:.75}
+#vcredit a{color:inherit}
+#vclose{margin-top:14px;font-family:var(--f-display);font-size:20px;background:var(--panel);color:var(--ink);border:3px solid var(--ink);border-radius:10px;padding:10px 26px;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.ball{transition:none}}
 </style>
 </head>
@@ -109,6 +111,7 @@ body.open main{visibility:hidden}  /* 펼친 종이 둘레로 뒤 글자가 비�
 
 <div id="vbox" hidden>
   <video id="vid" controls playsinline preload="none"></video>
+  <p id="vcredit">Music: "Covert Affair" Kevin MacLeod (<a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a>)<br>Licensed under Creative Commons: By Attribution 4.0 License<br><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">creativecommons.org/licenses/by/4.0/</a></p>
   <button id="vclose" type="button">닫기</button>
 </div>
 
@@ -127,7 +130,7 @@ const ORDERS = [
   { stamp:"세계관 영상", film:true, title:"기밀 영상",
     lines:["학교의 색이 사라진 날,","무슨 일이 있었는지","먼저 확인하고 출동하라."],
     button:"영상 보기", type:"video",
-    href:"https://d2ol7oe51mr4n9.cloudfront.net/user_3L0PVa2SvrCt0LjjzuaEuAargjS/9ee9787e-45dd-42b9-9953-0e06e4fbda06.mp4" },
+    href:"https://d2ol7oe51mr4n9.cloudfront.net/user_3L0PVa2SvrCt0LjjzuaEuAargjS/18132924-1d05-430a-af13-6918d9ab2e6c.mp4" },
   { stamp:"?", q:true, title:"? ? ?", type:"locked",
     lines:["아직 제시되지 않은 메시지.","","때가 되면 본부가","이 종이를 채운다."],
     button:"공개 예정" },

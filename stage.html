@@ -466,7 +466,7 @@ function build(){
   const bare=x=>x>190&&(x<rX-40||x>door.x+60);   // 표어 간판(출발 지점)과 라디오·본부 문 둘레에는 나무를 심지 않는다
   for(let c=6;c<LC-4;c+=23){ if(at(c,GY)===1&&at(c,GY-1)===0&&bare(c*T)) decor.push({x:c*T-7,kind:'tree'}); const b=c+11; if(at(b,GY)===1&&at(b,GY-1)===0&&bare(b*T)) decor.push({x:b*T-7,kind:'bush'}); }
   sign={x:52,t:mottoNow(),k:0,al:1}; radio={x:rX,s:songNow(),k:0,al:1,said:false};
-  if(!DAYS[stageNo].train) placePost(hard,say);
+  if(!DAYS[stageNo].train&&(DAYS[stageNo].date||'')>='2026-11-24') placePost(hard,say);   // 하늘 게시판은 11.24(화) 판부터 (선생님 요청)
 }
 /* 하늘 게시판 우체통 (2026-11-23 선생님 요청): 길 가운데쯤 빈 땅에 구름 발판 두 단을 쌓고, 높은 단 위에 우체통을 둔다.
    한 단(9행)은 땅에서 점프로, 두 단(6행)은 첫 단에서 점프로 오른다. 더 높이 두면 위쪽 말 칸에 가린다. 우체통에 닿으면 하늘 게시판 카드가 열린다.

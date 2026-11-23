@@ -98,6 +98,7 @@ thead th{background:var(--paper);font-size:12px}
       <input id="pw" type="password" autocomplete="current-password" placeholder="비밀번호" style="flex:1;min-width:160px">
       <button class="ok" id="go">들어가기</button>
     </form>
+    <label class="note" style="display:flex;gap:6px;align-items:center;margin-top:8px"><input type="checkbox" id="keep" checked> 이 컴퓨터에서 로그인 유지 (함께 쓰는 컴퓨터면 끄기)</label>
     <p class="err" id="lerr"></p>
   </div>
 
@@ -111,7 +112,7 @@ thead th{background:var(--paper);font-size:12px}
         <button role="tab" data-t="stats" aria-selected="false">참여 숫자</button>
         <button role="tab" data-t="notice" aria-selected="false">공지</button>
       </div>
-      <div class="row"><button id="reload">새로고침</button><a class="btn" id="sheetLink" target="_blank" rel="noopener">구글 시트 열기</a></div>
+      <div class="row"><button id="reload">새로고침</button><button id="logout">로그아웃</button><a class="btn" id="sheetLink" target="_blank" rel="noopener">구글 시트 열기</a></div>
     </div>
     <p class="note" id="stamp"></p>
 
@@ -199,7 +200,10 @@ const URL_=(window.HQ_URL||'').trim();
 const $=s=>document.querySelector(s);
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let PW='', D=null;
-try{ PW=sessionStorage.getItem('fog-admin')||''; }catch(e){}
+/* 로그인 유지: 체크하면 localStorage(창을 닫거나 컴퓨터를 꺼도 유지), 끄면 sessionStorage(이 탭에서만) */
+function savePw(){ try{ if($('#keep').checked){ localStorage.setItem('fog-admin',PW); sessionStorage.removeItem('fog-admin'); } else { sessionStorage.setItem('fog-admin',PW); localStorage.removeItem('fog-admin'); } }catch(e){} }
+function dropPw(){ PW=''; try{ localStorage.removeItem('fog-admin'); sessionStorage.removeItem('fog-admin'); }catch(e){} }
+try{ PW=localStorage.getItem('fog-admin')||sessionStorage.getItem('fog-admin')||''; }catch(e){}
 try{ const t=localStorage.getItem('fog-admin-total'); if(t) $('#total').value=t; }catch(e){}
 
 if(!URL_){ $('#cfgNote').innerHTML='<span class="err">아직 본부 서버 주소가 config.js에 들어가 있지 않아요.</span> 운영 안내서의 "서버 연결" 단계를 먼저 해 주세요.'; $('#go').disabled=true; }
@@ -211,26 +215,29 @@ function load(body){
   $('#stamp').textContent='불러오는 중…'; busy=true;
   return call(body).then(j=>{ busy=false; at=Date.now();
     if(!j||!j.ok){
-      if(j&&j.msg==='pw'){ PW=''; try{sessionStorage.removeItem('fog-admin')}catch(e){} showLogin('비밀번호가 맞지 않아요.'); }
+      if(j&&j.msg==='pw'){ dropPw(); D=null; showLogin('비밀번호가 맞지 않아요.'); }
+      /* 이미 들어와 있으면 서버가 잠깐 바쁘거나 잠겨도 화면을 그대로 두고 1분 뒤 다시 */
+      else if(D){ warn='서버가 잠깐 바빠서 못 불러왔어요. 곧 다시 해 볼게요.'; }
       else if(j&&j.msg==='locked'){ showLogin('비밀번호를 여러 번 틀려서 10분 동안 잠겼어요.'); }
       else showLogin('서버 응답이 이상해요: '+esc(j&&j.msg||'?'));
       return;
     }
-    D=j; try{ sessionStorage.setItem('fog-admin',PW); }catch(e){}
+    D=j; warn=''; savePw();
     $('#login').hidden=true; $('#main').hidden=false; render();
-  }).catch(e=>{ busy=false; at=Date.now(); if(D){ $('#stamp').innerHTML='<span class="err">연결이 잠깐 끊겼어요. 1분 뒤 다시 해 볼게요.</span>'; return; } showLogin('서버에 연결하지 못했어요. 인터넷 연결이나 서버 주소를 확인해 주세요.'); });
+  }).catch(e=>{ busy=false; at=Date.now(); if(D){ warn='연결이 잠깐 끊겼어요. 곧 다시 해 볼게요.'; return; } showLogin('서버에 연결하지 못했어요. 인터넷 연결이나 서버 주소를 확인해 주세요.'); });
 }
 function showLogin(msg){ $('#login').hidden=false; $('#main').hidden=true; $('#lerr').textContent=msg||''; }
 $('#go').onclick=()=>{ PW=$('#pw').value.trim(); if(!PW) return; $('#lerr').textContent=''; load(); };
 $('#reload').onclick=()=>load();
+$('#logout').onclick=()=>{ dropPw(); D=null; $('#pw').value=''; showLogin('로그아웃했어요.'); };
 let TAB='live';
 function tab(t){ TAB=t; document.querySelectorAll('[role=tab]').forEach(x=>x.setAttribute('aria-selected',x.dataset.t===t));
   document.querySelectorAll('section[data-p]').forEach(s=>s.hidden=s.dataset.p!==t);
   if(t==='live'&&D&&Date.now()-at>60e3) load(); }
 document.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>tab(b.dataset.t));
 /* 실시간 현황 탭을 보고 있는 동안 1분마다 새로고침 (다른 탭에서 글을 고르거나 쓰는 중에는 건드리지 않는다) */
-let at=0, busy=false;
-setInterval(()=>{ if(!D||document.hidden||TAB!=='live'||busy) return; const s=Math.max(0,60-Math.round((Date.now()-at)/1000)); if(s===0) load(); else $('#stamp').textContent='마지막으로 불러온 시각: '+D.now+' · '+s+'초 뒤 새로고침'; },1000);
+let at=0, busy=false, warn='';
+setInterval(()=>{ if(!D||document.hidden||TAB!=='live'||busy) return; const s=Math.max(0,60-Math.round((Date.now()-at)/1000)); if(s===0) load(); else $('#stamp').innerHTML=(warn?'<span class="err">'+warn+'</span> ':'')+'마지막으로 불러온 시각: '+esc(D.now)+' · '+s+'초 뒤 새로고침'; },1000);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&D&&TAB==='live'&&Date.now()-at>60e3) load(); });
 
 function render(){

@@ -10,7 +10,44 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f3ede2;--paper:#24221f;--bg:#171614;--muted:#aaa397;--line:#3a3631}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}
-.wrap{max-width:860px;margin:0 auto;padding:16px 16px 60px}
+.wrap{max-width:1280px;margin:0 auto;padding:16px 16px 60px}
+section[data-p]:not([data-p=live]){max-width:900px}
+/* 실시간 현황 */
+:root{--bar:#2f8fd6;--track:#e9e0cd}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bar:#5fb1ee;--track:#34302b}}
+.lg{display:grid;gap:14px;grid-template-columns:repeat(12,1fr);margin-top:12px}
+.lg>.card{margin:0;min-width:0}
+.s12{grid-column:span 12}.s6{grid-column:span 6}.s4{grid-column:span 4}.s3{grid-column:span 3}
+@media (max-width:900px){.s6,.s4{grid-column:span 12}.s3{grid-column:span 6}}
+@media (max-width:520px){.s3{grid-column:span 12}}
+.card .note.lead{margin:0 0 10px}
+.lk .lab{font-size:14px;font-weight:800}
+.lk .big{font-size:48px;font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums;margin:6px 0 2px}
+.lk .big small{font-size:19px;color:var(--muted);font-weight:800}
+.meter{height:10px;background:var(--track);border-radius:5px;overflow:hidden;margin:6px 0 4px}
+.meter i{display:block;height:100%;background:var(--bar);border-radius:5px}
+.lk.live .lab::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-right:6px;vertical-align:1px;animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.lk.live .lab::before{animation:none}}
+.cols{display:flex;align-items:flex-end;gap:4px;height:190px;margin-top:16px;border-bottom:1px solid var(--line)}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative;min-width:0}
+.col i{display:block;width:100%;max-width:46px;background:var(--bar);border-radius:4px 4px 0 0}
+.col i.now{outline:2px solid var(--ink);outline-offset:1px}
+.col em{font-style:normal;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;position:absolute;transform:translateY(-100%);padding-bottom:2px}
+.xl{display:flex;gap:4px;margin-top:4px}
+.xl span{flex:1;text-align:center;font-size:11.5px;color:var(--muted);min-width:0;white-space:nowrap;overflow:hidden}
+.hb{display:grid;grid-template-columns:minmax(110px,auto) 1fr 3.2em;gap:8px 10px;align-items:center}
+.hb .l{font-size:14px;font-weight:700;white-space:nowrap}
+.hb .t{height:18px;background:var(--track);border-radius:4px;overflow:hidden}
+.hb .t i{display:block;height:100%;background:var(--bar);border-radius:0 4px 4px 0}
+.hb .v{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+.mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.mini>*{border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;text-align:left;background:none;color:inherit;box-shadow:none;font-weight:400}
+.mini b{display:block;font-size:26px;font-variant-numeric:tabular-nums}
+.mini span{font-size:12.5px;color:var(--muted);font-weight:700}
+.mini .alert{border-color:var(--red)}.mini .alert b{color:var(--red)}
+.mini button:hover{border-color:var(--ink)}
+.cnt{display:inline-block;min-width:1.5em;background:var(--red);color:#fff;border-radius:999px;padding:0 6px;font-size:12px;text-align:center}
 h1{font-size:22px;margin:4px 0 2px}
 .sub{color:var(--muted);font-size:13px;margin:0 0 14px}
 .card{background:var(--paper);border:2px solid var(--ink);border-radius:var(--r);padding:14px;margin:12px 0;box-shadow:0 3px 0 var(--ink)}
@@ -67,17 +104,46 @@ thead th{background:var(--paper);font-size:12px}
   <div id="main" hidden>
     <div class="row" style="justify-content:space-between">
       <div class="tabs" role="tablist">
-        <button role="tab" data-t="sky" aria-selected="true">하늘 게시판 <span id="pendN"></span></button>
+        <button role="tab" data-t="live" aria-selected="true">실시간 현황</button>
+        <button role="tab" data-t="sky" aria-selected="false">하늘 게시판 <span id="pendN"></span></button>
         <button role="tab" data-t="fb" aria-selected="false">오류·의견 <span id="fbN"></span></button>
         <button role="tab" data-t="rank" aria-selected="false">방울 순위</button>
         <button role="tab" data-t="stats" aria-selected="false">참여 숫자</button>
         <button role="tab" data-t="notice" aria-selected="false">공지</button>
       </div>
-      <div class="row"><button id="reload">새로고침</button><a class="btn ok" href="live.html">실시간 현황판</a><a class="btn" id="sheetLink" target="_blank" rel="noopener">구글 시트 열기</a></div>
+      <div class="row"><button id="reload">새로고침</button><a class="btn" id="sheetLink" target="_blank" rel="noopener">구글 시트 열기</a></div>
     </div>
     <p class="note" id="stamp"></p>
 
-    <section data-p="sky">
+    <section data-p="live">
+      <div class="lg">
+        <div class="card lk s3"><div class="lab">오늘 게임을 연 휴대폰</div><div class="big" id="k1"></div><div class="meter"><i id="m1"></i></div><div class="note" id="n1"></div></div>
+        <div class="card lk s3"><div class="lab">오늘 판을 깬 휴대폰</div><div class="big" id="k2"></div><div class="meter"><i id="m2"></i></div><div class="note" id="n2"></div></div>
+        <div class="card lk live s3"><div class="lab">최근 30분 안에 판을 깬 휴대폰</div><div class="big" id="k3"></div><div class="note" id="n3"></div></div>
+        <div class="card lk s3"><div class="lab">지금까지 한 판이라도 깬 휴대폰</div><div class="big" id="k4"></div><div class="meter"><i id="m4"></i></div><div class="note" id="n4"></div></div>
+
+        <div class="card help s12" id="lvRisk" hidden><h2>걱정되는 말이 담긴 새 글이 있어요</h2><p class="note">아래 「새로 온 오류·의견」이나 「하늘 게시판」 탭에서 확인해 주세요.</p></div>
+        <div class="card s6"><h2>새로 온 오류·의견 <span id="lvFbN"></span></h2><p class="note lead">학생이 게임에서 보낸 글이에요. 여기서 바로 「확인함」·「고침」을 누를 수 있어요. 확인한 글은 「오류·의견」 탭에 모여요.</p><div id="lvFb"></div></div>
+        <div class="card s6"><h2>오늘 마음돌봄 활동</h2><p class="note lead">그날 숫자예요. 빨간 칸은 한 번 살펴봐 주세요. 칸을 누르면 해당 탭으로 가요.</p><div class="mini" id="care"></div></div>
+
+        <div class="card s6"><h2>오늘 언제 하고 있나</h2><p class="note lead">휴대폰마다 오늘 마지막으로 판을 깬 시각을 30분 단위로 모았어요. 테두리 칸이 지금 시간이에요.</p><div id="hours"></div></div>
+        <div class="card s6"><h2>판별로 깬 휴대폰</h2><p class="note lead">각 판을 한 번이라도 깬 휴대폰 수예요. 지난 판은 계속 열려 있어서 나중에 따라잡을 수 있어요.</p><div id="stages"></div></div>
+
+        <div class="card s6"><h2>오늘 마음 날씨</h2><p class="note lead">판에 들어갈 때 고른 날씨예요. 휴대폰마다 오늘 마지막으로 고른 하나만 세요.</p><div id="moods"></div></div>
+        <div class="card s6"><h2>날짜별 접속</h2><p class="note lead">게임을 연 휴대폰 수(하루 한 번). 1주차(11.23)부터.</p><div id="days"></div></div>
+      </div>
+      <details class="card"><summary><b>숫자를 읽을 때 알아 둘 것</b></summary>
+        <ul class="note" style="margin:8px 0 0;padding-left:18px">
+          <li>모두 <b>휴대폰 수</b>예요. 한 학생이 폰 두 대를 쓰면 2로 세고, 둘이 한 폰을 같이 쓰면 1로 세요. 전교생 수는 「참여 숫자」 탭에서 바꿔요.</li>
+          <li><b>반·학년별 숫자는 없어요.</b> 학생 정보를 받지 않게 만들어서 서버도 누가 어느 반인지 몰라요.</li>
+          <li>「게임을 연 휴대폰」·「마음 날씨」·「마음돌봄 활동」 숫자는 2026.11.23 오후 3시 20분쯤부터 모였어요. 그 전에 연 폰은 다음에 다시 열 때 세요.</li>
+          <li>「판을 깬 휴대폰」은 판을 깰 때 들어온 순위 기록이라 처음부터 정확해요. 판을 깨기 전에 그만둔 폰은 여기에 안 나와요.</li>
+          <li>선생님 모드(#all)로 해 본 것은 세지 않아요. 이 탭을 열어 두면 1분마다 저절로 새로고침돼요.</li>
+        </ul>
+      </details>
+    </section>
+
+    <section data-p="sky" hidden>
       <div class="card help" id="riskCard" hidden>
         <h2>걱정되는 말이 담긴 글이 있어요</h2>
         <p>아래 빨간 표시 글은 학생 앱에는 보이지 않아요(대기 상태). 글쓴이는 알 수 없으니, 다음 날 전체 공지나 Wee클래스 홍보로 도움을 청할 곳을 한 번 더 알려 주세요.</p>
@@ -142,8 +208,8 @@ function call(body){
   return fetch(URL_,{method:'POST',body:JSON.stringify(Object.assign({a:'admin',pw:PW},body||{})),headers:{'Content-Type':'text/plain;charset=utf-8'}}).then(r=>r.json());
 }
 function load(body){
-  $('#stamp').textContent='불러오는 중…';
-  return call(body).then(j=>{
+  $('#stamp').textContent='불러오는 중…'; busy=true;
+  return call(body).then(j=>{ busy=false; at=Date.now();
     if(!j||!j.ok){
       if(j&&j.msg==='pw'){ PW=''; try{sessionStorage.removeItem('fog-admin')}catch(e){} showLogin('비밀번호가 맞지 않아요.'); }
       else if(j&&j.msg==='locked'){ showLogin('비밀번호를 여러 번 틀려서 10분 동안 잠겼어요.'); }
@@ -152,15 +218,20 @@ function load(body){
     }
     D=j; try{ sessionStorage.setItem('fog-admin',PW); }catch(e){}
     $('#login').hidden=true; $('#main').hidden=false; render();
-  }).catch(e=>{ showLogin('서버에 연결하지 못했어요. 인터넷 연결이나 서버 주소를 확인해 주세요.'); });
+  }).catch(e=>{ busy=false; at=Date.now(); if(D){ $('#stamp').innerHTML='<span class="err">연결이 잠깐 끊겼어요. 1분 뒤 다시 해 볼게요.</span>'; return; } showLogin('서버에 연결하지 못했어요. 인터넷 연결이나 서버 주소를 확인해 주세요.'); });
 }
 function showLogin(msg){ $('#login').hidden=false; $('#main').hidden=true; $('#lerr').textContent=msg||''; }
 $('#go').onclick=()=>{ PW=$('#pw').value.trim(); if(!PW) return; $('#lerr').textContent=''; load(); };
 $('#reload').onclick=()=>load();
-document.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('[role=tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
-  document.querySelectorAll('section[data-p]').forEach(s=>s.hidden=s.dataset.p!==b.dataset.t);
-});
+let TAB='live';
+function tab(t){ TAB=t; document.querySelectorAll('[role=tab]').forEach(x=>x.setAttribute('aria-selected',x.dataset.t===t));
+  document.querySelectorAll('section[data-p]').forEach(s=>s.hidden=s.dataset.p!==t);
+  if(t==='live'&&D&&Date.now()-at>60e3) load(); }
+document.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+/* 실시간 현황 탭을 보고 있는 동안 1분마다 새로고침 (다른 탭에서 글을 고르거나 쓰는 중에는 건드리지 않는다) */
+let at=0, busy=false;
+setInterval(()=>{ if(!D||document.hidden||TAB!=='live'||busy) return; const s=Math.max(0,60-Math.round((Date.now()-at)/1000)); if(s===0) load(); else $('#stamp').textContent='마지막으로 불러온 시각: '+D.now+' · '+s+'초 뒤 새로고침'; },1000);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&D&&TAB==='live'&&Date.now()-at>60e3) load(); });
 
 function render(){
   $('#stamp').textContent='마지막으로 불러온 시각: '+D.now;
@@ -181,10 +252,11 @@ function render(){
   /* 공지 */
   $('#notice').value=D.notice||'';
   renderStats();
+  renderLive();
 }
 $('#saveNotice').onclick=()=>{ $('#nmsg').textContent='저장 중…'; load({op:'notice',notice:$('#notice').value.trim()}).then(()=>$('#nmsg').textContent='저장했어요.'); };
 $('#clearNotice').onclick=()=>{ $('#notice').value=''; $('#saveNotice').onclick(); };
-$('#total').oninput=()=>{ try{localStorage.setItem('fog-admin-total',$('#total').value)}catch(e){} if(D) renderStats(); };
+$('#total').oninput=()=>{ try{localStorage.setItem('fog-admin-total',$('#total').value)}catch(e){} if(D){ renderStats(); renderLive(); } };
 
 /* ---- 참여 숫자 ---- */
 const WEEKS=[['안내 주간','2026-11-16','2026-11-22'],['1주차','2026-11-23','2026-11-29'],['2주차','2026-11-30','2026-12-06'],['3주차','2026-12-07','2026-12-13']];
@@ -224,9 +296,48 @@ $('#csv').onclick=()=>{
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='회색안개작전_참여숫자_'+D.now.slice(0,10)+'.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
 };
 /* ---- 오류·의견 ---- */
+/* ---- 실시간 현황 ---- */
+const STAGES=['11.23 월 · 등굣길','11.24 화 · 운동장','11.25 수 · 뒷산 길','11.26 목 · 보스','11.27 금 · 쉬어 가는 판','훈련장'];   /* 게임 DAYS 순서 */
+const MOODS=[['m_sun','☀️ 맑음'],['m_cloud','⛅ 구름'],['m_fog','🌫️ 안개'],['m_rain','🌧️ 비'],['m_storm','⚡ 번개']];
+const pctOf=(a,b)=>b?Math.round(a/b*100):0;
+const mins=s=>{ const m=/^(\d{4}-\d\d-\d\d) (\d\d):(\d\d)/.exec(s||''); return m?{d:m[1],t:+m[2]*60+ +m[3]}:null; };
+function renderLive(){
+  const N=Math.max(1,+$('#total').value||180), today=D.now.slice(0,10), nowT=(mins(D.now)||{t:0}).t;
+  const T=(D.stats||[]).find(r=>r.date===today)||{};
+  const R=(D.rank||[]).map(r=>Object.assign({},r,{L:mins(r.last)}));
+  const todayR=R.filter(r=>r.L&&r.L.d===today), recent=todayR.filter(r=>nowT-r.L.t<=30).length, visit=+T.visit||0;
+  $('#k1').innerHTML=visit+' <small>/ '+N+'</small>'; $('#m1').style.width=Math.min(100,pctOf(visit,N))+'%'; $('#n1').textContent='전교생의 '+pctOf(visit,N)+'%';
+  $('#k2').innerHTML=todayR.length+' <small>/ '+N+'</small>'; $('#m2').style.width=Math.min(100,pctOf(todayR.length,N))+'%';
+  $('#n2').textContent='오늘 처음 깬 판 '+(+T.raid||0)+'개 · 오늘 판을 오늘 깬 폰 '+(+T.brief||0);
+  $('#k3').textContent=recent; $('#n3').textContent=recent?'지금 하고 있는 요원들이 있어요':'조용해요';
+  $('#k4').innerHTML=R.length+' <small>/ '+N+'</small>'; $('#m4').style.width=Math.min(100,pctOf(R.length,N))+'%'; $('#n4').textContent='전교생의 '+pctOf(R.length,N)+'% · 1주차 시작부터';
+  if(!D.rank) $('#n4').innerHTML='<span class="err">서버 코드가 예전 버전이라 순위 기록을 못 받았어요.</span>';
+  /* 오늘 시간대: 15시(그날 판이 열림)~22시(소등), 30분 칸. 그 밖에 깬 기록이 있으면 칸을 넓힌다 */
+  let lo=15*60, hi=22*60; todayR.forEach(r=>{ lo=Math.min(lo,Math.floor(r.L.t/30)*30); hi=Math.max(hi,Math.floor(r.L.t/30)*30+30); });
+  const slots=[]; for(let t=lo;t<hi;t+=30) slots.push({t,n:0}); todayR.forEach(r=>{ const s=slots[Math.floor((r.L.t-lo)/30)]; if(s) s.n++; });
+  const hm=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
+  $('#hours').innerHTML=todayR.length?cols(slots.map(s=>({v:s.n,lab:s.t%60?'':String(s.t/60)+'시',tip:hm(s.t)+'~'+hm(s.t+30)+' · '+s.n+'대',now:nowT>=s.t&&nowT<s.t+30}))):'<p class="empty">오늘은 아직 판을 깬 휴대폰이 없어요.</p>';
+  const cnt={}; R.forEach(r=>Object.keys(r.b||{}).forEach(k=>{ cnt[k]=(cnt[k]||0)+1; }));
+  const sk=[0,1,2,3,4].concat(Object.keys(cnt).map(Number).filter(k=>k>4).sort((a,b)=>a-b));
+  $('#stages').innerHTML=R.length?hbars(sk.map(k=>({l:STAGES[k]||((k+1)+'번째 판'),v:cnt[k]||0})),Math.max(1,R.length)):'<p class="empty">아직 판을 깬 기록이 없어요.</p>';
+  const mv=MOODS.map(([k,l])=>({l,v:Math.max(0,+T[k]||0)})), msum=mv.reduce((a,x)=>a+x.v,0);
+  $('#moods').innerHTML=msum?hbars(mv,Math.max(...mv.map(x=>x.v)))+'<p class="note" style="margin:8px 0 0">모두 '+msum+'대</p>':'<p class="empty">오늘 고른 날씨가 아직 없어요.</p>';
+  const pend=(D.posts||[]).filter(p=>p.status!=='공개'&&p.status!=='숨김').length, phone=+T.phone||0, risk=+T.risk||0;
+  const care=[[(+T.ord_done||0)+(+T.ord_alt||0),'지령 했다고 보고'],[+T.ord_no||0,'지령 못 했다고 보고'],[+T.game||0,'마음돌봄 방 들른 판'],
+    [phone,'도움전화 화면 연 폰',phone>0],[risk,'걱정되는 말 감지',risk>0],[pend,'확인 기다리는 하늘 글',false,'sky']];
+  $('#care').innerHTML=care.map(([v,l,a,t])=>t?`<button data-go="${t}"${a?' class="alert"':''}><b>${v}</b><span>${esc(l)} →</span></button>`:`<div${a?' class="alert"':''}><b>${v}</b><span>${esc(l)}</span></div>`).join('');
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>tab(b.dataset.go));
+  const DR=(D.stats||[]).filter(r=>r.date>='2026-11-23').sort((a,b)=>a.date<b.date?-1:1), wd=d=>'일월화수목금토'[new Date(d+'T12:00:00+09:00').getUTCDay()];
+  $('#days').innerHTML=DR.length?cols(DR.map(r=>({v:+r.visit||0,lab:r.date.slice(5).replace('-','.')+' '+wd(r.date),tip:r.date+' · '+(+r.visit||0)+'대',now:r.date===today}))):'<p class="empty">11.23부터 쌓여요.</p>';
+}
+function cols(a){ const mx=Math.max(1,...a.map(x=>x.v))/0.86;   /* 가장 높은 막대 위에도 숫자 자리가 남게 */
+  return '<div class="cols" role="img" aria-label="'+esc(a.map(x=>x.tip).join(', '))+'">'+a.map(x=>`<div class="col" title="${esc(x.tip)}">${x.v?`<em style="bottom:${x.v/mx*100}%">${x.v}</em>`:''}<i${x.now?' class="now"':''} style="height:${x.v/mx*100}%"></i></div>`).join('')+'</div>'
+    +'<div class="xl">'+a.map(x=>`<span>${esc(x.lab)}</span>`).join('')+'</div>'; }
+function hbars(a,mx){ return '<div class="hb">'+a.map(x=>`<span class="l">${esc(x.l)}</span><span class="t" title="${esc(x.l)} · ${x.v}"><i style="width:${mx?x.v/mx*100:0}%"></i></span><span class="v">${x.v}</span>`).join('')+'</div>'; }
 function renderFb(){
   const F=D.fb;
   if(!F){
+    $('#lvFb').innerHTML='<p class="err">서버 코드가 예전 버전이라 글을 받을 수 없어요.</p>';
     $('#fbN').textContent=''; $('#fbOldN').textContent=''; $('#fbRisk').hidden=true; $('#fbMore').hidden=true; $('#fbOldSrv').hidden=true; $('#fbOld').innerHTML='';
     $('#fbNew').innerHTML='<p class="err">서버 코드가 예전 버전이라 아직 글을 받을 수 없어요.</p><p class="note">Apps Script에 새 <code>server/Code.gs</code>를 붙여 넣고 「배포 → 배포 관리 → 연필(수정) → 버전: 새 버전 → 배포」를 하면 쓸 수 있어요.</p>';
     return;
@@ -246,6 +357,9 @@ function renderFb(){
   const row=(f,btns)=>`<div class="post"><div><div class="t">${f.flag?`<span class="flag${f.flag==='걱정되는 말'?'':' f2'}">${esc(f.flag)}</span>`:''}<span class="pill">${esc(f.k)}</span> ${esc(f.t)}</div><div class="m">${esc(f.at)}${f.status==='고침'?' · <span class="pill p공개">고침</span>':''}${f.c?' · '+esc(f.c):''}</div></div><div class="row">${btns||'<span class="note">번호 칸이 빈 줄이에요. 시트에서 확인해 주세요.</span>'}</div></div>`;
   const bad=D.fbErr?'<p class="err">의견 목록을 읽지 못했어요. 구글 시트의 「의견」 탭을 확인해 주세요.</p>':'';
   $('#fbNew').innerHTML=bad+(fresh.length?fresh.map(f=>row(f,btn(f,'확인함','확인함','ok')+btn(f,'고침','고침'))).join(''):bad?'':'<p class="empty">새로 온 글이 없어요.</p>');
+  $('#lvFbN').innerHTML=fresh.length?'<span class="cnt">'+fresh.length+'</span>':'';
+  $('#lvRisk').hidden=!(fresh.some(f=>f.flag==='걱정되는 말')||D.posts.some(p=>p.flag==='걱정되는 말'&&p.status!=='공개'&&p.status!=='숨김'));
+  $('#lvFb').innerHTML=bad+(fresh.length?fresh.slice(0,8).map(f=>row(f,btn(f,'확인함','확인함','ok')+btn(f,'고침','고침'))).join('')+(fresh.length>8?'<p class="note">'+(fresh.length-8)+'개 더 있어요. 「오류·의견」 탭에서 보세요.</p>':''):bad?'':'<p class="empty">새로 온 글이 없어요.</p>');
   $('#fbOld').innerHTML=old.length?old.map(f=>row(f,(f.status==='고침'?'':btn(f,'고침','고침'))+btn(f,'새 글','새 글로'))).join(''):'<p class="empty">없어요.</p>';
   document.querySelectorAll('[data-fb]').forEach(x=>x.onclick=()=>{ x.disabled=true; load({op:'fb',id:+x.dataset.fb,status:x.dataset.s}); });
 }

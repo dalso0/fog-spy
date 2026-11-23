@@ -6,6 +6,8 @@
 (function(){
   const URL_ = (window.HQ_URL||'').trim();
   const ON = /^https:\/\/script\.google(usercontent)?\.com\//.test(URL_);
+  /* window.HQ_NEWS=false 이면 합계만 보내고 본부 소식(공지·전교 정화·표어·곡)은 받지 않는다 (횡스크롤 게임 stage.html) */
+  const NEWS=window.HQ_NEWS!==false;
   const LK='fog-hq-v1';
   let L={}; try{ L=JSON.parse(localStorage.getItem(LK)||'{}')||{}; }catch(e){ L={}; }
   const saveL=()=>{ try{ localStorage.setItem(LK,JSON.stringify(L)); }catch(e){} };
@@ -30,14 +32,14 @@
   /* ---- 본부 소식 받기(1분 캐시) ---- */
   let pending=null;
   function state(force){
-    if(!ON) return Promise.resolve(null);
+    if(!ON||!NEWS) return Promise.resolve(null);
     if(!force && L.st && Date.now()-(L.stAt||0)<60e3) return Promise.resolve(L.st);
     if(pending) return pending;
     pending=fetch(URL_+'?a=state',{cache:'no-store'}).then(r=>r.json()).then(j=>{ pending=null; if(j&&j.ok){ L.st=j; L.stAt=Date.now(); saveL(); return j; } return L.st||null; })
       .catch(()=>{ pending=null; return L.st||null; });
     return pending;
   }
-  function cached(){ return ON ? (L.st||null) : null; }
+  function cached(){ return ON&&NEWS ? (L.st||null) : null; }
 
   /* ---- 하늘 게시판 글 보내기 ---- */
   function sky(t){
@@ -47,5 +49,5 @@
   }
 
   window.HQ={on:ON, once, add, mood, state, cached, sky, flush};
-  if(ON){ once('visit'); state(); }
+  if(ON){ once('visit'); if(NEWS) state(); }
 })();

@@ -73,7 +73,7 @@ thead th{background:var(--paper);font-size:12px}
         <button role="tab" data-t="stats" aria-selected="false">참여 숫자</button>
         <button role="tab" data-t="notice" aria-selected="false">공지</button>
       </div>
-      <div class="row"><button id="reload">새로고침</button><a class="btn" id="sheetLink" target="_blank" rel="noopener">구글 시트 열기</a></div>
+      <div class="row"><button id="reload">새로고침</button><a class="btn ok" href="live.html">실시간 현황판</a><a class="btn" id="sheetLink" target="_blank" rel="noopener">구글 시트 열기</a></div>
     </div>
     <p class="note" id="stamp"></p>
 
@@ -187,7 +187,7 @@ $('#clearNotice').onclick=()=>{ $('#notice').value=''; $('#saveNotice').onclick(
 $('#total').oninput=()=>{ try{localStorage.setItem('fog-admin-total',$('#total').value)}catch(e){} if(D) renderStats(); };
 
 /* ---- 참여 숫자 ---- */
-const WEEKS=[['1주차','2026-11-16','2026-11-22'],['2주차','2026-11-23','2026-11-29'],['3주차','2026-11-30','2026-12-06']];
+const WEEKS=[['안내 주간','2026-11-16','2026-11-22'],['1주차','2026-11-23','2026-11-29'],['2주차','2026-11-30','2026-12-06'],['3주차','2026-12-07','2026-12-13']];
 function sum(rows,k){ return rows.reduce((a,r)=>a+(+r[k]||0),0); }
 function renderStats(){
   const R=D.stats.slice().sort((a,b)=>a.date<b.date?-1:1), M=D.metrics, N=Math.max(1,+$('#total').value||180);
@@ -200,7 +200,7 @@ function renderStats(){
     [avg.toFixed(1),'하루 평균 접속 ('+days.length+'일)'],
     [pct(avg/N),'하루 평균 참여율'],
     [peak?peak.visit+' ('+peak.date.slice(5)+')':'-','가장 많이 들어온 날'],
-    [sum(R,'brief'),'저녁 브리핑 완료'],
+    [sum(R,'brief'),'그날 판을 그날 깸'],
     [ot?pct((od+oa)/ot):'-','지령 수행률 (했다+비슷하게)'],
     [sum(R,'decode'),'주간 암호 해독'],
     [sum(R,'finale'),'최종 작전 완료'],
@@ -211,7 +211,7 @@ function renderStats(){
   $('#kpis').innerHTML=K.map(([v,l])=>`<div class="kpi"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join('');
   /* 주차별 */
   const wk=WEEKS.map(([n,a,b])=>({n,rows:R.filter(r=>r.date>=a&&r.date<=b)}));
-  const rest=R.filter(r=>r.date<WEEKS[0][1]||r.date>WEEKS[2][2]);
+  const rest=R.filter(r=>r.date<WEEKS[0][1]||r.date>WEEKS[WEEKS.length-1][2]);
   if(rest.length) wk.push({n:'기간 밖',rows:rest});
   $('#weekly').innerHTML=`<table><thead><tr><th>항목</th>${wk.map(w=>`<th>${w.n}</th>`).join('')}<th>전체</th></tr></thead><tbody>${M.map(([k,l])=>`<tr><td>${esc(l)}</td>${wk.map(w=>`<td>${sum(w.rows,k)}</td>`).join('')}<td><b>${sum(R,k)}</b></td></tr>`).join('')}</tbody></table>`;
   /* 날짜별 */

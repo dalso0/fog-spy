@@ -727,7 +727,6 @@ function step(dt){
   // 깃발, 말풍선
   if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; stuck=0; if(bossC) bossC.blk=bossC.wk=bossC.hits=0; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
   if(!room) for(const s of says) if(!s.done&&P.x>s.x){ s.done=true; say(s.t); }
-  if(!room&&!radio.said&&A.RADIO&&P.x>Math.min(radio.x,door.x)-140){ radio.said=true; say('문 앞 라디오에 다가가면 오늘의 곡을 들을 수 있다 삐약.',3.6); }
   // 말풍선은 한 번 뜨면 적어도 1.6초는(표어는 1초) 그대로 두고, 다음 말은 그 뒤에 한 번에 바꾼다
   if(bubble&&tNow>=bubble.until) bubble=null;
   if(bq.length&&(!bubble||tNow-bubble.t0>=bubble.min)){ const n=bq.shift(); bubble={t:n.t,t0:tNow,until:tNow+n.dur,min:n.min}; }
@@ -1181,7 +1180,6 @@ function toyCard(k,fresh){ if(!(window.WAX&&WAX.toy)) return hqCard();
   try{ ov.querySelector('[data-t].on').focus({preventScroll:true}); }catch(e){} }   // 키보드로 고를 때는 지금 고른 말랑이 버튼에서 시작한다
 // 본부 서버에서 받은 소식: 전교 정화 합계, 공지 한 줄, 오늘의 추천곡. 연결이 없으면 아무것도 보이지 않는다 (연결이 없을 때의 추천곡은 본부 문 앞 라디오에만 나온다)
 function hqInfo(){ const put=s=>{ const r=ov.querySelector('#raid'); if(!r||!s||!s.ok) return;
-    { const h=ov.querySelector('#hs'), sg=songEl(); h.textContent=''; if(sg) h.append(' ',sg); }
     if(window.HQ_NEWS!=='game'&&s.raid&&s.raid.goal>0){ r.querySelector('b').style.width=Math.min(100,Math.round(s.raid.total/s.raid.goal*100))+'%'; ov.querySelector('#raidn').textContent=s.raid.total+' / '+s.raid.goal; r.hidden=false; }
     const n=ov.querySelector('#ntc'); if(s.notice){ n.textContent='공지 · '+s.notice; n.hidden=false; } };
   put(HQ.cached()); HQ.state().then(put).catch(()=>{}); }
@@ -1197,21 +1195,19 @@ function briefing(){ const sv=loadSave(), cl=sv.clear||{}, rp=(sv.rep||{})[stage
    어땠는지 고른 것과 지금 해 본 것은 어디에도 남기지 않는다. 서버에는 예전처럼 그 판의 첫 보고(했다/안 했다)만 간다 */
 function reportCard(){ const o=DAYS[stageNo].report, yest=new Date(kst()-864e5).toISOString().slice(0,10);
   card(`<div class="eyebrow">${(loadSave().day||{})[stageNo-1]===yest?'어제의':'지난'} 지령 보고</div><h2>「${o[0]}」</h2><p>${o[1]} 해 봤나?</p>
-  <div class="row"><button id="r1">했다</button><button id="r2">안 했다</button></div>
-  <p class="note">안 했어도 괜찮다. 솔직하게 고르면 된다.</p>`);
+  <div class="row"><button id="r1">했다</button><button id="r2">안 했다</button></div>`);
   // 서버에는 그 판의 첫 보고만 센다
   const pick=k=>{ const sv=loadSave(); sv.rep=sv.rep||{}; if(!sv.rep[stageNo]){ sv.rep[stageNo]=k; putSave(sv); hq('add','ord_'+k,1); } bonus=true; bonusNote='보고 완료. 색 방패 1개와 색 방울 5개'; SFX.tick();
-    if(k==='done') howCard(o); else if(o[2]) nowCard(o); else moodCard('보고 받았다. 안 한 날도 있는 법이다.'); };
+    if(k==='done') howCard(o); else if(o[2]) nowCard(o); else moodCard('안 한 날도 있는 법이다.'); };
   on('r1',()=>pick('done')); on('r2',()=>pick('no')); }
 const HOW=[['할 만했다','할 만했으면 또 해도 된다.'],['별 느낌 없었다','별 느낌이 없을 때도 있다.'],['좀 어색했다','처음 하는 일은 원래 어색하다.'],['딴생각이 났다','딴생각이 난 걸 알아차렸다면 잘한 거다.']];
 function howCard(o){ card(`<div class="eyebrow">지령 보고 · 「${o[0]}」</div><h2>해 보니 어땠나</h2>
-  <div class="row">${HOW.map((h,i)=>`<button data-h="${i}">${h[0]}</button>`).join('')}</div>
-  <p class="note">정답은 없다. 고른 건 어디에도 남지 않는다.</p>`);
+  <div class="row">${HOW.map((h,i)=>`<button data-h="${i}">${h[0]}</button>`).join('')}</div>`);
   ov.firstChild.classList.add('wide');
-  ov.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ SFX.tick(); moodCard('보고 받았다. '+HOW[+b.dataset.h][1]); }); }
+  ov.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ SFX.tick(); moodCard(HOW[+b.dataset.h][1]); }); }
 function nowCard(o){ card(`<div class="eyebrow">지령 「${o[0]}」</div><h2>지금 해 볼까</h2><p>${o[2]}</p>
   <div class="row"><button class="go" id="n1">지금 해 보기</button><button id="n2">그냥 출발</button></div>`);
-  on('n2',()=>{ SFX.tick(); moodCard('보고 받았다. 안 한 날도 있는 법이다.'); });
+  on('n2',()=>{ SFX.tick(); moodCard('안 한 날도 있는 법이다.'); });
   on('n1',()=>{ SFX.tick(); card(`<div class="eyebrow">지령 「${o[0]}」 · 지금</div><h1 id="nc">10</h1><p>${o[2]}</p><div class="row"><button class="go" id="n3" hidden>다 했다</button></div>`);
     const box=ov.firstChild, t0=Date.now(), iv=setInterval(()=>{ if(ov.firstChild!==box){ clearInterval(iv); return; }
       const left=10-Math.floor((Date.now()-t0)/1000); box.querySelector('#nc').textContent=Math.max(0,left);
@@ -1457,8 +1453,9 @@ function finish(){ running=false; SFX.clear();
     <div class="order"><div class="eyebrow">${d.nl||'내일의 지령'}</div><p><b>「${d.next[0]}」</b> ${d.next[1]}</p></div>
     <p class="note" id="fr" hidden></p>
     <div class="row">${newToy?'<button class="go" id="f2">말랑이 받기</button><button id="f1">본부로</button>':'<button class="go" id="f1">본부로</button>'}</div>`);
-    { const n=ov.querySelector('#fr'), sg=songEl(), [sn,cnt]=fr; if(sn){ const b=document.createElement('b'); b.textContent=SNACK(); n.append(b); if(cnt||sg) n.append(' '); ov.firstChild.classList.add('sn'); }
-      if(cnt) n.append('전교 정화에 1 보탰어요.'); if(cnt&&sg) n.append(' '); if(sg) n.append(sg); n.hidden=!(cnt||sg||sn); }
+    // 오늘의 곡 줄과 「전교 정화에 1 보탰어요」는 카드에 띄우지 않는다(2026-11-26 선생님: 굳이 필요 없다). 곡은 본부 문 앞 라디오에만
+    { const n=ov.querySelector('#fr'), [sn]=fr; if(sn){ const b=document.createElement('b'); b.textContent=SNACK(); n.append(b); ov.firstChild.classList.add('sn'); }
+      n.hidden=!sn; }
     ov.firstChild.classList.add('wide'); on('f1',()=>{ SFX.tick(); rankDue?rankCard(true):hqCard(); }); if(newToy) on('f2',()=>{ SFX.item(); toyCard(tk,true); }); };
   card(`${head}<h1>${d.done||'글자 조각 「'+d.letter+'」 확보'}</h1>
   <div class="stat" style="grid-template-columns:repeat(${1+[care.b,care.s,care.n].filter(x=>x>0).length},1fr)"><div><b>${coinsN}</b>색 방울 (조각 ${pcs}/3)</div>${care.b?`<div><b>${care.b}</b>깊은 숨</div>`:''}${care.s?`<div><b>${care.s}</b>가만히 있기</div>`:''}${care.n?`<div><b>${care.n}</b>알아차린 마음</div>`:''}</div>
@@ -1512,8 +1509,6 @@ function rankCard(final){ rankDue=false;
     else t='요원 '+(j.code||agent().code)+' · 색 방울을 모으면 순위에 올라가요.';
     if(j.changed) t+=' 코드가 다른 요원과 겹쳐서 「'+j.code+'」로 바뀌었어요.';
     me.textContent=t; me.hidden=false; }); }
-// 카드에 붙는 오늘의 추천곡 한 줄: 관리 시트의 음악 탭에 그날 곡이 있을 때만 나온다 (게임에 들어 있는 요일별 곡은 본부 문 앞 라디오에만 나온다)
-function songEl(){ const st=HQ.cached(); if(!(st&&st.date===today()&&st.song&&cut(st.song.t,40))) return null; const o=songNow(), e=document.createElement('span'); e.className='song'; e.textContent='본부 라디오 오늘의 곡: '+o.t+(o.a?' · '+o.a:''); return e; }
 
 /* ---------- 라디오 곡 듣기 ----------
    곰이 땅을 딛고 라디오 앞에 서 있으면 아래 가운데에 「유튜브에서 듣기」가 뜬다. 누르면 새 창에서 그 곡을 유튜브에서 찾는다

@@ -257,6 +257,10 @@ function tone(f,d,type='square',v=.04,slide=0,delay=0){ if(!sound||!ac()) return
   g.gain.setValueAtTime(v,t0); g.gain.linearRampToValueAtTime(0,t0+d); o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0+d+.02);}catch(e){} }
 function noise(d,v){ if(!sound||!ac()) return; try{ const n=Math.floor(AC.sampleRate*d), b=AC.createBuffer(1,n,AC.sampleRate), a=b.getChannelData(0); for(let i=0;i<n;i++) a[i]=(Math.random()*2-1)*(1-i/n);
   const s=AC.createBufferSource(), g=AC.createGain(); s.buffer=b; g.gain.value=v; s.connect(g); g.connect(AC.destination); s.start(); }catch(e){} }
+/* 싱잉볼: 사인파 몇 개를 살짝 어긋나게 겹쳐 길게 울린다 (소리 파일 없이 코드로) */
+function bowl(v=.07,delay=0){ if(!sound||!ac()) return; try{ const t0=AC.currentTime+delay, f=233;
+  for(const [m,a,d] of [[1,1,7],[1.006,.7,7],[2.71,.45,4.5],[5.18,.2,2.6]]){ const o=AC.createOscillator(), g=AC.createGain(); o.type='sine'; o.frequency.value=f*m;
+    g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(v*a,t0+.02); g.gain.exponentialRampToValueAtTime(.0001,t0+d); o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0+d+.05); } }catch(e){} }
 const SFX={
   jump:()=>tone(330,.13,'square',.035,340), coin:()=>{ tone(1047,.06,'square',.03); tone(1568,.15,'square',.03,0,.06); },
   bump:()=>tone(140,.07,'triangle',.09,-50), brk:()=>{ noise(.16,.08); tone(190,.1,'square',.03,-100); },
@@ -511,6 +515,7 @@ function drawTopMsgs(cx,hz){ const L=room.msgs; if(!L) return; const n=L.length,
 const K={l:false,r:false,j:false,b:false}; let jBuf=0, prevB=false;
 let bolt=null, boltNext=2.5;   // 날씨 「번개」: 지금 치는 번개와 다음 번개 시각
 let P, cam, maxX, cp, tNow, playT, running=false, paused=false, bonus=false, bonusNote='', mood='sun';
+let cush=null, med=null;   // 명상 방석과 숨 고르기 진행
 let bq=[], parts=[], gusts=[], clouds=[], bubble=null, bubA=1, msg=null, deaths=0, shake=0, freeze=0, chickX=40, chickY=150, warp=null, stuck=0, lift=null;
 /* 판 첫 자리: ◀▶ 버튼 오른쪽 끝보다 조금 더 오른쪽 (키 작은 폰에서 늘곰이 버튼 뒤에 숨지 않게). 화면이 넓으면 예전처럼 두 칸째 */
 function startX(){ let r=0; try{ const el=document.getElementById('pad'); r=(el.offsetLeft+el.offsetWidth)*dprU/k; }catch(e){} return Math.max(2*T,Math.min(8*T,Math.ceil(r+8))); }
@@ -518,7 +523,7 @@ function reset(){
   build();
   P={x:startX(),y:GTOP-22,w:12,h:22,vx:0,vy:0,face:1,ground:true,coy:0,grey:0,inv:0,shield:bonus?1:0,coins:bonus?5:0,pcs:0,
      charge:0,charging:false,full:false,glide:false,jumpHeld:false,boost:false,runT:0,airT:0,coat:false,puffCd:0,bHold:0};
-  BGM.rewind(); care={b:0,s:0,n:0};
+  BGM.rewind(); care={b:0,s:0,n:0}; cush={x:P.x+26,w:28,still:0,lock:false}; med=null;
   held=-1; cam=0; maxX=P.x; cp={x:P.x,y:P.y}; tNow=0; playT=0; parts=[]; gusts=[]; clouds=[]; bubble=null; bq=[]; msg=null; deaths=0; shake=0; bolt=null; boltNext=2.5; freeze=0; chickX=P.x+30; chickY=P.y-20; warp=null; stuck=0; lift=null;
   // 금주의 표어는 길가 간판으로만 보여 준다 (말풍선까지 같은 말을 하면 겹친다)   // 판마다 첫 말은 간판의 표어. 다음 말이 오면 1초 뒤에 자리를 내준다 (첫 판의 조작 안내가 늦지 않게)
 }
@@ -597,6 +602,17 @@ const hit=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 function dynSolids(){ const a=[]; for(const c of curtains) if(c.alive) a.push({x:c.x,y:-300,w:c.w,h:GTOP+300,cur:c}); for(const w of walls) if(w.alive) a.push({x:w.x,y:-300,w:w.w,h:GTOP+300,wall:w}); return a; }
 function puff(x,y,n,col,sp=45,s=2){ for(let i=0;i<n;i++){ const a=Math.random()*6.28, v=sp*(.4+Math.random()); const t=.3+Math.random()*.3; parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-20,t,T0:t,col,s,g:120}); } }
 function dust(x,y,dir){ for(let i=0;i<3;i++){ const t=.25+Math.random()*.15; parts.push({x:x+(Math.random()-.5)*6,y:y-1,vx:-dir*(10+Math.random()*25),vy:-8-Math.random()*14,t,T0:t,col:'#efe6d2',s:2,g:20}); } }
+/* 숨 고르기: 4초 들이쉬고 6초 내쉬기를 세 번. 끝까지 하면 하루 한 번 색 방울 3개. 움직이면 그만둔다 */
+const MED_IN=4, MED_OUT=6, MED_N=3;
+function medStart(){ med={t:0,n:0}; cush.still=0; cush.lock=true; P.vx=0; P.x=cush.x+cush.w/2-6; K.j=false; jBuf=0; bowl(); }
+function medStep(dt){ playT-=dt; med.t+=dt;   // 숨 고르는 동안은 걸린 시간에 넣지 않는다
+  if(med.t>.8&&(K.l||K.r||K.j)){ med=null; note('숨 고르기를 멈췄다'); return; }
+  const n=Math.floor(med.t/(MED_IN+MED_OUT)); if(n>med.n&&n<MED_N){ med.n=n; bowl(.04); }
+  if(med.t>=MED_N*(MED_IN+MED_OUT)){ med=null; care.b++; bowl(.06);
+    const sv=loadSave(), first=sv.cush!==today();
+    if(first&&!teacher()){ sv.cush=today(); putSave(sv); }
+    if(first){ for(let i=0;i<3;i++) popCoin(P.x+6+(i-1)*9,P.y-14,i+1); note('숨 고르기 끝. 색 방울 3개'); } else note('숨 고르기 끝. 방울은 하루에 한 번');
+    say('오늘 내 마음 날씨는 어떤지 떠올려 봐 삐약.'); } }
 function say(t,dur=4.6,min=1.6){ if(bubble&&bubble.t===t){ bubble.until=tNow+dur; return; } bq=bq.filter(q=>q.t!==t); bq.push({t,dur,min}); if(bq.length>2) bq.shift(); }
 function note(t){ msg={t,until:tNow+1.7}; }
 function popCoin(x,y,h){ P.coins++; parts.push({pop:true,x:x-4,y:y-10,vx:0,vy:-175,t:.42,T0:.42,h:(h||0)%4,g:520}); SFX.coin(); }
@@ -640,6 +656,7 @@ function step(dt){
   if(freeze>0){ freeze-=dt; return; }
   if(warp){ warpStep(dt); return; }
   if(lift){ liftStep(dt); return; }
+  if(med){ medStep(dt); return; }
   // 주홍 코트를 입었으면 숨 버튼을 톡 눌러 짧은 바람을 쏜다 (길게 누르면 평소처럼 모은다)
   P.puffCd-=dt; P.bHold=K.b?P.bHold+dt:0;
   if(K.b&&!prevB&&P.coat&&P.puffCd<=0){ gusts.push({x:P.x+6+P.face*8,y:P.y+9,dir:P.face,left:84,pow:.3,puff:true}); P.puffCd=.38; SFX.gust(.3); } prevB=K.b;
@@ -681,6 +698,10 @@ function step(dt){
         if(!nudged){ let best=sol[0],bd=1e9; for(const c of sol){ const d=Math.abs((c+.5)*T-(P.x+P.w/2)); if(d<bd){bd=d;best=c;} }
           P.y=(r+1)*T+.01; P.vy=30; P.jumpHeld=false; headHit(best,r); } } } }
   if(P.ground){ P.coy=.1; P.glide=false; P.airT=0; if(Math.abs(P.vx)>8) P.runT+=dt*Math.abs(P.vx)/MAXV; } else P.airT+=dt;
+  // 명상 방석: 방석 위에 가만히 서 있으면 숨 고르기가 시작된다
+  if(cush&&!room){ const on=P.ground&&Math.abs(P.x+6-(cush.x+cush.w/2))<11;
+    if(!on) cush.lock=false;
+    if(on&&!cush.lock&&Math.abs(P.vx)<1&&!K.l&&!K.r&&!K.j&&!K.b&&!P.charging){ cush.still+=dt; if(cush.still>1.2) medStart(); } else cush.still=0; }
   if(P.y>WH+40){ respawn(); return; }
   P.grey=Math.max(0,P.grey-dt); P.inv=Math.max(0,P.inv-dt);
   // 본부 문이 길의 끝이다. 문을 뛰어넘어 그 뒤로 달려가 낭떠러지에 떨어지지 않게, 문 오른쪽 끝에서 막는다 (문 위에 내려서면 작전 완료)
@@ -1011,12 +1032,20 @@ function draw(){ if(radio) radio.r=null;
   // 뭉치, 띵띵이
   for(const m of mungs) if(m.alive){ const x=m.x-cx; if(x<-20||x>W+4) continue; if(m.sq>0) spr(A.MUNG_SQ,x,m.y+8-cy,true); else spr(A.MUNG[Math.floor(tNow*5+m.a)%2],x,m.y-cy,true,m.vx>0); }
   for(const s of swarms) if(s.state!=='gone') for(const b of s.bugs) spr(A.BUG[Math.floor(tNow*12+b.ph)%2],b.x-5-cx+(s.state==='alert'?Math.round(Math.sin(tNow*40+b.ph)):0),b.y-5-cy,true);
+  // 명상 방석 (두툼하고 높은 둥근 방석). 줄마다 폭을 달리해 둥글게, 윗면은 밝게, 옆면은 주름진 두께
+  if(cush&&!room){ const x=Math.round(cush.x-cx)-1, y=hz-16; if(x>-30&&x<W+4){ const R=(c,a,b,w,h)=>{ bx.fillStyle=c; bx.fillRect(x+a,y+b,w,h); };
+    const WD=[14,20,24,26,28,28,28,28,28,28,28,28,28,28,26,22];
+    WD.forEach((w,r)=>{ const a=(28-w)/2; R('#1f1b18',a,r,w,1); if(r>0&&r<15){ const iw=WD[Math.min(r+1,15)]<w&&r>11?w-2:w-2; R(r<7?'#e8703f':r===7?'#1f1b18':'#bf4522',a+1,r,iw,1); } });
+    R('#f39a6c',7,2,10,1); R('#f6b48d',9,3,4,1); R('#d65c30',5,6,18,1);                                 // 윗면 빛과 그늘
+    for(let i=4;i<26;i+=3) R('#8f3016',i,9,1,4); R('#e07a4c',2,8,24,1); R('#7d2a12',3,14,22,1);           // 옆면 주름과 밑 그늘
+    R('#e2b04a',13,3,2,2); R('#8f6a1e',13,5,2,1); R('#1f1b18',2,16,24,1);                                // 가운데 단추, 바닥 그림자
+    if(!med&&!warp&&Math.abs(P.x+6-(cush.x+13))<40) { box(x-23,y+19,74,12,'#fff8e8','#1f1b18'); texts.push({t:'방석에 가만히 서기',x:x+14,y:y+27.6,s:6.5,c:'#1f1b18',a:'center',f:DISP}); } } }
   // 숨 바람
   bx.fillStyle='#ffffff'; for(const g of gusts){ const x=Math.round(g.x-cx), y=Math.round(g.y-cy); for(let i=-1;i<=1;i++){ const yy=y+i*7; bx.fillRect(x-(g.dir>0?10:-2),yy,8,1); bx.fillRect(x+(g.dir>0?-2:-2),yy-1,4,1); bx.fillRect(x+(g.dir>0?3:-5),yy-2,2,1); } }
   // 늘곰. 통로를 탈 때는 아래로 가라앉고(올라올 때는 반대로), 통로를 한 번 더 그려서 가라앉은 몸을 가린다
   { let f; if(lift) f=lift.ph==='down'?'glide':'jump'; else if(P.charging) f=(P.charge<1&&Math.floor(tNow*5)%2)?'idle':'breath'; else if(!P.ground) f=P.glide?'glide':(P.vy<0?'jump':'fall'); else if(Math.abs(P.vx)>8) f='run'+(Math.floor(P.runT*11)%4); else f=Math.floor(tNow*1.6)%2?'idle2':'idle';
     const sink=!warp?0:warp.ph==='in'?Math.min(1,warp.t/.5)*26:warp.ph==='out'?(1-Math.min(1,warp.t/.45))*26:26;
-    if(sink<26&&!(P.inv>0&&Math.floor(tNow*16)%2)) spr((P.coat?A.BEARR:A.BEAR)[warp?'idle':f],P.x-8-cx,P.y-3-cy+Math.round(sink),!(P.grey>0),P.face<0);
+    if(sink<26&&!(P.inv>0&&Math.floor(tNow*16)%2)) spr((P.coat?A.BEARR:A.BEAR)[warp?'idle':med?'breath':f],P.x-8-cx,P.y-3-cy+Math.round(sink)-(med?13:0),!(P.grey>0),P.face<0);
     if(warp) pipes();
     const px=Math.round(P.x+6-cx), py=Math.round(P.y-cy);
     if(P.shield&&!warp) for(let i=0;i<8;i++){ const a=i/8*6.283+tNow*2.5; bx.fillStyle=i%2?'#69b4e6':'#ffffff'; bx.fillRect(Math.round(px+Math.cos(a)*12),Math.round(py+10+Math.sin(a)*15),1,1); }
@@ -1044,6 +1073,17 @@ function draw(){ if(radio) radio.r=null;
   let dark=0;
   { const fd=!warp?0:warp.ph==='close'?Math.min(1,warp.t/.25):warp.ph==='wait'?1:warp.ph==='open'?1-Math.min(1,warp.t/.25):0;
     if(fd>0){ const a=dark=Math.ceil(fd*4)/4; bx.globalAlpha=a; bx.fillStyle='#1f1b18'; bx.fillRect(0,0,W,H); bx.globalAlpha=1; for(const t of texts) t.al=1-a; } }
+  // 숨 고르기 화면: 어둡게 하고 링이 4초 동안 커졌다가 6초 동안 작아진다. 소리를 꺼도 링만으로 따라 할 수 있다
+  if(med){ const a=Math.min(.62,med.t*1.2); bx.globalAlpha=a; bx.fillStyle='#1f1b18'; bx.fillRect(0,0,W,H); bx.globalAlpha=1; for(const t of texts) t.al=.25;
+    const c=med.t%(MED_IN+MED_OUT), inh=c<MED_IN, p=inh?c/MED_IN:1-(c-MED_IN)/MED_OUT, e=.5-.5*Math.cos(Math.PI*p), r=14+e*(Math.min(H,W)*.22), mx=W/2, my=H/2+4;
+    bx.globalAlpha=.18+.22*e; bx.fillStyle='#fff1d6'; bx.beginPath(); bx.arc(mx,my,r,0,6.283); bx.fill(); bx.globalAlpha=1;
+    bx.strokeStyle='#fff8e8'; bx.lineWidth=2; bx.beginPath(); bx.arc(mx,my,r,0,6.283); bx.stroke();
+    bx.strokeStyle='#e2b04a'; bx.lineWidth=1; bx.beginPath(); bx.arc(mx,my,14+Math.min(H,W)*.22,0,6.283); bx.stroke();
+    const left=Math.ceil(inh?MED_IN-c:MED_IN+MED_OUT-c);
+    texts.push({t:inh?'들이쉬기':'내쉬기',x:mx,y:my-1,s:10,c:'#fff8e8',a:'center',f:DISP});
+    texts.push({t:String(left),x:mx,y:my+11,s:8,c:'#e2b04a',a:'center',f:DISP});
+    texts.push({t:'숨을 따라 링이 커지고 작아진다',x:mx,y:30,s:8,c:'#fff8e8',w:'700',a:'center',f:BODY});
+    texts.push({t:(Math.min(MED_N,Math.floor(med.t/(MED_IN+MED_OUT))+1))+' / '+MED_N+'   움직이면 그만둔다',x:mx,y:H-10,s:7,c:'#cdbf9f',w:'700',a:'center',f:BODY}); }
   // 위쪽 표시
   box(4,4,96,16,'#fff8e8','#1f1b18'); bx.drawImage(A.DROP[3].c,8,7); texts.push({t:String(P.coins),x:19,y:16.5,s:10,c:'#1f1b18',f:DISP});
   for(let i=0;i<3;i++){ const x=50+i*11, on=i<P.pcs; bx.fillStyle=on?'#1f1b18':'#cdbf9f'; bx.fillRect(x+2,8,3,1); bx.fillRect(x+1,9,5,1); bx.fillRect(x,10,7,3); bx.fillRect(x+1,13,5,1); bx.fillRect(x+2,14,3,1); if(on){ bx.fillStyle='#d9512c'; bx.fillRect(x+2,9,3,1); bx.fillRect(x+1,10,5,3); bx.fillRect(x+2,13,3,1); } }
@@ -1486,13 +1526,13 @@ YT.addEventListener('click',()=>{ K.l=K.r=K.j=K.b=false; });   // 새 창으로 
 function music(){ const okay=sound&&running&&AC&&AC.state==='running'&&!document.hidden;
   if(!okay){ BGM.pause(); return; }
   const calm=room||P.charging||(P.ground&&Math.abs(P.vx)<8&&swarms.some(s=>s.state==='alert'));
-  BGM.set(paused?.3:(calm?.28:1),P.grey>0); BGM.play(AC); }
+  BGM.set(med?.05:paused?.3:(calm?.28:1),P.grey>0); BGM.play(AC); }
 function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music(); ytShow();
   if(running&&!paused){ acc+=d; while(acc>=1/120){ step(1/120); acc-=1/120; if(!running||paused){ acc=0; break; } } }
   draw(); requestAnimationFrame(frame); }
 reset(); home(); requestAnimationFrame(frame);
 document.addEventListener('visibilitychange',()=>{ last=performance.now(); if(document.hidden) BGM.pause(); });
-window.G={get radio(){return radio;},get bolt(){return bolt;},boltSoon(){boltNext=tNow;},hold(v){paused=!!v;},get mood(){return mood;},set mood(v){mood=v;},get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},get warp(){return warp;},get stageNo(){return stageNo;},get lift(){return lift;},get stuck(){return stuck;},get flags(){return flags;},get cp(){return cp;},get cam(){return cam;},get maxX(){return maxX;},get camY(){return camY;},get W(){return W;},get H(){return H;},die(){respawn();},get bub(){return bubble&&{t:bubble.t,a:bubA};},get held(){return held;},get topR(){return topR;},get gusts(){return gusts;},get sign(){return sign;},get radio(){return radio;},say,get bubL(){return bubble&&bubble.lines?{n:bubble.lines.length,fs:bubble.fs,bw:bubble.bw,t:bubble.t}:null;},toHQ,get note(){return msg&&msg.until>tNow?msg.t:'';},
+window.G={get cush(){return cush;},get med(){return med;},get radio(){return radio;},get bolt(){return bolt;},boltSoon(){boltNext=tNow;},hold(v){paused=!!v;},get mood(){return mood;},set mood(v){mood=v;},get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},get warp(){return warp;},get stageNo(){return stageNo;},get lift(){return lift;},get stuck(){return stuck;},get flags(){return flags;},get cp(){return cp;},get cam(){return cam;},get maxX(){return maxX;},get camY(){return camY;},get W(){return W;},get H(){return H;},die(){respawn();},get bub(){return bubble&&{t:bubble.t,a:bubA};},get held(){return held;},get topR(){return topR;},get gusts(){return gusts;},get sign(){return sign;},get radio(){return radio;},say,get bubL(){return bubble&&bubble.lines?{n:bubble.lines.length,fs:bubble.fs,bw:bubble.bw,t:bubble.t}:null;},toHQ,get note(){return msg&&msg.until>tNow?msg.t:'';},
   get post(){return post;},
   go(n){stageNo=n||0;bonus=true;mood='sun';reset();play();}};
 })();

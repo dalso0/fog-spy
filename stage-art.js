@@ -5,17 +5,18 @@ const PAL={k:'#1f1b18',w:'#ffffff',c:'#f6ead0',C:'#d6c198',r:'#d9512c',R:'#a03a1
   o:'#c9993f',O:'#8f6a22',e:'#e6bf6a',b:'#b0683a',B:'#7e4525',m:'#e8b98a',t:'#dcc095',T:'#b59565',
   H:'#3b2f29',g:'#6fae5c',G:'#3f7d45',l:'#9bd07a',d:'#c08a4a',D:'#94642f',s:'#69b4e6',S:'#3f86c2',
   y:'#f3c744',Y:'#c9951c',n:'#ee8a2f',f:'#c9cfd5',F:'#9aa2ab',x:'#6b727a',p:'#f7c9a8',P:'#d99a7a',
-  A:'#d9512c',a:'#a03a1c'};
+  A:'#d9512c',a:'#a03a1c',
+  u:'#dcc095',U:'#b59565',v:'#1f1b18'};   // u U = 모자, v = 선글라스 알 (늘곰 꾸미기로 코트와 따로 칠한다. 기본은 코트·먹색과 같다)
 const hex=c=>{ const n=parseInt(c.slice(1),16); return [(n>>16)&255,(n>>8)&255,n&255]; };
 const grey=c=>{ const [r,g,b]=hex(c); const L=r*.3+g*.59+b*.11; const v=Math.round(L*.5+92); return 'rgb('+(v-3)+','+v+','+(v+5)+')'; };
-const GPAL={}; for(const key in PAL) GPAL[key]=(key==='k')?'#3a3d42':grey(PAL[key]);
+const GPAL={}; for(const key in PAL) GPAL[key]=(key==='k'||key==='v')?'#3a3d42':grey(PAL[key]);
 function cvs(w,h){ const c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
 function px(rows,pal,name){ const h=rows.length,w=rows[0].length,c=cvs(w,h),x=c.getContext('2d');
   rows.forEach((row,y)=>{ if(row.length!==w) throw new Error('그림 '+name+' '+y+'번째 줄 너비 '+row.length+'≠'+w);
     for(let i=0;i<w;i++){ const ch=row[i]; if(ch==='.') continue; const col=pal[ch]; if(!col) throw new Error('그림 '+name+' 색 '+ch); x.fillStyle=col; x.fillRect(i,y,1,1); } });
   return c; }
 function flip(c){ const o=cvs(c.width,c.height),x=o.getContext('2d'); x.translate(c.width,0); x.scale(-1,1); x.drawImage(c,0,0); return o; }
-function greyPal(p){ const o={}; for(const key in p) o[key]=key==='k'?'#3a3d42':grey(p[key]); return o; }
+function greyPal(p){ const o={}; for(const key in p) o[key]=(key==='k'||key==='v')?'#3a3d42':grey(p[key]); return o; }
 function set(rows,name,pal){ const c=px(rows,pal||PAL,name), g=px(rows,pal?greyPal(pal):GPAL,name); return {c,g,cf:flip(c),gf:flip(g),w:c.width,h:c.height}; }
 
 /* ---------- 늘곰 요원 (오른쪽을 봄) ---------- */
@@ -54,8 +55,10 @@ const ARM={
  up:{x:10,y:10,r:['...kk.','..kbbk','.ktttk','ktttk.','kttk..']}};
 const WINGL=['...kkk','..kttt','.ktttt','kTtttt','kTtttt','.kTTtt','..kkkk'];
 const WINGR=['kkk.','ttk.','tttk','tttk','ttk.','kk..'];
+// 모자(0~4줄)는 u U, 선글라스(7~8줄 가운데)는 v로 글자를 나눠 둔다
+const BEAR_UP2=BEAR_UP.map((r,y)=>y<5?r.replace(/t/g,'u').replace(/T/g,'U'):(y===7||y===8)?r.slice(0,6)+r.slice(6,16).replace(/k/g,'v')+r.slice(16):r);
 function bear(P){ const F={};
-  const up=px(BEAR_UP,P,'bear'), wl=px(WINGL,P,'wl'), wr=px(WINGR,P,'wr');
+  const up=px(BEAR_UP2,P,'bear'), wl=px(WINGL,P,'wl'), wr=px(WINGR,P,'wr');
   const mk=(legs,arm,uy,wings)=>{ const c=cvs(28,25),x=c.getContext('2d');
     if(wings){ x.drawImage(wl,1,13+uy); x.drawImage(wr,20,13+uy); }
     x.drawImage(px(LEGS[legs],P,'legs'),5,21); x.drawImage(up,5,1+uy);
@@ -66,7 +69,7 @@ function bear(P){ const F={};
 const bearC=bear(PAL), bearG=bear(GPAL); const BEAR={};
 for(const n in bearC) BEAR[n]={c:bearC[n],g:bearG[n],cf:flip(bearC[n]),gf:flip(bearG[n]),w:28,h:25};
 // 주홍 코트를 입은 늘곰: 모자와 코트만 주홍으로
-const PALR=Object.assign({},PAL,{t:'#d9512c',T:'#a03a1c',H:'#fff8e8',c:'#fff8e8',o:'#f3c744'});
+const PALR=Object.assign({},PAL,{t:'#d9512c',T:'#a03a1c',u:'#d9512c',U:'#a03a1c',H:'#fff8e8',c:'#fff8e8',o:'#f3c744',v:'#1f1b18'});
 const bearR=bear(PALR); const BEARR={};
 for(const n in bearR) BEARR[n]={c:bearR[n],g:bearG[n],cf:flip(bearR[n]),gf:flip(bearG[n]),w:28,h:25};
 
@@ -141,5 +144,16 @@ const RADIO=pair((P)=>{ const c=cvs(26,34),x=c.getContext('2d'); const R=(col,a,
   R(P.k,6,7,14,1); R(P.k,6,8,1,1); R(P.k,19,8,1,1);                                                                  // 손잡이
   R(P.k,21,7,1,2); R(P.k,22,5,1,2); R(P.k,23,3,1,2); R(P.k,24,1,1,2); R(P.r,24,0,2,1); return c; });                 // 안테나
 const COAT=set(['...kk.kk...','..krrkrrk..','.krrckcrrk.','krrrrcrrrrk','krkrrrrrkrk','kk.krrrk.kk','...kryrk...','...krrrk...','..krrrrrk..','..krrRrrk..','..kkkkkkk..'],'coat');
-window.ART={PAL,GPAL,BEAR,BEARR,COAT,CHICK,MUNG,MUNG_SQ,BUG,GROUND,DIRT,BRICK,HARD,CRATE,USED,WALLB,WALLF,PAD,DROP,SHIELD,PIECE,BUSH,TREE,CLOUD,DOOR,RADIO,SCHOOL,grey,cvs};
+/* ---------- 늘곰 꾸미기와 공간 꾸미기 (🎒 배낭) ----------
+   bearLook(pal): 코트(t T c)·모자(u U H)·선글라스(v) 색을 바꾼 늘곰 한 벌. 같은 색 조합은 한 번만 그린다 */
+const LOOKS={};
+function bearLook(over){ const key=JSON.stringify(over||{}); if(LOOKS[key]) return LOOKS[key];
+  const P=Object.assign({},PAL,over||{}), c=bear(P), g=bear(greyPal(P)), o={};
+  for(const n in c) o[n]={c:c[n],g:g[n],cf:flip(c[n]),gf:flip(g[n]),w:28,h:25};
+  return LOOKS[key]=o; }
+const DECO={
+  plant:set(['....kk.kk...','...kglkglk..','..kglgkgGgk.','.kgGlgkgGGk.','.kGgggkggGk.','..kkGgkGgk..','....kGGk....','..kkkkkkkk..','..kdddddDk..','...kddddDk..','...kddddDk..','....kkkkk...'],'plant'),
+  ball:set(['..kkkk..','.kwkkwk.','kwwkkwwk','kkwwwwkk','kkwwwwkk','kwwkkwwk','.kwkkwk.','..kkkk..'],'ball'),
+  lamp:set(['..kkkkk..','.kyyyyyk.','kyyyyyyyk','kYYYYYYYk','.kkkkkkk.','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','...kkk...','.kkxxxkk.','.kkkkkkk.'],'lamp')};
+window.ART={bearLook,DECO,PAL,GPAL,BEAR,BEARR,COAT,CHICK,MUNG,MUNG_SQ,BUG,GROUND,DIRT,BRICK,HARD,CRATE,USED,WALLB,WALLF,PAD,DROP,SHIELD,PIECE,BUSH,TREE,CLOUD,DOOR,RADIO,SCHOOL,grey,cvs};
 })();

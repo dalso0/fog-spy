@@ -632,7 +632,7 @@ const K={l:false,r:false,j:false,b:false}; let jBuf=0, prevB=false;
 let bolt=null, boltNext=2.5;   // 날씨 「번개」: 지금 치는 번개와 다음 번개 시각
 let P, cam, maxX, cp, tNow, playT, running=false, paused=false, bonus=false, bonusNote='', mood='sun';
 let cush=null, med=null;   // 명상 방석과 숨 고르기 진행
-let bq=[], parts=[], gusts=[], clouds=[], bubble=null, bubA=1, msg=null, deaths=0, shake=0, freeze=0, chickX=40, chickY=150, warp=null, stuck=0, lift=null;
+let chickTop=null, bq=[], parts=[], gusts=[], clouds=[], bubble=null, bubA=1, msg=null, deaths=0, shake=0, freeze=0, chickX=40, chickY=150, warp=null, stuck=0, lift=null;
 /* 판 첫 자리: ◀▶ 버튼 오른쪽 끝보다 조금 더 오른쪽 (키 작은 폰에서 늘곰이 버튼 뒤에 숨지 않게). 화면이 넓으면 예전처럼 두 칸째 */
 function startX(){ let r=0; try{ const el=document.getElementById('pad'); r=(el.offsetLeft+el.offsetWidth)*dprU/k; }catch(e){} return Math.max(2*T,Math.min(8*T,Math.ceil(r+8))); }
 function reset(){
@@ -1319,9 +1319,12 @@ function draw(){ if(radio) radio.r=null;
     if(p.pop) bx.drawImage(A.DROP[p.h].c,x,y); else if(p.deb) bx.drawImage(A.BRICK.c,p.sx,p.sy,7,7,x,y,7,7);
     else { const s=p.t<p.T0*.4?Math.max(1,p.s-1):p.s; bx.fillStyle=p.col; bx.fillRect(x,y,s,s); } }
   // 병아리 요원
-  { const kx=P.x+6-P.face*20, ky=P.y-20+Math.sin(tNow*5)*3; if(lift){ const a=lift.ph==='up'?.4:1; chickX+=(P.x+6-chickX)*a; chickY+=(P.y-8-chickY)*a; } else { chickX+=(kx-chickX)*.08; chickY+=(ky-chickY)*.08; }
+  chickTop=null;
+  { const kx=P.x+6-P.face*20; let ky=P.y-20+Math.sin(tNow*5)*3;
+    // 표어 간판 앞을 지날 때는 간판 위로 살짝 떠서 간판 글자를 가리지 않는다
+    if(sign&&sign.h&&!room&&kx>sign.x-10&&kx<sign.x+sign.w+10) ky=Math.min(ky,GTOP-38-sign.h-10+Math.sin(tNow*5)*2); if(lift){ const a=lift.ph==='up'?.4:1; chickX+=(P.x+6-chickX)*a; chickY+=(P.y-8-chickY)*a; } else { chickX+=(kx-chickX)*.08; chickY+=(ky-chickY)*.08; }
     const r=radio&&radio.r, sx=chickX-6-cx, sy=chickY-6-cy; if(r&&sx+12>r.x&&sx<r.x+r.w&&sy+12>r.y&&sy<r.y+r.h) bx.globalAlpha=.3;   // 라디오 곡 이름을 가리면 흐리게
-    if(!med) spr(A.CHICK[Math.floor(tNow*8)%2],sx,sy,true,P.face<0); bx.globalAlpha=1; }
+    if(!med){ const ck=A.CHICK[Math.floor(tNow*8)%2]; spr(ck,sx,sy,true,P.face<0); chickTop={i:P.face<0?ck.cf:ck.c,x:Math.round(sx),y:Math.round(sy),a:bx.globalAlpha}; } bx.globalAlpha=1; }
   // 방에서 나가는 통로 표지 (병아리에 가리지 않게 맨 위에)
   if(room&&!warp){ const e=RE*T-cx; box(e-6,hz-88,44,13,'#fff8e8','#1f1b18'); texts.push({t:'나가는 곳',x:e+16,y:hz-78.3,s:7.5,c:'#1f1b18',a:'center',f:DISP}); if(!over(RE*T)) arrowDn(e+16,hz-72+bob,'#d9512c'); }
   // 비
@@ -1355,6 +1358,8 @@ function draw(){ if(radio) radio.r=null;
   // 키워서 화면에
   ctx.imageSmoothingEnabled=false; ctx.drawImage(buf,0,0,W*k,H*k);
   for(const t of texts){ if(t.al===0) continue; ctx.globalAlpha=t.al===undefined?1:t.al; ctx.font=(t.w||'400')+' '+Math.round(t.s*k)+'px '+t.f; ctx.fillStyle=t.c; ctx.textAlign=t.a||'left'; ctx.fillText(t.t,t.x*k,t.y*k); }
+  // 병아리는 길 위 글자(간판·말 표시)보다 앞에 한 번 더 그린다. 위쪽 말풍선 칸(bubB 위)과 겹칠 때는 말풍선 글자를 가리지 않게 그리지 않는다
+  if(chickTop&&!(bubble&&chickTop.y<bubB+2)&&chickTop.y<H&&chickTop.x>-14&&chickTop.x<W){ ctx.globalAlpha=chickTop.a*(1-dark); ctx.drawImage(chickTop.i,chickTop.x*k,chickTop.y*k,chickTop.i.width*k,chickTop.i.height*k); }
   ctx.globalAlpha=1;
 }
 

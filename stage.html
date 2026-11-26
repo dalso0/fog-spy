@@ -49,6 +49,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 #bh{right:max(10px,env(safe-area-inset-right,0px));z-index:6}
 #bs,#bp{z-index:6}   /* ⚙ 설정과 🎒 배낭은 첫 화면·본부 카드 위에서도 누를 수 있게 */
 body.oc #bs,body.oc #bp{visibility:hidden}
+body.thin #bb,body.thin #bj{opacity:.45}
 #bp{right:calc(max(10px,env(safe-area-inset-right,0px)) + 138px)}
 #hv{z-index:7}
 #bs{right:calc(max(10px,env(safe-area-inset-right,0px)) + 46px)}
@@ -635,12 +636,12 @@ function drawTopMsgs(cx,hz){ const L=room.msgs; if(!L) return; const n=L.length,
 /* ---------- 상태 ---------- */
 const K={l:false,r:false,j:false,b:false}; let jBuf=0, prevB=false;
 let bolt=null, boltNext=2.5;   // 날씨 「번개」: 지금 치는 번개와 다음 번개 시각
-let sayHold=0, P, cam, maxX, cp, tNow, playT, running=false, paused=false, bonus=false, bonusNote='', mood='sun';
+let thinBtn=false, sayHold=0, P, cam, maxX, cp, tNow, playT, running=false, paused=false, bonus=false, bonusNote='', mood='sun';
 let cush=null, med=null;   // 명상 방석과 숨 고르기 진행
 let chickTop=null, bq=[], parts=[], gusts=[], clouds=[], bubble=null, bubA=1, msg=null, deaths=0, shake=0, freeze=0, chickX=40, chickY=150, warp=null, stuck=0, lift=null;
 /* 판 첫 자리: ◀▶ 버튼 오른쪽 끝보다 조금 더 오른쪽 (키 작은 폰에서 늘곰이 버튼 뒤에 숨지 않게). 화면이 넓으면 예전처럼 두 칸째 */
 function startX(){ let r=0; try{ const el=document.getElementById('pad'); r=(el.offsetLeft+el.offsetWidth)*dprU/k; }catch(e){} return Math.max(2*T,Math.min(8*T,Math.ceil(r+8))); }
-function reset(){
+function reset(){ thinBtn=false; document.body.classList.remove('thin');
   build();
   P={x:startX(),y:GTOP-22,w:12,h:22,vx:0,vy:0,face:1,ground:true,coy:0,grey:0,inv:0,shield:bonus?1:0,coins:bonus?5:0,pcs:0,
      charge:0,charging:false,full:false,glide:false,jumpHeld:false,boost:false,runT:0,airT:0,coat:false,puffCd:0,bHold:0};
@@ -974,9 +975,10 @@ function step(dt){
     if(still&&!P.charging&&onPipe(ex)){ room.et+=dt; if(room.et>=1){ if(room.kind==='top') warpIn(ex+10,()=>{ leaveTop(); warpOut(); },()=>note('다시 길 위로')); else warpIn(ex+10,()=>{ leaveRoom(); warpOut(); },()=>{ shutPipe(); note('다시 길 위로'); }); } } else room.et=0; }
   if(P.ground&&!room&&P.x+P.w>door.x+10&&P.x<door.x+door.w-6) finish();
   cam+=(camTarget()-cam)*Math.min(1,dt*6);
+  { const th=!room&&!!mg&&mg.alive&&mg.on&&(mg.x+mg.w-cam)>W-Math.ceil(175*W/Math.max(1,innerWidth)); if(th!==thinBtn){ thinBtn=th; document.body.classList.toggle('thin',th); } }   // 확성기가 오른쪽 아래 버튼 뒤로 들어가면 버튼을 옅게 해서 확성기와 고리가 비쳐 보이게
 }
 function camTarget(){ const lo=room?room.x0:0, hi=(room?room.x1:LW)-W; let c=P.x-W*.36+P.face*12;
-  if(!room&&mg&&mg.alive&&mg.x>P.x&&mg.x-P.x<W+140) c=Math.max(c,Math.min(mg.x+mg.w+40-W,P.x-60));   // 확성기 보스가 가까우면 카메라를 확성기 쪽으로 당겨 불빛과 굴러오는 고리가 보이게
+  if(!room&&mg&&mg.alive&&mg.x>P.x&&mg.x-P.x<W+140) { const q=W/Math.max(1,innerWidth); c=Math.max(c,Math.min(mg.x+mg.w+Math.max(40,Math.ceil(170*q))-W,P.x-Math.max(60,Math.ceil(160*q)))); }   /* 확성기는 오른쪽 아래 숨·점프 버튼(약 170 CSS px) 왼쪽에, 늘곰은 왼쪽 아래 ◀▶(약 150 CSS px) 오른쪽에. 둘 다 못 들어가면 늘곰이 먼저 */   // 확성기 보스가 가까우면 카메라를 확성기 쪽으로 당겨 불빛과 굴러오는 고리가 보이게
   return hi<lo?(lo+hi)/2:Math.max(lo,Math.min(hi,c)); }
 function enterRoom(){ room={kind:nook.kind,x0:RX*T,x1:(RX+30)*T,ret:nook.x+10,t:0,p:0,et:0,done:false,sq:0,n:0,full:false,pb:false,lt:-9,ph:'ready',pt:0};
   P.x=RA*T+10; P.y=GTOP-32-P.h; P.vx=P.vy=0; P.face=1; cam=camTarget(); chickX=P.x; chickY=P.y-20; }
@@ -1476,7 +1478,7 @@ function briefing(){ const sv=loadSave(), cl=sv.clear||{}, rp=(sv.rep||{})[stage
    「건너뛰기」는 벌이 없다. 보스 판에서는 띄우지 않는다. 선생님 모드는 매번 띄우고 아무것도 남기지 않는다 */
 let nowSeen=-1;
 function nowCheck(){ const d=DAYS[stageNo], o=ordNow(stageNo); if(!o||d.boss||d.train||room||!ov.hidden||!hv.hidden) return;
-  const sv=loadSave(); if(!teacher()&&sv.obs===today()) return;
+  const sv=loadSave(); if(!teacher()&&(sv.obs===today()||d.date!==today())) return;   // 학생은 오늘 날짜 판에서만(지난 판을 먼저 해도 오늘 지령이 소진되지 않게)
   if(teacher()&&nowSeen===stageNo) return; nowSeen=stageNo;   // 선생님 모드는 판마다 한 번만 보여 준다
   if(!teacher()){ sv.obs=today(); putSave(sv); }
   midCard(o); }

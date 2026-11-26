@@ -284,7 +284,8 @@ let coins,pieces,mungs,swarms,curtains,walls,flags,says,items,door,decor,nook,ro
    끝까지 모은 바람이 여섯 번 막히면 병아리가 한 겹 걷어 주겠다고 묻는다 (죽지는 않는데 멀리 서서 헛도는 학생을 위해).
    멀리서는 다음 떼가 나오기 전에 불 수 없어서 다가가야 하고, 다가갈수록 뭉치가 빨리 닿는다. 마지막 겹은 두 마리씩 두 번 나오는데, 그 사이의 짧은 틈은 숨을 모으기에 모자라다.
    2주차부터의 보스는 이보다 어렵게 만든다 (선생님 의견 2026-11-17: 1주차 보스가 너무 쉽다) */
-const WAVES=[null,{t:[0,.5,1.7,2.2],v:76,rest:4},{t:[0,.56,1.12],v:70,rest:4.2},{t:[0,.62],v:64,rest:7.5}];
+// 2026-11-26 선생님 의견(학생도 선생님도 못 깸): 둘째·마지막 겹 뭉치를 둘로 줄이고 쉬는 시간을 늘린다. 마지막 겹은 숨이 4초에 모인다
+const WAVES=[null,{t:[0,1.1],v:66,rest:9},{t:[0,.9],v:66,rest:6.5},{t:[0,.62],v:64,rest:7.5}];
 const LEVELS=[
 // 월: 등굣길
 (L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door,nook,boss}=L;
@@ -732,7 +733,8 @@ function step(dt){
   // 뭉치. 보스 장막은 곰이 가까이 오면 박자(WAVES)에 맞춰 뭉치를 떼로 내보내고, 한 떼를 다 내보내면 눈을 감고 쉰다
   if(bossC&&bossC.alive){ const b=bossC, wv=WAVES[b.hp];
     if(b.x<b.tx) b.x=Math.min(b.tx,b.x+120*dt);
-    else if(b.x>P.x&&b.x-P.x<236&&!room){ b.cd-=dt;
+    // 장막이 눈을 감고 쉬는 동안 곰이 숨을 모으면(또 모은 바람이 날아가는 동안) 장막도 기다린다. 뭉치만 넘기면 누구나 끝까지 숨을 모을 수 있게
+    else if(b.x>P.x&&b.x-P.x<236&&!room){ if(!(b.nap&&(P.charging||gusts.some(g=>!g.puff&&g.dir>0&&g.x<b.x)))&&!swarms.some(s=>s.state==='alert')) b.cd-=dt;   // 띵띵이 앞에서 가만히 있는 동안에도 떼를 안 보낸다
       if(b.cd<=0){ b.nap=false;
         if(mungs.filter(m=>m.tmp&&m.alive).length<6){ let a=b.x-236; for(const w of walls) if(w.alive&&w.x<b.x) a=Math.max(a,w.x+w.w);
           mungs.push({x:b.x-17,y:GTOP-14,w:16,h:14,a,b:b.x,vx:-wv.v,vy:0,alive:true,sq:0,tmp:true}); puff(b.x-6,GTOP-8,6,'#c9cfd5',40); }

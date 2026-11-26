@@ -47,6 +47,8 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .top{background:rgba(246,234,208,.88);top:7px;width:36px;height:34px;font-size:15px;box-shadow:0 3px 0 var(--ink);border-width:3px}
 .top::before{inset:-5px}
 #bh{right:max(10px,env(safe-area-inset-right,0px));z-index:6}
+#bs,#bp{z-index:6}   /* ⚙ 설정과 🎒 배낭은 첫 화면·본부 카드 위에서도 누를 수 있게 */
+#bp{right:calc(max(10px,env(safe-area-inset-right,0px)) + 138px)}
 #hv{z-index:7}
 #bs{right:calc(max(10px,env(safe-area-inset-right,0px)) + 46px)}
 #bq{right:calc(max(10px,env(safe-area-inset-right,0px)) + 92px)}
@@ -64,6 +66,26 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .ql{margin-left:-.3em}.qr{margin-right:-.3em}
 .card p{margin:0;font-size:14.5px;line-height:1.55;text-wrap:pretty}
 .card h2,.card p,.tel span{word-break:keep-all;overflow-wrap:anywhere}   /* 낱말 가운데서 줄이 바뀌지 않게 */
+.card.opt{gap:9px}
+/* 🎒 배낭 */
+.card.bp{gap:8px;width:min(640px,100%)}
+.tabs{display:flex;gap:6px}
+.hqh{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap} .hqh h2{margin-right:auto} .tabs.wkt{margin:0} .ov .tabs.wkt button.dk{flex:none;padding:4px 14px;font-size:15px}
+.ov .tabs button.dk{flex:1;font-size:16px}
+.bpl{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:8px;max-height:min(210px,calc(100vh - 170px));overflow:auto;padding:2px 2px 6px}
+.it{border:3px solid var(--ink);border-radius:6px;background:var(--paper);display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;text-align:center}
+.it canvas{image-rendering:pixelated;width:72px;height:56px}
+.it b{font-family:var(--f-display);font-weight:400;font-size:15px;line-height:1.1}
+.it small{font-size:12px;color:#5d5850}
+.ov .it button.dk{padding:4px 8px;font-size:14px}
+.it.on{background:var(--ink);color:var(--panel)} .it.on canvas{background:var(--paper);border-radius:4px} .it.on small{color:#d6c198}
+.wal{display:flex;align-items:baseline;gap:8px;font-family:var(--f-display);font-size:26px} .wal small{font-family:var(--f-body);font-size:13px}
+@media (max-height:340px){ .bpl{max-height:132px} .it canvas{width:54px;height:42px} .card.bp .eyebrow{display:none} }
+.orow{display:flex;align-items:center;gap:10px}
+.orow>span{flex:none;width:5.2em;font-size:14px;font-weight:700}
+.seg{display:flex;gap:6px;flex:1}
+.ov .seg button.dk{flex:1;padding:6px 2px;font-size:15px}
+@media (max-height:300px){ .card.opt{gap:5px} .ov .seg button.dk{padding:3px 2px} }
 .eyebrow{font-size:12px;letter-spacing:.08em;color:var(--red-d);font-weight:700}
 .row{display:flex;flex-wrap:wrap;gap:8px}
 .ov button{font-family:var(--f-display);font-size:18px;border:3px solid var(--ink);border-radius:6px;background:var(--paper);
@@ -71,7 +93,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .ov button.go{background:var(--red);color:#fff8e8;font-size:22px;padding:12px 18px}
 .ov button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .note{font-size:12.5px;color:#5c5348}
-.hqtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.hqtop{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
 .hqr{display:flex;align-items:center;gap:10px;margin-left:auto}
 .agc{display:flex;align-items:baseline;gap:8px;padding:5px 12px;border:3px solid var(--ink);border-radius:6px;background:var(--ocher);box-shadow:0 3px 0 var(--ink);white-space:nowrap}
 .agc small{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--ink)}
@@ -180,8 +202,9 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
   <div id="pad" class="btn" role="group" aria-label="왼쪽 오른쪽"><span id="pl">◀</span><span id="pr">▶</span></div>
   <button id="bb" class="btn" aria-label="숨">숨</button>
   <button id="bj" class="btn" aria-label="점프">점프</button>
+  <button id="bp" class="btn top" aria-label="배낭 (지갑, 상점, 꾸미기)"><svg viewBox="0 0 11 11" width="19" height="19" aria-hidden="true" shape-rendering="crispEdges"><path fill="#1f1b18" d="M4 0h3v1H4zM3 1h1v1H3zM7 1h1v1H7zM1 2h9v1H1zM0 3h11v1H0zM0 4h11v1H0zM0 5h2v1H0zM9 5h2v1H9zM0 6h2v1H0zM3 6h5v1H3zM9 6h2v1H9zM0 7h2v1H0zM3 7h5v1H3zM9 7h2v1H9zM0 8h2v1H0zM9 8h2v1H9zM0 9h11v1H0zM1 10h9v1H1z"/></svg></button>
   <button id="bq" class="btn top" aria-label="본부로 (판 고르기)"><svg viewBox="0 0 9 8" width="18" height="16" aria-hidden="true" shape-rendering="crispEdges"><path fill="#1f1b18" d="M4 0h1v1h1v1h1v1h1v1h1v1H8v3H5V5H4v3H1V5H0V4h1V3h1V2h1V1h1z"/></svg></button>
-  <button id="bs" class="btn top" aria-label="소리 켜고 끄기">♪</button>
+  <button id="bs" class="btn top" aria-label="설정 (소리 크기, 화면 밝기)"><svg viewBox="0 0 11 11" width="19" height="19" aria-hidden="true" shape-rendering="crispEdges"><path fill="#1f1b18" d="M4 0h3v1H4zM1 1h2v1H1zM4 1h3v1H4zM8 1h2v1H8zM1 2h9v1H1zM2 3h7v1H2zM0 4h4v1H0zM7 4h4v1H7zM0 5h4v1H0zM7 5h4v1H7zM0 6h4v1H0zM7 6h4v1H7zM2 7h7v1H2zM1 8h9v1H1zM1 9h2v1H1zM4 9h3v1H4zM8 9h2v1H8zM4 10h3v1H4z"/></svg></button>
   <button id="bh" class="btn top" aria-label="도움전화">☎</button>
   <a id="yt" class="btn" hidden target="_blank" rel="noopener"><b>▶</b>유튜브에서 듣기</a>
   <div id="ov" class="ov" hidden></div>
@@ -190,7 +213,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 
 <script src="stage-art.js?v=1120"></script>
 <script src="stage-music.js?v=1120"></script>
-<script src="stage-wax.js?v=1120b"></script>   <!-- ?v= 를 바꾸면 폰이 예전 파일을 붙들고 있지 않고 새로 받는다 -->
+<script src="stage-wax.js?v=1127"></script>   <!-- ?v= 를 바꾸면 폰이 예전 파일을 붙들고 있지 않고 새로 받는다 -->
 <script src="stage-feel.js?v=1123"></script>
 <!-- 본부 서버(운영 시트)와 잇는 두 줄.
      (1) config.js: 본부 주소만 읽는다. 이 줄을 켜면 「오류·의견 보내기」(학생이 보내기를 누른 글만 나간다)와 색 방울 순위(판을 깰 때 요원 코드와 판별 최고 방울 수)가 켜진다. 2026.11.18 선생님이 서버를 배포한 뒤 켬. 끄려면 이 줄을 주석으로 감싼다 -->
@@ -237,8 +260,8 @@ function layout(){
   cv.width=W*k; cv.height=H*k; buf.width=W; buf.height=H; camY=WH-H;
   topFit(sw);
 }
-// 위쪽 버튼(⌂ ♪ ☎)이 차지하는 오른쪽 폭 (게임 점)
-function topFit(sw){ topR=Math.ceil((sw-document.getElementById('bq').offsetLeft)*dprU/k)+4; }
+// 위쪽 버튼(⌂ ⚙ ☎)이 차지하는 오른쪽 폭 (게임 점)
+function topFit(sw){ topR=Math.ceil((sw-document.getElementById('bp').offsetLeft)*dprU/k)+4; }
 addEventListener('resize',layout); layout();
 addEventListener('orientationchange',()=>setTimeout(layout,300)); addEventListener('pageshow',layout);
 if(window.visualViewport) visualViewport.addEventListener('resize',layout);
@@ -249,18 +272,27 @@ let AC=null, sound=true;
 // 아이폰 사파리는 무음 스위치가 켜져 있으면 웹 게임 소리(WebAudio)를 끈다. 소리 종류를 '재생'으로 알려 두면 영상처럼 음량 버튼만 따른다 (iOS 17부터)
 function ac(){ if(!sound) return null; try{ if(!AC){ try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){} AC=new (window.AudioContext||window.webkitAudioContext)(); }
   if(AC.state!=='running') AC.resume(); }catch(e){} return AC; }
-window.gameAudio=()=>sound?ac():null;   // 말랑이(stage-wax.js)도 이 소리 통로를 쓴다. 소리를 꺼 두면 말랑이도 조용하다
+window.gameAudio=()=>sound?ac():null;
+/* ⚙ 설정: 배경음악·효과음 크기(0 끔~3 크게)와 화면 밝기(0 어둡게, 1 보통, 2 밝게). 이 폰에만 남긴다(fogspy2.opt).
+   예전 ♪ 버튼으로 소리를 꺼 둔 사람(fogspy2.mute)은 둘 다 끈 것으로 옮긴다. 둘 다 끄면 소리 통로(AC)도 쉬게 한다 */
+const VOL=[0,.35,.7,1], BRI=[.8,1,1.18];
+let OPT={m:3,s:3,b:1};   // 저장된 값은 아래 readOpt()로 읽는다 (저장 함수가 준비된 뒤)
+let SG=null;
+function sfxOut(){ if(!SG||SG.context!==AC){ SG=AC.createGain(); SG.connect(AC.destination); } SG.gain.value=VOL[OPT.s]; return SG; }
+window.gameOut=A=>(A===AC&&AC)?sfxOut():A.destination;   // 말랑이 소리도 효과음 크기를 따른다
+function applyOpt(){ sound=OPT.m>0||OPT.s>0; if(SG) SG.gain.value=VOL[OPT.s]; cv.style.filter=OPT.b===1?'':'brightness('+BRI[OPT.b]+')';
+  if(!sound&&AC){ try{ AC.suspend(); }catch(e){} } }   // 말랑이(stage-wax.js)도 이 소리 통로를 쓴다. 소리를 꺼 두면 말랑이도 조용하다
 // 다른 앱에 다녀오거나 전화가 오면 소리가 멈춘다. 아이폰은 손가락을 뗄 때나 누를 때만 다시 켤 수 있다
 ['touchend','pointerup','click','keydown'].forEach(n=>addEventListener(n,()=>{ if(AC&&AC.state!=='running') ac(); },true));
 function tone(f,d,type='square',v=.04,slide=0,delay=0){ if(!sound||!ac()) return; try{ const t0=AC.currentTime+delay, o=AC.createOscillator(), g=AC.createGain();
   o.type=type; o.frequency.setValueAtTime(f,t0); if(slide) o.frequency.linearRampToValueAtTime(Math.max(30,f+slide),t0+d);
-  g.gain.setValueAtTime(v,t0); g.gain.linearRampToValueAtTime(0,t0+d); o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0+d+.02);}catch(e){} }
+  g.gain.setValueAtTime(v,t0); g.gain.linearRampToValueAtTime(0,t0+d); o.connect(g); g.connect(sfxOut()); o.start(t0); o.stop(t0+d+.02);}catch(e){} }
 function noise(d,v){ if(!sound||!ac()) return; try{ const n=Math.floor(AC.sampleRate*d), b=AC.createBuffer(1,n,AC.sampleRate), a=b.getChannelData(0); for(let i=0;i<n;i++) a[i]=(Math.random()*2-1)*(1-i/n);
-  const s=AC.createBufferSource(), g=AC.createGain(); s.buffer=b; g.gain.value=v; s.connect(g); g.connect(AC.destination); s.start(); }catch(e){} }
+  const s=AC.createBufferSource(), g=AC.createGain(); s.buffer=b; g.gain.value=v; s.connect(g); g.connect(sfxOut()); s.start(); }catch(e){} }
 /* 싱잉볼: 사인파 몇 개를 살짝 어긋나게 겹쳐 길게 울린다 (소리 파일 없이 코드로) */
 function bowl(v=.07){ if(!sound||!ac()) return; try{ const t0=AC.currentTime, f=220;
   for(const [m,a,d] of [[1,1,8],[1.004,.8,8],[2.76,.4,5],[5.4,.16,3],[8.9,.06,1.6]]){ const o=AC.createOscillator(), g=AC.createGain(); o.type='sine'; o.frequency.value=f*m;
-    g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(v*a,t0+.03); g.gain.exponentialRampToValueAtTime(.0001,t0+d); o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0+d+.05); } }catch(e){} }
+    g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(v*a,t0+.03); g.gain.exponentialRampToValueAtTime(.0001,t0+d); o.connect(g); g.connect(sfxOut()); o.start(t0); o.stop(t0+d+.05); } }catch(e){} }
 const SFX={
   jump:()=>tone(330,.13,'square',.035,340), coin:()=>{ tone(1047,.06,'square',.03); tone(1568,.15,'square',.03,0,.06); },
   bump:()=>tone(140,.07,'triangle',.09,-50), brk:()=>{ noise(.16,.08); tone(190,.1,'square',.03,-100); },
@@ -277,7 +309,7 @@ const SFX={
 const grid=new Uint8Array(COLS*ROWS); let boxes={}, bumps={}, padT={};
 const at=(c,r)=>(c<0||c>=COLS)?2:(r<0||r>=ROWS)?0:grid[r*COLS+c];
 const set=(c,r,v)=>{ if(c>=0&&c<COLS&&r>=0&&r<ROWS) grid[r*COLS+c]=v; };
-let coins,pieces,mungs,swarms,curtains,walls,flags,says,items,door,decor,nook,room,bossC,sign,radio,post=null;
+let coins,pieces,mungs,swarms,curtains,walls,flags,says,items,door,decor,nook,room,bossC,sign,radio,post=null, noises=[];
 /* 주간 보스 「회색 장막」이 뭉치를 내보내는 박자. 겹(hp)마다 한 떼를 내보내는 때(t, 초), 뭉치 빠르기(v), 떼 사이에 쉬는 시간(rest)이 다르다.
    보스가 내보낸 뭉치는 숨 바람을 한 번 막는다. 그래서 떼를 밟거나 넘긴 다음, 장막이 눈을 감고 쉬는 틈에 숨을 끝까지 모아 불어야 장막에 닿는다.
    덜 모은 바람은 보스 뭉치를 날리지 못한다 (숨 버튼을 톡톡 눌러 떼를 다 날리면 넘길 일이 없어져서. 주홍 코트의 짧은 바람은 날린다).
@@ -386,6 +418,27 @@ const LEVELS=[
   say(67,'안개 장막이다. 숨 버튼을 꾹 눌렀다가 떼라 삐약.'); curtain(74);
   flag(78); say(80,'띵띵이 떼다. 쫓아오면 손을 떼고 가만히 있어라 삐약.'); swarm(90);
   coinRow(96,100,10); piece(98,8); say(101,'훈련은 여기까지다. 문으로 들어가라 삐약.'); door(106);
+},
+// ---- 2주차 (판 번호 6부터. DAYS와 같은 차례)
+// 월: 복도 「숨」. 새 장치는 소음 구름(멈춰서 긴 숨), 통로 방은 프레스 룸(힘 줬다 빼기). 감정 벽은 몸의 느낌 낱말(stage-feel.js w2mon)
+(L)=>{ const {ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,noise,wall,flag,say,stairs,door,nook}=L;
+  // 1구간: 소음 구름 익히기
+  ground(0,52); say(2,'1주차 요원들 덕분에 안개가 옅어져서 학교 안이 보인다. 오늘은 복도다 삐약.');
+  coinRow(7,10,10); crate(13,R1,'coin'); brick(14,15,R1); crate(16,R1,'shield'); mung(19,27);
+  say(28,'앞에 웅웅거리는 소음 구름이 있다. 시끄러운 데서는 서두르면 더 꼬인다 삐약.'); noise(33,6);
+  coinRow(41,44,10); hard(47,49,9); piece(48,7); mung(45,52);
+  // 2구간: 발판과 두 번째 구름
+  ground(55,95); flag(56); crate(60,R1,'coat'); brick(61,62,R1); mung(64,72); pad(76); hard(79,82,6); coinRow(79,82,4);
+  noise(86,6); coin(96,7); coin(97,6); coin(98,7);
+  // 3구간: 감정 벽과 띵띵이
+  ground(100,150); flag(101); say(103,'감정 벽이다. 오늘은 몸의 느낌에도 이름을 붙여 봐라 삐약.'); wall(108);
+  swarm(118); brick(125,125,R1); crate(126,R1,'coins'); brick(127,127,R1); mung(130,138); curtain(142); hard(146,148,9); piece(147,7);
+  // 4구간: 프레스 룸 통로와 긴 구름
+  ground(153,200); flag(154); mung(158,166); nook(170,'press'); coinRow(175,178,10); noise(182,7); stairs(194,4);
+  coin(199,5); coin(200,4); coin(201,5);
+  // 5구간: 섞어서
+  ground(203,281); flag(204); swarm(211); brick(217,221,R1); mung(217,222,R1); crate(219,R2,'coins');
+  mung(225,233); hard(228,230,9); piece(229,7); noise(237,6); coinRow(245,250,10); door(262);
 } ];
 // 1주차 하루치 정보. next = 판을 깨면 받는 지령, report = 앞 판에서 받아 이 판을 시작할 때 보고하는 지령 (그래서 첫 판에는 report가 없다), toy = 판을 끝내면 받는 말랑이,
 // feel = 그 판의 감정 벽에 나오는 상황 묶음 (stage-feel.js의 days)
@@ -397,10 +450,13 @@ const DAYS=[
   {d:'11.25 수',date:'2026-11-25',name:'뒷산 길',letter:'빛',report:['다른 길','평소와 다른 길로 걸으며 처음 보는 것 하나 찾기.'],next:['초록 세 개','복도나 창밖에서 초록색 세 개 찾기. 아무도 눈치채지 못하게.'],feel:'wed'},
   {d:'11.26 목 · 보스',date:'2026-11-26',name:'회색 장막',boss:true,toy:'apple',done:'1주차 암호 「하늘빛」 완성',report:['초록 세 개','복도나 창밖에서 초록색 세 개 찾기.','폰을 내려놓고 방 안이나 창밖에서 초록색 세 개를 찾는다.'],next:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 걸 느껴 보기.'],feel:'thu'},
   {d:'11.27 금',date:'2026-11-27',name:'쉬어 가는 판',rest:true,toy:'mandarin',done:'쉬어 가는 판 완료',report:['발바닥 수사','신발 끈을 다시 묶고, 발바닥이 땅에 닿는 걸 느껴 보기.','폰을 내려놓고 일어서서, 발바닥이 바닥에 닿는 느낌을 10초 동안 느껴 본다.'],next:['소리 세 개','10초 동안 가만히 귀 기울이고 들리는 소리 세 가지 세기.'],nl:'주말의 지령',feel:'fri'},
-  {d:'언제든',name:'훈련장',train:true} ];
+  {d:'언제든',name:'훈련장',train:true},
+  // ---- 2주차 「소리와 숨의 주」 (2026-11-26 선생님이 A안으로 고름). 1주차 요원들 덕분에 안개가 옅어져 학교 안 장소가 보이기 시작한다.
+  // 판 번호는 훈련장(5) 뒤로 이어 붙인다 (기록 fogspy2.clear·best·day가 판 번호로 남아 있어서 1주차 번호는 그대로 둔다). wk = 몇 주차, place = 장소 소품
+  {d:'11.30 월',date:'2026-11-30',name:'복도',wk:2,place:'hall',letter:'숨',report:['소리 세기','눈을 감고 들리는 소리 세 개를 세어 보기.','눈을 감고 지금 들리는 소리 세 개를 세어 본다.'],next:['숨 세 번','쉬는 시간에 자리에서 천천히 숨을 세 번 쉬기. 숨이 들어오고 나가는 것만 느끼기.'],now:['숨 하나 길게','지금 숨을 한 번 길게 내쉰다. 내쉬는 숨을 들이쉬는 숨보다 길게.'],feel:'w2mon'} ];
 // 월~목 네 판(암호 글자 셋 + 목요일 보스)을 깨면 본부와 완료 카드에 간식 안내가 나온다 (금요일 쉬어 가는 판은 선택). 미션 단어는 그 주의 암호
 const SNACK=()=>{ const c=agent().code, j=(c.charCodeAt(c.length-1)-44032)%28?'을':'를'; return '다음 주에 Wee클래스에 와서 내 요원 코드 「'+c+'」'+j+' 말하면 활동 간식을 받아요.'; },   // 선생님은 관리실 실시간 현황에서 요원 코드로 확인한다
-      weekDone=c=>!!c&&DAYS.slice(0,TRAIN).every((d,i)=>d.rest||c[i]);   // 쉬어 가는 판(금)은 깨지 않아도 된다: 월~목(암호 글자 셋 + 보스)만 깨면 간식 안내
+      weekDone=(c,w=1)=>!!c&&weekIdx(w).some(i=>DAYS[i].boss)&&weekIdx(w).every(i=>DAYS[i].rest||c[i]);   // 그 주 보스 판이 게임에 들어온 뒤에만 완성으로 본다   // 쉬어 가는 판(금)은 깨지 않아도 된다: 월~목(암호 글자 셋 + 보스)만 깨면 간식 안내
 let stageNo=0;
 // 이 판에서 한 마음돌봄 행동: b = 끝까지 모은 숨, s = 가만히 있기(띵띵이, 하늘 방, 가만히 방), n = 감정 벽에 붙인 이름. 완료 카드에 걸린 시간 대신 이 숫자를 보여 준다. 어디에도 남기지 않는다
 let care={b:0,s:0,n:0};
@@ -415,13 +471,17 @@ const teacher=()=>location.hash==='#all'||!!loadSave().teacher;
 const free=()=>teacher()||Date.now()<LIVE;
 const isOpen=i=>free()||Date.now()>=openAt(i);
 const lightsOut=()=>{ const h=kst().getUTCHours(); return !free()&&(h>=22||h<6); };
-const hasPieces=cl=>!!(cl[0]&&cl[1]&&cl[2]);
+const wkOf=i=>DAYS[i].wk||1, weekIdx=w=>DAYS.map((d,i)=>i).filter(i=>!DAYS[i].train&&wkOf(i)===w);
+const WEEKS_IN=[...new Set(DAYS.filter(d=>!d.train).map(d=>d.wk||1))];   // 게임에 판이 들어 있는 주
+const nowWk=()=>{ const t=today(); return t>='2026-12-07'?3:t>='2026-11-30'?2:1; };
+const hasPieces=(cl,w=1)=>weekIdx(w).filter(i=>DAYS[i].letter).every(i=>cl[i]);
+const prevSt=i=>{ let j=i-1; while(j>=0&&DAYS[j].train) j--; return j; };   // 앞 판 (훈련장은 건너뛴다: 2주차 월의 앞 판은 1주차 금)
 const today=()=>kst().toISOString().slice(0,10);   // 한국 날짜 (2026-11-23 꼴)
 // 서버에는 이름 없는 합계 숫자만 보낸다. 선생님 모드에서 해 본 것은 세지 않는다
 const hq=(fn,...a)=>{ if(HQ.on&&!teacher()) try{ HQ[fn](...a); }catch(e){} };
 // 오늘 열린 판 가운데 아직 안 깬 판. 없으면 -1
 function todayNo(){ const cl=loadSave().clear||{}, ymd=today();
-  for(let i=0;i<TRAIN;i++) if(DAYS[i].date===ymd&&Date.now()>=openAt(i)&&!cl[i]&&(!DAYS[i].boss||hasPieces(cl))) return i;
+  for(let i=0;i<DAYS.length;i++) if(!DAYS[i].train&&DAYS[i].date===ymd&&Date.now()>=openAt(i)&&!cl[i]&&(!DAYS[i].boss||hasPieces(cl,wkOf(i)))) return i;
   return -1; }
 // 저장값이 깨져 있으면(객체가 아니면) 빈 것으로 본다. 칸의 꼴이 다르면 그 칸만 버린다: 판별 기록 칸은 객체, 색 방울은 0 이상의 정수
 let saveMem=null;   // 저장이 막힌 폰(쿠키를 모두 막아 둔 폰 등)에서는 창을 닫기 전까지만 여기에 들고 있는다
@@ -441,7 +501,7 @@ function toysOf(sv){ const t=Array.isArray(sv.toys)?sv.toys.filter(k=>typeof k==
 function addToy(k){ const sv=loadSave(), t=toysOf(sv); if(t.includes(k)) return false; t.push(k); sv.toys=t; putSave(sv); return true; }
 function build(){
   grid.fill(0); boxes={}; bumps={}; padT={};
-  coins=[];pieces=[];mungs=[];swarms=[];curtains=[];walls=[];flags=[];says=[];items=[];decor=[]; nook=null; room=null; bossC=null; post=null;
+  coins=[];pieces=[];mungs=[];swarms=[];curtains=[];walls=[];flags=[];says=[];items=[];decor=[]; nook=null; room=null; bossC=null; post=null; noises=[];
   const ground=(a,b)=>{ for(let c=a;c<=b;c++) for(let r=GY;r<ROWS;r++) set(c,r,1); };
   const hard=(a,b,r)=>{ for(let c=a;c<=b;c++) set(c,r,2); };
   const brick=(a,b,r)=>{ for(let c=a;c<=b;c++) set(c,r,6); };
@@ -453,12 +513,13 @@ function build(){
   const mung=(a,b,row=GY)=>mungs.push({x:b*T-16,y:row*T-14,w:16,h:14,a:a*T,b:b*T,vx:-22,vy:0,alive:true,sq:0});
   const swarm=(c)=>{ const s={hx:c*T,hy:GTOP-50,state:'idle',calm:0,bugs:[]}; for(let i=0;i<5;i++) s.bugs.push({x:s.hx+i*10-20,y:s.hy+(i%2)*12,ph:i*1.26}); swarms.push(s); };
   const curtain=(c)=>curtains.push({x:c*T,w:20,alive:true,hint:0});
+  const noise=(c,n=6)=>noises.push({x:c*T,w:n*T,done:false,hint:false,nt:0,fade:0});   // 소음 구름 (2주차): c칸부터 n칸
   const wall=(c)=>walls.push({x:c*T,w:32,alive:true});
   const flag=(c)=>flags.push({x:c*T,on:false});
   const say=(c,t)=>says.push({x:c*T,t,done:false});
   const stairs=(c,n)=>{ for(let i=0;i<n;i++) for(let h=0;h<=i;h++) set(c+i,11-h,2); };
   const pipeT=(c)=>{ for(let i=0;i<2;i++) for(let r=GY-2;r<GY;r++) set(c+i,r,7); };   // 통로: 2칸×2칸, 밟고 설 수 있다
-  LEVELS[stageNo]({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,wall,flag,say,stairs,door:c=>{ door={x:c*T,y:GTOP-40,w:32,h:40}; },
+  LEVELS[stageNo]({ground,hard,brick,crate,pad,coin,coinRow,piece,mung,swarm,curtain,noise,wall,flag,say,stairs,door:c=>{ door={x:c*T,y:GTOP-40,w:32,h:40}; },
     nook:(c,kind)=>{ nook={x:c*T,kind,t:0,used:false,shut:false,hint:false}; pipeT(c); if(kind==='wax'&&window.WAX) WAX.preload(); },
     boss:(c)=>{ bossC={x:c*T,w:38,alive:true,hint:0,boss:true,hp:3,tx:c*T,cd:.5,i:0,nap:false,blk:0,wk:0,hits:0,pf:0}; curtains.push(bossC); }});
   for(let r=0;r<ROWS;r++) set(LC,r,2);
@@ -472,7 +533,8 @@ function build(){
   for(let n=0;n<14&&!rFree(rc);n++) rc--;
   const rX=rc*T;
   const bare=x=>x>190&&(x<rX-40||x>door.x+60);   // 표어 간판(출발 지점)과 라디오·본부 문 둘레에는 나무를 심지 않는다
-  for(let c=6;c<LC-4;c+=23){ if(at(c,GY)===1&&at(c,GY-1)===0&&bare(c*T)) decor.push({x:c*T-7,kind:'tree'}); const b=c+11; if(at(b,GY)===1&&at(b,GY-1)===0&&bare(b*T)) decor.push({x:b*T-7,kind:'bush'}); }
+  const PK={hall:['locker','board','cdoor','locker']}[DAYS[stageNo].place]; let pk=0;   // 2주차 장소 판은 나무·덤불 자리에 그 장소 소품을 돌아가며 놓는다
+  for(let c=6;c<LC-4;c+=23){ if(at(c,GY)===1&&at(c,GY-1)===0&&bare(c*T)) decor.push({x:c*T-7,kind:PK?PK[pk++%PK.length]:'tree'}); const b=c+11; if(at(b,GY)===1&&at(b,GY-1)===0&&bare(b*T)) decor.push({x:b*T-7,kind:PK?PK[pk++%PK.length]:'bush'}); }
   sign={x:52,t:mottoNow(),k:0,al:1}; radio={x:rX,s:songNow(),k:0,al:1,said:false};
   if(!DAYS[stageNo].train&&(DAYS[stageNo].date||'')>='2026-11-24') placePost(hard,say);   // 하늘 게시판은 11.24(화) 판부터 (선생님 요청)
 }
@@ -485,7 +547,7 @@ function placePost(hard,say){
   for(const c of curtains) busy.push([c.x-40,c.x+c.w+40]); for(const w of walls) busy.push([w.x-40,w.x+w.w+40]);
   for(const f of flags) busy.push([f.x-24,f.x+24]); for(const p of pieces) busy.push([p.x-10,p.x+10]);
   for(const c of coins) if(c.y<9*T) busy.push([c.x-10,c.x+10]);
-  if(nook) busy.push([nook.x-40,nook.x+72]); if(radio) busy.push([radio.x-40,radio.x+80]); busy.push([door.x-120,door.x+60]); busy.push([0,260]);
+  if(nook) busy.push([nook.x-40,nook.x+72]); if(radio) busy.push([radio.x-40,radio.x+80]); busy.push([door.x-120,door.x+60]); busy.push([0,260]); for(const n of noises) busy.push([n.x-40,n.x+n.w+40]);
   const free=c=>{ for(let d=-1;d<=11;d++){ if(at(c+d,GY)!==1) return false; for(let r=3;r<GY;r++) if(at(c+d,r)!==0) return false; }
     const a=(c-1)*T, b=(c+12)*T; return !busy.some(([x0,x1])=>x1>a&&x0<b); };
   const mid=Math.round(door.x/T*.5);
@@ -553,9 +615,8 @@ document.addEventListener('contextmenu',e=>{ if(!inText(e)) e.preventDefault(); 
 ['gesturestart','gesturechange','gestureend','dblclick'].forEach(n=>document.addEventListener(n,e=>{ if(n!=='dblclick'||!inText(e)) e.preventDefault(); },{passive:false}));
 document.addEventListener('touchmove',e=>{ if(e.touches.length>1) e.preventDefault(); },{passive:false});
 { let lastEnd=0; document.addEventListener('touchend',e=>{ const now=performance.now(); if(now-lastEnd<350&&!e.target.closest('button,textarea,a')) e.preventDefault(); lastEnd=now; },{passive:false}); }
-{ const bs=document.getElementById('bs'); sound=!loadSave().mute; bs.textContent=sound?'♪':'×';   // 소리를 꺼 두면 다음에 열 때도 꺼져 있다
-  bs.onclick=()=>{ sound=!sound; bs.textContent=sound?'♪':'×'; const sv=loadSave(); sv.mute=!sound; putSave(sv);
-    if(sound){ ac(); SFX.tick(); } else if(AC){ try{ AC.suspend(); }catch(e){} } }; }
+OPT=(()=>{ const sv=loadSave(), o=sv.opt||{}, m=sv.mute?0:3, k=(v,d,n)=>(Number.isInteger(v)&&v>=0&&v<=n)?v:d; return {m:k(o.m,m,3),s:k(o.s,m,3),b:k(o.b,1,2)}; })();
+applyOpt(); document.getElementById('bs').onclick=()=>optCard(); document.getElementById('bp').onclick=()=>{ if(hv.hidden){ SFX.tick(); bpCard('bag'); } };
 document.getElementById('bh').onclick=()=>helpCard();
 /* 본부로 나가기: 판을 하다가 위쪽 집 버튼(⌂), 폰의 뒤로 가기, 컴퓨터의 Esc를 누르면 판 고르기(본부)로 나간다.
    하던 판은 그 자리에 멈춰 두고(held), 본부에서 그 판을 다시 누르면 이어 한다. 다른 판을 고르면 멈춰 둔 판은 버린다 */
@@ -645,7 +706,10 @@ function headHit(c,r){ const v=at(c,r), key=c+','+r;
 }
 // 장막에 끝까지 모은 숨 바람이 닿았을 때. 보스 장막은 한 겹씩 걷히며 뒤로 물러나고, 보통 장막과 보스의 마지막 겹은 한 번에 걷힌다
 // 보스 장막의 마지막 한 겹 앞에서는 숨이 천천히(4초) 모인다. 판마다 한 번은 버튼이 아니라 진짜 숨을 쉬어 보게 하려는 것이다
-const deep=()=>!!(bossC&&bossC.alive&&bossC.hp===1&&bossC.x>=bossC.tx&&bossC.x>P.x&&bossC.x-P.x<236);
+const deep=()=>!!(bossC&&bossC.alive&&bossC.hp===1&&bossC.x>=bossC.tx&&bossC.x>P.x&&bossC.x-P.x<236)||!!noiseIn();
+/* 소음 구름 (2주차 월 「복도」): 땅 위 몇 칸에 걸친 시끄러운 구름. 안에 들어서면 화면이 떨리고 음악이 먹먹해지고, 구름 오른쪽 끝을 넘어갈 수 없다.
+   그 자리에 멈춰 숨을 길게(4초) 끝까지 모으면 구름이 잔잔해져 흩어진다. 싸워서 없애는 게 아니라, 시끄러울 때 멈추고 숨 쉬면 지나간다 */
+const noiseIn=()=>(noises||[]).find(n=>!n.done&&P.x+P.w>n.x&&P.x<n.x+n.w);
 function blow(c){
   if(c.boss&&c.hp>1){ c.hp--; c.w=14+c.hp*8; c.tx=Math.max(c.x,c.tx)+22*T; c.cd=.8; c.i=0; c.nap=false; c.blk=c.wk=c.hits=0; shake=.25; freeze=.06; for(let i=0;i<26;i++) puff(c.x+10,GTOP-Math.random()*150,1,'#c9cfd5',90,2);
     for(const m of mungs) if(m.tmp&&m.alive&&m.sq<=0) popMung(m,true); note(c.hp===2?'한 겹 걷혔다. 장막이 물러난다':'이제 한 겹 남았다'); SFX.calm();
@@ -674,7 +738,7 @@ function step(dt){
   P.vx=Math.max(-maxV,Math.min(maxV,P.vx));
   // 점프
   jBuf-=dt; P.coy-=dt;
-  if(jBuf>0&&P.coy>0&&!P.charging){ P.vy=JUMP; P.coy=0; jBuf=0; P.jumpHeld=true; P.glide=false; P.boost=false; SFX.jump(); dust(P.x+6,P.y+P.h,P.face); }
+  if(jBuf>0&&P.coy>0&&!P.charging&&!pressOn()){ P.vy=JUMP; P.coy=0; jBuf=0; P.jumpHeld=true; P.glide=false; P.boost=false; SFX.jump(); dust(P.x+6,P.y+P.h,P.face); }
   else if(jBuf>0&&!P.ground&&P.coy<=0&&P.vy>-40&&P.airT>.12) P.glide=true;
   if(!K.j){ P.jumpHeld=false; P.glide=false; }
   P.vy+=(P.vy<0?((P.jumpHeld||P.boost)?G_UP:G_REL):G_FALL)*dt; if(P.vy>=0) P.boost=false;
@@ -725,7 +789,7 @@ function step(dt){
       if(it.kind==='coat'){ P.coat=true; P.grey=0; freeze=.12; note('주홍 코트를 입었다'); puff(P.x+6,P.y+11,18,'#d9512c',80); say('주홍 코트다. 숨 버튼을 톡 누르면 바람이 나간다 삐약.'); }
       else { P.shield=1; note('색 방패를 얻었다'); } } }
   // 깃발, 말풍선
-  if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; stuck=0; if(bossC) bossC.blk=bossC.wk=bossC.hits=0; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
+  if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; stuck=0; if(bossC) bossC.blk=bossC.wk=bossC.hits=0; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); nowCheck(); }
   if(!room) for(const s of says) if(!s.done&&P.x>s.x){ s.done=true; say(s.t); }
   // 말풍선은 한 번 뜨면 적어도 1.6초는(표어는 1초) 그대로 두고, 다음 말은 그 뒤에 한 번에 바꾼다
   if(bubble&&tNow>=bubble.until) bubble=null;
@@ -784,6 +848,11 @@ function step(dt){
       else if(g.pow>=.8){ if(c.boss&&c.hp>1) g.left=0; blow(c); }
       else { g.left=0; if(!g.puff) say('조금 약하다. 고리가 다 찰 때까지 들이쉬어라 삐약.'); else if(tNow>c.hint){ c.hint=tNow+6; say('장막은 짧은 바람으로 안 걷힌다. 숨 버튼을 꾹 눌러 모아라 삐약.'); } } } }
   gusts=gusts.filter(g=>g.left>0);
+  for(const n of noises){ if(n.done){ n.fade=Math.max(0,n.fade-dt); continue; }
+    if(P.x+P.w>n.x&&P.x<n.x+n.w){ shake=Math.max(shake,.06);
+      if(!n.hint){ n.hint=true; n.nt=tNow+7; say('소음 구름이다. 시끄러울 땐 서두르지 말고 멈춰서 숨 버튼을 길게 눌러 끝까지 모아라 삐약.',6.5); }
+      const lim=n.x+n.w-2-P.w; if(P.x>lim){ P.x=lim; if(P.vx>0) P.vx=0; if(tNow>n.nt){ n.nt=tNow+5; note('웅웅 소리에 막혔다. 멈춰서 숨을 길게'); } }
+      if(P.charging&&P.charge>=1){ n.done=true; n.fade=1; care.s++; note('소음 구름이 잔잔해졌다'); SFX.calm(); for(let i=0;i<14;i++) puff(n.x+n.w*Math.random(),GTOP-60+Math.random()*24,1,'#c9cfd5',40); } } }
   tickParts(dt);
   for(const c of clouds){ c.y-=14*dt; c.x+=5*dt; c.a+=dt; } clouds=clouds.filter(c=>c.y>-30);
   shake=Math.max(0,shake-dt);
@@ -796,17 +865,22 @@ function step(dt){
   else if(room){ const hands=!K.l&&!K.r&&!K.j&&!K.b, ex=RE*T; room.t+=dt;
     if(!room.done){
       if(room.kind==='sky'){ if(still&&hands&&P.y+P.h<=8*T+1) room.p+=dt/7; }
+      else if(room.kind==='press'){ if(pressOn()){ if(K.j){ room.sq=Math.min(1,room.sq+dt/2.5); if(room.sq>=1&&!room.full){ room.full=true; SFX.full(); } }
+          else { if(room.full){ room.n++; room.p=room.n/3; if(room.n<3){ note(['어깨가 툭 내려간다','손에 힘이 풀린다'][room.n-1]); SFX.pad(); } } room.sq=0; room.full=false; } } else { room.sq=0; room.full=false; } }
       else if(still&&hands) room.p+=dt/8;
       if(room.p>=1){ room.p=1; room.done=true; care.s++; roomCount(); for(let i=0;i<5;i++) popCoin(P.x+6+(i-2)*9,P.y-6,i); SFX.calm();
-        note({sky:'먼 곳을 보니 눈이 편안하다',still:'아무것도 안 해도 불은 켜진다'}[room.kind]); say('잘했다. 오른쪽 통로 위에 서 있으면 밖으로 나간다 삐약.'); } }
+        note({sky:'먼 곳을 보니 눈이 편안하다',still:'아무것도 안 해도 불은 켜진다',press:'힘을 꽉 줬다 빼니 몸이 가볍다'}[room.kind]); say('잘했다. 오른쪽 통로 위에 서 있으면 밖으로 나간다 삐약.'); } }
     if(still&&!P.charging&&onPipe(ex)){ room.et+=dt; if(room.et>=1){ if(room.kind==='top') warpIn(ex+10,()=>{ leaveTop(); warpOut(); },()=>note('다시 길 위로')); else warpIn(ex+10,()=>{ leaveRoom(); warpOut(); },()=>{ shutPipe(); note('다시 길 위로'); }); } } else room.et=0; }
   if(P.ground&&!room&&P.x+P.w>door.x+10&&P.x<door.x+door.w-6) finish();
   cam+=(camTarget()-cam)*Math.min(1,dt*6);
 }
 function camTarget(){ const lo=room?room.x0:0, hi=(room?room.x1:LW)-W; return hi<lo?(lo+hi)/2:Math.max(lo,Math.min(hi,P.x-W*.36+P.face*12)); }
-function enterRoom(){ room={kind:nook.kind,x0:RX*T,x1:(RX+30)*T,ret:nook.x+10,t:0,p:0,et:0,done:false};
+function enterRoom(){ room={kind:nook.kind,x0:RX*T,x1:(RX+30)*T,ret:nook.x+10,t:0,p:0,et:0,done:false,sq:0,n:0,full:false};
   P.x=RA*T+10; P.y=GTOP-32-P.h; P.vx=P.vy=0; P.face=1; cam=camTarget(); chickX=P.x; chickY=P.y-20; }
-function roomHello(){ say({sky:'하늘 방이다. 계단 꼭대기에 올라가서 먼 하늘을 가만히 봐라 삐약.',still:'가만히 방이다. 손을 떼고 아무것도 하지 마라. 눈을 감아도 불은 켜진다 삐약.'}[room.kind],6); }
+function roomHello(){ say({sky:'하늘 방이다. 계단 꼭대기에 올라가서 먼 하늘을 가만히 봐라 삐약.',still:'가만히 방이다. 손을 떼고 아무것도 하지 마라. 눈을 감아도 불은 켜진다 삐약.',
+  press:'프레스 룸이다. 가운데 발판에 서서 점프 버튼을 꾹 눌러 온몸에 힘을 줘라. 고리가 다 차면 손을 떼고 힘을 툭 빼라. 세 번 해라 삐약.'}[room.kind],7); }
+/* 프레스 룸 (2주차 월 통로 방): 점진적 근육 이완. 방 가운데 발판(RX+12~17칸) 위에서는 점프가 안 되고, 점프 버튼을 꾹 누르면 몸에 힘을 주고(2.5초에 고리가 참) 떼면 힘을 뺀다. 세 번이면 끝 */
+const pressOn=()=>room&&room.kind==='press'&&!room.done&&P.ground&&P.x+6>(RX+12)*T&&P.x+6<(RX+18)*T;
 function leaveRoom(){ P.x=room.ret; P.y=GTOP-32-P.h; P.vx=P.vy=0; room=null; cam=camTarget(); chickX=P.x; chickY=P.y-20; }
 // 왁뿌볼 방은 가까이 보는 카드로 띄운다. 곰이 통로로 내려간 뒤(화면이 어두워진 뒤)에 열리고, 닫으면 같은 통로로 올라온다
 function waxCard(){ if(!window.WAX){ warp.after=()=>{ shutPipe(); note('다시 길 위로'); }; warpOut(); return; }   // 왁뿌볼 파일을 못 받았으면 그냥 올라온다
@@ -881,6 +955,13 @@ const MOTTOS=['너는 하늘, 다른 건 모두 날씨일 뿐','급할수록 숨
 const SONGS=[['가을 아침','아이유'],['하늘바라기','정은지'],['길','god'],['한숨','이하이'],['수고했어, 오늘도','옥상달빛']];   // 월~금. 1주차 지령에 맞춘 곡 (월요일은 선생님이 고름, 2026-11-20)
 const tiny=()=>k/dprU<1.5?7.5:6.5;   // 게임 점 하나가 1.5px보다 작게 찍히는 화면(주소창이 보이는 안드로이드 가로 화면)에서는 작은 글자를 한 단계 키운다
 const cut=(t,n)=>{ t=String(t==null?'':t).replace(/\s+/g,' ').trim(); return t.length>n?t.slice(0,n-1)+'…':t; };
+/* 지령: 관리실 「게임 설정」에서 고친 지령(본부 서버의 orders, 판 날짜로 찾음)이 있으면 그것을, 없으면 게임에 든 지령(DAYS)을 쓴다.
+   next = 판 끝에 받는 내일의 지령, now = 판 중간 깃발의 10초 지령. 보고(report)는 앞 판의 내일의 지령을 그대로 묻는다 */
+function ordOv(i,kind){ const d=DAYS[i], st=HQ.cached(), o=d&&st&&st.orders&&st.orders[d.date], v=o&&o[kind];
+  return Array.isArray(v)&&cut(v[0],20)?[cut(v[0],20),cut(v[1],90)]:null; }
+const ordNext=i=>DAYS[i].next&&(ordOv(i,'next')||DAYS[i].next);
+const ordNow=i=>ordOv(i,'now')||DAYS[i].now||null;
+function ordReport(i){ const d=DAYS[i]; if(!d.report) return null; let j=i-1; while(j>=0&&!DAYS[j].next) j--; const o=j>=0&&ordOv(j,'next'); return o||d.report; }
 function mottoNow(){ const t=Date.now(), w=t>=Date.parse('2026-12-07T00:00:00+09:00')?2:t>=Date.parse('2026-11-30T00:00:00+09:00')?1:0, st=HQ.cached();
   return (st&&Array.isArray(st.mottos)&&cut(st.mottos[w],30))||MOTTOS[w]; }
 function songNow(){ const st=HQ.cached(), o=st&&st.date===today()&&st.song, t=o?cut(o.t,40):''; if(t) return {t,a:cut(o.a,20)};
@@ -962,7 +1043,12 @@ function roomBg(hz){ const kd=room.kind;
     bx.fillStyle='#e3eef5'; bx.fillRect(0,hz+6,W,2); }
   else if(kd==='still'){ bx.fillStyle=room.done?'#f3e2c0':'#20242f'; bx.fillRect(0,0,W,H);
     const n=Math.round(room.p*14); for(let i=0;i<n;i++){ const x=(i*71+23)%(W-20)+10, y=(i*47+17)%(hz-40)+12+Math.round(Math.sin(tNow*1.5+i)*2); bx.fillStyle=room.done?'#c9993f':'#f3c744'; bx.fillRect(x,y,2,2); if(Math.floor(tNow*2+i)%3){ bx.fillStyle=room.done?'#e2c999':'#8a7a3a'; bx.fillRect(x-1,y,1,2); bx.fillRect(x+2,y,1,2); bx.fillRect(x,y-1,2,1); bx.fillRect(x,y+2,2,1); } } }
+  else if(kd==='press'){ const cx0=Math.floor(cam); bx.fillStyle=mix('#3a3430','#f3e2c0',room.p); bx.fillRect(0,0,W,H);
+    bx.fillStyle=mix('#4a4440','#e2c999',room.p); bx.fillRect(0,hz-44,W,44); bx.fillStyle='#c9993f'; bx.fillRect(0,hz-45,W,1);
+    for(let i=0;i<3;i++){ const lx=(RX+11)*T+i*28-cx0, on=i<room.n; bx.fillStyle='#1f1b18'; bx.fillRect(lx,18,14,14); bx.fillStyle=on?'#f3c744':'#5c6269'; bx.fillRect(lx+2,20,10,10); if(on){ bx.fillStyle='#fff3c4'; bx.fillRect(lx+3,21,3,3); } }
+    const px0=(RX+12)*T-cx0, pw=6*T, sq=room.sq||0; bx.fillStyle='#1f1b18'; bx.fillRect(px0,hz-4,pw,4); bx.fillStyle=mix('#a03a1c','#d9512c',sq); bx.fillRect(px0+1,hz-3,pw-2,2); }
   else { bx.fillStyle='#f3e2c0'; bx.fillRect(0,0,W,H); bx.fillStyle='#e2c999'; bx.fillRect(0,hz-44,W,44); bx.fillStyle='#c9993f'; bx.fillRect(0,hz-45,W,1); for(let x=-((Math.floor(cam))%32);x<W;x+=32) bx.fillRect(x,hz-44,1,44); } }
+const DECOR_S={tree:[A.TREE,46],bush:[A.BUSH,13],locker:[A.LOCKER,32],board:[A.BOARD,34],cdoor:[A.CDOOR,44]};
 function draw(){ if(radio) radio.r=null;
   texts.length=0;
   const edge=room?1e9:maxX+150, prog=Math.min(1,maxX/door.x), cx=Math.floor(cam)+(shake>0?Math.round((Math.random()-.5)*4):0), cy=camY;
@@ -982,7 +1068,17 @@ function draw(){ if(radio) radio.r=null;
   for(let n=0;n<4;n++){ const x=Math.round(260+n*640-cx*.35); if(x>W||x<-130) continue; bx.drawImage(A.SCHOOL.g,x,hz-60); if(prog>0){ bx.globalAlpha=prog; bx.drawImage(A.SCHOOL.c,x,hz-60); bx.globalAlpha=1; } }
   bx.fillStyle=mix('#8f969c','#79b071',prog); for(let x=0;x<W;x+=2){ const wx=x+Math.floor(cx*.3), h=Math.round(12+Math.sin(wx*.026+2)*7+Math.sin(wx*.07)*3); bx.fillRect(x,hz-h,2,h); }
   // 나무와 덤불
-  for(const d of decor){ const sx=d.x-cx; if(sx<-40||sx>W+10) continue; const col=d.x<edge, s=d.kind==='tree'?A.TREE:A.BUSH; bx.drawImage(col?s.c:s.g,sx,hz-(d.kind==='tree'?46:13)); }
+  for(const d of decor){ const sx=d.x-cx; if(sx<-40||sx>W+10) continue; const col=d.x<edge, [s,dh]=DECOR_S[d.kind]||DECOR_S.bush; bx.drawImage(col?s.c:s.g,sx,hz-dh); }
+  // 소음 구름: 웅웅거리는 먹구름과 그 아래 흐린 기둥, 위로 튀는 빨간 소리 줄. 잔잔해지면 옅어지며 사라진다
+  for(const n of noises){ if(n.done&&n.fade<=0) continue; const x0=Math.round(n.x-cx); if(x0>W+4||x0+n.w<-4) continue;
+    const al=n.done?n.fade:1, y0=hz-78, j=n.done?0:Math.round(Math.sin(tNow*28));
+    const circ=(cx0,cy0,r,col)=>{ bx.fillStyle=col; for(let dy=-r;dy<=r;dy++){ const w=Math.round(Math.sqrt(r*r-dy*dy)); bx.fillRect(cx0-w,cy0+dy,w*2+1,1); } };
+    bx.globalAlpha=al*.18; bx.fillStyle='#3a3d42'; bx.fillRect(x0,y0+14,n.w,hz-y0-14);
+    bx.globalAlpha=al; for(let i=8;i<n.w-4;i+=14) circ(x0+i+j,y0+8+(i%28?2:0),10,'#1f1b18'); for(let i=8;i<n.w-4;i+=14) circ(x0+i+j,y0+8+(i%28?2:0),9,'#6b727a');
+    bx.fillStyle='#8e959d'; for(let i=8;i<n.w-4;i+=14) bx.fillRect(x0+i-4+j,y0+2,6,2);
+    if(!n.done){ bx.fillStyle='#d9512c'; for(let i=0;i<3;i++){ const sx=x0+14+i*Math.round((n.w-28)/2), sy=y0-6-((Math.floor(tNow*6)+i)%3)*2; for(let q=0;q<4;q++) bx.fillRect(sx+q*3,sy+(q%2?2:0),3,1); }
+      texts.push({t:'웅웅',x:x0+n.w/2,y:y0+11,s:8,c:'#fff8e8',a:'center',f:DISP}); }
+    bx.globalAlpha=1; }
   // 구름이 된 뭉치
   bx.fillStyle='#ffffff'; for(const c of clouds){ const x=Math.round(c.x-cx), y=Math.round(c.y-cy); bx.fillRect(x-6,y,12,4); bx.fillRect(x-3,y-3,7,3); bx.fillRect(x-8,y+1,2,2); bx.fillRect(x+6,y+1,2,2); }
   // 아직 걷히지 않은 앞쪽 안개 (배경만 덮고, 발판과 캐릭터는 또렷하게 둔다)
@@ -1036,10 +1132,17 @@ function draw(){ if(radio) radio.r=null;
   for(const s of swarms) if(s.state!=='gone') for(const b of s.bugs) spr(A.BUG[Math.floor(tNow*12+b.ph)%2],b.x-5-cx+(s.state==='alert'?Math.round(Math.sin(tNow*40+b.ph)):0),b.y-5-cy,true);
   // 명상 방석과 숨 고르기 (가부좌한 늘곰, 둘레로 퍼지는 싱잉볼 파장, 곰 말풍선)
   if(cush&&!room){ const x=Math.round(cush.x-cx), y=hz-16; if(x>-40&&x<W+4){ const R=(c,a,b,w,h)=>{ bx.fillStyle=c; bx.fillRect(x+a,y+b,w,h); };
+    // 공간 꾸미기(배낭에서 산 물건): 방석은 왼쪽 조작 버튼에 반쯤 가리므로 물건은 금주의 표어 간판 다리 사이에 둔다.
+    // 화분은 왼쪽 다리 옆, 축구공은 그 앞, 작은 조명은 오른쪽 다리 옆 (조명은 둘레를 노랗게 밝힌다)
+    const gr=!(P.grey>0), sx=Math.round(sign.x-cx), sw=sign.w||64;
+    if(roomOn('s_lamp')){ const lx=sx+sw-22; if(gr){ bx.globalAlpha=.16; bx.fillStyle='#f3c744'; for(let r=0;r<12;r++){ const w=Math.round(Math.sqrt(144-r*r)*1.4); bx.fillRect(lx+4-w,hz-18+r,w*2,1); bx.fillRect(lx+4-w,hz-18-r,w*2,1); } bx.globalAlpha=1; } spr(A.DECO.lamp,lx,hz-A.DECO.lamp.h,gr); }
+    if(roomOn('s_plant')) spr(A.DECO.plant,sx+26,hz-A.DECO.plant.h,gr);
+    if(roomOn('s_ball')) spr(A.DECO.ball,sx+42,hz-A.DECO.ball.h,gr);
+    const CU=roomOn('s_cush')?['#5d6fa3','#34406a','#8494c4','#a9b6dc','#45568a','#232c4d','#6d7fb3','#1d2440']:['#e8703f','#bf4522','#f39a6c','#f6b48d','#d65c30','#8f3016','#e07a4c','#7d2a12'];
     const WD=[14,20,24,26,28,28,28,28,28,28,28,28,28,28,26,22];
-    WD.forEach((w,r)=>{ const a=(28-w)/2; R('#1f1b18',a,r,w,1); if(r>0&&r<15) R(r<7?'#e8703f':r===7?'#1f1b18':'#bf4522',a+1,r,w-2,1); });
-    R('#f39a6c',7,2,10,1); R('#f6b48d',9,3,4,1); R('#d65c30',5,6,18,1);
-    for(let i=4;i<26;i+=3) R('#8f3016',i,9,1,4); R('#e07a4c',2,8,24,1); R('#7d2a12',3,14,22,1); R('#1f1b18',2,16,24,1);
+    WD.forEach((w,r)=>{ const a=(28-w)/2; R('#1f1b18',a,r,w,1); if(r>0&&r<15) R(r<7?CU[0]:r===7?'#1f1b18':CU[1],a+1,r,w-2,1); });
+    R(CU[2],7,2,10,1); R(CU[3],9,3,4,1); R(CU[4],5,6,18,1);
+    for(let i=4;i<26;i+=3) R(CU[5],i,9,1,4); R(CU[6],2,8,24,1); R(CU[7],3,14,22,1); R('#1f1b18',2,16,24,1);
     if(!med&&!warp){ const bob=Math.round(Math.sin(tNow*4)*1.5), lt='방석 위에 올라가기'; ctx.font=Math.round(6*k)+'px '+DISP;
       const lw=Math.ceil(ctx.measureText(lt).width/k)+6, lx=Math.max(1,Math.min(x+14-lw/2,sign.x-cx-2-lw));   // 표지는 금주의 표어에 닿지 않게
       box(lx,y-31+bob,lw,12,'#fff8e8','#1f1b18'); texts.push({t:lt,x:lx+lw/2,y:y-22.6+bob,s:6,c:'#1f1b18',a:'center',f:DISP});
@@ -1048,7 +1151,7 @@ function draw(){ if(radio) radio.r=null;
         ring=(r,al,col)=>{ if(al<=0) return; bx.globalAlpha=Math.min(1,al); bx.fillStyle=col; const n=Math.max(24,Math.round(r*2.4)); for(let i=0;i<n;i++){ const a=i/n*6.283; bx.fillRect(Math.round(ox+Math.cos(a)*r)-1,Math.round(oy+Math.sin(a)*r*.62),2,1); } bx.globalAlpha=1; };
       if(inh){ const p=c/MED_IN; ring(30-14*p,.25+.65*p,'#fff8e8'); ring(42-18*p,.3*p,'#fff8e8'); }
       else { const q=(c-MED_IN)/MED_OUT; for(let i=0;i<4;i++){ const u=q*1.6-i*.22; if(u>0&&u<1) ring(16+u*72,(1-u)*.95,i%2?'#f3c744':'#fff8e8'); } }
-      if(!window.SITB){ const RW=[".........kkkkkk.........", "........kTttttTk........", ".......kTttttttTk.......", ".......kHHHHHHHHk.......", "..kkkkkkkkkkkkkkkkkkkk..", ".kTtttttttttttttttttttk.", "..kkkkkkkkkkkkkkkkkkkk..", "..kbBkbbbbbbbbbbbbkBbk..", "..kBBkbbbbbbbbbbbbkBBk..", "...kkbkkkkkbbkkkkkbkk...", "....kbkwkkkkkkwkkkbk....", "....kbkkkkkbbkkkkkbk....", "....kbbbbbmmmmbbbbbk....", "....kbbbbmmkkmmbbbbk....", ".....kbbbmmmmmmbbbk.....", "......kkbbbbbbbbkk......", ".....kTtkcccccckttk.....", "....ktttTkccccktttTk....", "...kttttTkkcckkttttTk...", "...ktttttTkkkkTtttttk...", "..kttttttTtoottTttttk...", "..kbbBbtttTttTtttbBbbk..", ".kbbbbtttttttttttTbbbbk.", "kbbbbbbkkkkkkkkkbbbbbbbk", "kbBbbmmbbbbBBbbbbmmbbBbk", "kBBBbbbbbbBBBBbbbbbbBBBk", ".kkkkkkkkkkkkkkkkkkkkkk."], PL={"k": "#1f1b18", "w": "#ffffff", "c": "#f6ead0", "C": "#d6c198", "t": "#dcc095", "T": "#b59565", "H": "#3b2f29", "b": "#b0683a", "B": "#7e4525", "m": "#e8b98a", "p": "#f7c9a8", "P": "#d99a7a", "o": "#c9993f", "O": "#8f6a22"}, cv=document.createElement('canvas'); cv.width=24; cv.height=RW.length; const g=cv.getContext('2d'); RW.forEach((r,yy)=>{ for(let xx=0;xx<24;xx++){ const ch=r[xx]; if(ch!=='.'){ g.fillStyle=PL[ch]; g.fillRect(xx,yy,1,1); } } }); window.SITB=cv; }
+      if(!window.SITB){ const RW=[".........kkkkkk.........", "........kTttttTk........", ".......kTttttttTk.......", ".......kHHHHHHHHk.......", "..kkkkkkkkkkkkkkkkkkkk..", ".kTtttttttttttttttttttk.", "..kkkkkkkkkkkkkkkkkkkk..", "..kbBkbbbbbbbbbbbbkBbk..", "..kBBkbbbbbbbbbbbbkBBk..", "...kkbkkkkkbbkkkkkbkk...", "....kbkwkkkkkkwkkkbk....", "....kbkkkkkbbkkkkkbk....", "....kbbbbbmmmmbbbbbk....", "....kbbbbmmkkmmbbbbk....", ".....kbbbmmmmmmbbbk.....", "......kkbbbbbbbbkk......", ".....kTtkcccccckttk.....", "....ktttTkccccktttTk....", "...kttttTkkcckkttttTk...", "...ktttttTkkkkTtttttk...", "..kttttttTtoottTttttk...", "..kbbBbtttTttTtttbBbbk..", ".kbbbbtttttttttttTbbbbk.", "kbbbbbbkkkkkkkkkbbbbbbbk", "kbBbbmmbbbbBBbbbbmmbbBbk", "kBBBbbbbbbBBBBbbbbbbBBBk", ".kkkkkkkkkkkkkkkkkkkkkk."], PL0={"k": "#1f1b18", "w": "#ffffff", "c": "#f6ead0", "C": "#d6c198", "t": "#dcc095", "T": "#b59565", "H": "#3b2f29", "b": "#b0683a", "B": "#7e4525", "m": "#e8b98a", "p": "#f7c9a8", "P": "#d99a7a", "o": "#c9993f", "O": "#8f6a22"}, PL=Object.assign({u:'#dcc095',U:'#b59565',v:'#1f1b18'},PL0,{u:PL0.t,U:PL0.T},lookPal()), RW2=RW.map((r,yy)=>yy<6?r.replace(/t/g,'u').replace(/T/g,'U'):(yy>=9&&yy<=11)?r.slice(0,5)+r.slice(5,19).replace(/k/g,'v')+r.slice(19):r), cv=document.createElement('canvas'); cv.width=24; cv.height=RW.length; const g=cv.getContext('2d'); RW2.forEach((r,yy)=>{ for(let xx=0;xx<24;xx++){ const ch=r[xx]; if(ch!=='.'){ g.fillStyle=PL[ch]; g.fillRect(xx,yy,1,1); } } }); window.SITB=cv; }
       bx.drawImage(window.SITB,x+2,y-24);
       const t=inh?'들이쉬고':'내쉬고', bw=t.length*9+12, bxx=Math.max(2,Math.min(x+14-bw/2,sign.x-cx-4-bw)), by=y-58;
       box(bxx,by,bw,14,'#fff8e8','#1f1b18'); bx.fillStyle='#fff8e8'; bx.fillRect(x+13,by+13,3,2); bx.fillStyle='#1f1b18'; bx.fillRect(x+12,by+14,1,2); bx.fillRect(x+16,by+14,1,2); bx.fillRect(x+13,by+16,3,1);
@@ -1058,10 +1161,11 @@ function draw(){ if(radio) radio.r=null;
   // 늘곰. 통로를 탈 때는 아래로 가라앉고(올라올 때는 반대로), 통로를 한 번 더 그려서 가라앉은 몸을 가린다
   { let f; if(lift) f=lift.ph==='down'?'glide':'jump'; else if(P.charging) f=(P.charge<1&&Math.floor(tNow*5)%2)?'idle':'breath'; else if(!P.ground) f=P.glide?'glide':(P.vy<0?'jump':'fall'); else if(Math.abs(P.vx)>8) f='run'+(Math.floor(P.runT*11)%4); else f=Math.floor(tNow*1.6)%2?'idle2':'idle';
     const sink=!warp?0:warp.ph==='in'?Math.min(1,warp.t/.5)*26:warp.ph==='out'?(1-Math.min(1,warp.t/.45))*26:26;
-    if(!med&&sink<26&&!(P.inv>0&&Math.floor(tNow*16)%2)) spr((P.coat?A.BEARR:A.BEAR)[warp?'idle':f],P.x-8-cx,P.y-3-cy+Math.round(sink),!(P.grey>0),P.face<0);
+    if(!med&&sink<26&&!(P.inv>0&&Math.floor(tNow*16)%2)) spr((P.coat?A.BEARR:lookArt())[warp?'idle':f],P.x-8-cx,P.y-3-cy+Math.round(sink),!(P.grey>0),P.face<0);
     if(warp) pipes();
     const px=Math.round(P.x+6-cx), py=Math.round(P.y-cy);
     if(P.shield&&!warp) for(let i=0;i<8;i++){ const a=i/8*6.283+tNow*2.5; bx.fillStyle=i%2?'#69b4e6':'#ffffff'; bx.fillRect(Math.round(px+Math.cos(a)*12),Math.round(py+10+Math.sin(a)*15),1,1); }
+    if(room&&room.kind==='press'&&room.sq>0){ ring(px,py-12,room.sq,room.sq>=1?'#d9512c':'#ffffff','#5c6269'); texts.push({t:room.sq>=1?'이제 툭— 힘 빼기':'꽈악— 힘 주기',x:px+22,y:py-10,s:8,c:'#fff7e6',a:'left',f:DISP}); /* 병아리와 겹치지 않게 오른쪽, 어두운 방이라 밝은 글자 */ }
     if(P.charging){ ring(px,py-12,P.charge,P.charge>=.8?'#d9512c':'#ffffff','#5c6269'); texts.push({t:deep()?(P.charge>=1?'후— 내쉰다':'들이쉰다'):P.charge>=1?'후—':'스읍',x:px,y:py-23,s:8,c:'#1f1b18',a:'center',f:DISP}); }
     for(const s of swarms) if(s.state==='alert'&&s.calm>0) ring(px,py-12,s.calm/2.1,'#69b4e6','#5c6269');
     if(!warp){ if(nook&&!room&&!nook.used&&nook.t>0) ring(px,py-12,nook.t,'#d9512c','#5c6269');
@@ -1141,15 +1245,25 @@ function sleepCard(){ running=false; syncLevel(0); card(`<div class="eyebrow">�
 // 폰에서 전체 화면(주소창 숨김)과 가로 고정. 안드로이드 크롬에서만 된다. 아이폰은 홈 화면에 추가해서 연다
 function goFull(){ try{ const el=document.documentElement; if(!el.requestFullscreen||document.fullscreenElement||!matchMedia('(pointer:coarse)').matches) return;
   el.requestFullscreen({navigationUI:'hide'}).then(()=>{ try{ screen.orientation.lock('landscape').catch(()=>{}); }catch(e){} }).catch(()=>{}); }catch(e){} }
+/* 본부는 한 주씩 보여 준다. 처음에는 오늘이 속한 주(게임에 그 주 판이 없으면 들어 있는 마지막 주). 다른 주 판이 하나라도 열려 있으면 위에 주 고르기 버튼이 생겨서 지난 주 판도 다시 할 수 있다 */
+let hqW=0;
+// 키 낮은 폰에서 본부 카드 윗줄(요원 코드)이 오른쪽 위 단추들 밑에 깔리지 않게 그만큼 비켜 준다
+function hqClear(){ const t=ov.querySelector('.hqtop'), b=document.getElementById('bp'); if(!t||!b) return; t.style.paddingRight='';
+  const r=t.getBoundingClientRect(), q=b.getBoundingClientRect(); if(q.bottom>r.top&&q.left<r.right) t.style.paddingRight=Math.ceil(r.right-q.left+4)+'px'; }
 function hqCard(){ if(lightsOut()) return sleepCard(); syncLevel(1);
-  const sv=loadSave(), cl=sv.clear||{}, bossOk=hasPieces(cl)||teacher();
-  const st=DAYS.slice(0,TRAIN).map((d,i)=>!isOpen(i)?'lock':(d.boss&&!bossOk)?'need':'open'), any=st.includes('open');
-  card(`<div class="hqtop"><div class="eyebrow">본부 · 1주차 암호 ${DAYS.slice(0,TRAIN).filter(d=>d.letter).map((d,i)=>cl[DAYS.indexOf(d)]?d.letter:'_').join(' ')}</div><div class="raid" id="raid" hidden><span>전교 정화</span><i><b></b></i><span id="raidn"></span></div><div class="hqr"><div class="agc"><small>요원 코드</small><b>${agent().code}</b>${agent().fixed||teacher()?'':'<button class="lnk" id="re">다시 뽑기</button>'}</div></div></div>
-  <h2>${st[0]==='lock'?'작전은 11월 23일(월) 오후 3시에 시작한다':'작전 고르기'}</h2><p class="ntc" id="ntc" hidden></p>
-  <div class="days">${DAYS.slice(0,TRAIN).map((d,i)=>`<button data-d="${i}" ${st[i]!=='open'?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${held===i?'이어 하기':cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):st[i]==='lock'?'오후 3시에 열림':st[i]==='need'?'조각 3개면 열림':'아직'}</span></button>`).join('')}</div>
+  const sv=loadSave(), cl=sv.clear||{};
+  const wOpen=w=>teacher()||weekIdx(w).some(i=>isOpen(i)), ws=WEEKS_IN.filter(wOpen);
+  let w=hqW&&WEEKS_IN.includes(hqW)?hqW:Math.min(nowWk(),Math.max(...WEEKS_IN)); if(!WEEKS_IN.includes(w)) w=WEEKS_IN[0];
+  const IX=weekIdx(w), bossOk=hasPieces(cl,w)||teacher();
+  const st=IX.map(i=>!isOpen(i)?'lock':(DAYS[i].boss&&!bossOk)?'need':'open'), any=st.includes('open');
+  const wkTabs=ws.length>1?`<div class="tabs wkt">${ws.map(x=>`<button class="dk${x===w?' on':''}" data-wk="${x}">${x}주차</button>`).join('')}</div>`:'';
+  card(`<div class="hqtop"><div class="eyebrow">본부 · ${w}주차 암호 ${IX.filter(i=>DAYS[i].letter).map(i=>cl[i]?DAYS[i].letter:'_').join(' ')}</div><div class="raid" id="raid" hidden><span>전교 정화</span><i><b></b></i><span id="raidn"></span></div><div class="hqr"><div class="agc"><small>요원 코드</small><b>${agent().code}</b>${agent().fixed||teacher()?'':'<button class="lnk" id="re">다시 뽑기</button>'}</div></div></div>
+  <div class="hqh"><h2>${st[0]==='lock'?(w===1?'작전은 11월 23일(월) 오후 3시에 시작한다':w+'주차 작전은 '+DAYS[IX[0]].d.replace(/ .*/,'')+' 오후 3시에 시작한다'):'작전 고르기'}</h2>${wkTabs}</div><p class="ntc" id="ntc" hidden></p>
+  <div class="days">${IX.map((i,n)=>{ const d=DAYS[i]; return `<button data-d="${i}" ${st[n]!=='open'?'disabled':''}><small>${d.d}</small><b>${d.name}</b><span>${held===i?'이어 하기':cl[i]?(d.boss?'암호 완성':d.rest?'완료':'「'+d.letter+'」 확보'):st[n]==='lock'?'오후 3시에 열림':st[n]==='need'?'조각 3개면 열림':'아직'}</span></button>`; }).join('')}</div>
   <div class="row"><button data-d="${TRAIN}"${any?'':' class="go"'}>훈련장 · ${held===TRAIN?'이어 하기':'조작 연습 1분'}</button>${window.WAX&&WAX.toy?`<button id="tb">말랑이 상자 ${ownToys().length}/${TOYS.length}</button>`:''}${rankShow()?'<button id="rb">순위표</button>':''}</div>
-  <p class="note">${weekDone(cl)?'<b>1주차 암호 완성. '+SNACK()+'</b> ':''}${saveMem!==null?'이 폰은 기록을 저장하지 못해요. 창을 닫으면 처음부터 다시 해야 해요.':''}<span id="hs"></span>${fbShow()?' <button class="lnk" id="fb">오류·의견 보내기</button>':''}</p>`);
-  ov.firstChild.classList.add('wide'); hqInfo(); if(ov.querySelector('#fb')) on('fb',()=>{ SFX.tick(); fbCard('본부'); });
+  <p class="note">${weekDone(cl,w)?'<b>'+w+'주차 암호 완성. '+SNACK()+'</b> ':''}${saveMem!==null?'이 폰은 기록을 저장하지 못해요. 창을 닫으면 처음부터 다시 해야 해요.':''}<span id="hs"></span>${fbShow()?' <button class="lnk" id="fb">오류·의견 보내기</button>':''}</p>`);
+  ov.firstChild.classList.add('wide'); hqClear(); hqInfo(); if(ov.querySelector('#fb')) on('fb',()=>{ SFX.tick(); fbCard('본부'); });
+  ov.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{ SFX.tick(); hqW=+b.dataset.wk; hqCard(); });
   ov.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{ const n=+b.dataset.d; SFX.tick(); goLevel(2);
     if(n===held){ stageNo=n; held=-1; play(); return; }   // 멈춰 둔 판은 그 자리에서 이어 한다
     stageNo=n; if(DAYS[stageNo].train){ bonus=false; mood='sun'; reset(); play(); } else briefing(); });
@@ -1188,13 +1302,32 @@ function hqInfo(){ const put=s=>{ const r=ov.querySelector('#raid'); if(!r||!s||
    보고는 「했다 / 안 했다」 두 가지이고(예전의 「비슷하게 했다」 기록 alt는 했다로 본다), 판마다 한 번만 받는다. 했다고 보고한 판은 다시 할 때도 색 방패를 들고 시작한다. 첫 판은 보고 대신 본부가 색 방패를 챙겨 준다.
    미리 해 보는 기간과 선생님 모드에서는 앞 판만 깼으면 매번 묻는다 (카드를 언제든 확인할 수 있게) */
 function briefing(){ const sv=loadSave(), cl=sv.clear||{}, rp=(sv.rep||{})[stageNo];
-  if(stageNo>0&&cl[stageNo-1]&&(free()||(!rp&&!cl[stageNo]&&(sv.day||{})[stageNo-1]!==today()))) return reportCard();
+  const pv=prevSt(stageNo); if(pv>=0&&cl[pv]&&(free()||(!rp&&!cl[stageNo]&&(sv.day||{})[pv]!==today()))) return reportCard();
   bonus=stageNo===0||!!rp; bonusNote=stageNo===0?'첫 작전 지원. 색 방패 1개와 색 방울 5개':'보고 완료. 색 방패 1개와 색 방울 5개'; moodCard(); }
 /* 지원 물자(색 방패와 색 방울)는 「했다」든 「안 했다」든 똑같이 준다: 지령을 한 값이 아니라 있는 그대로 보고한 값이다 (「했다」에만 주면 안 하고도 누르게 된다).
    「했다」 뒤에는 해 보니 어땠는지 한 번 더 묻고, 「안 했다」 뒤에는 집에서 바로 할 수 있는 지령(DAYS의 report 셋째 칸)이면 지금 해 보겠느냐고 묻는다.
    어땠는지 고른 것과 지금 해 본 것은 어디에도 남기지 않는다. 서버에는 예전처럼 그 판의 첫 보고(했다/안 했다)만 간다 */
-function reportCard(){ const o=DAYS[stageNo].report, yest=new Date(kst()-864e5).toISOString().slice(0,10);
-  card(`<div class="eyebrow">${(loadSave().day||{})[stageNo-1]===yest?'어제의':'지난'} 지령 보고</div><h2>「${o[0]}」</h2><p>${o[1]} 해 봤나?</p>
+/* 판 중간 10초 지령 (2주차, 2026-11-26 선생님이 ①안을 기본으로 고름).
+   그 판의 첫 깃발에 닿으면 게임을 멈추고 지금 바로 해 볼 짧은 지령 카드를 띄운다. 하루에 한 번만 뜬다(fogspy2.obs = 띄운 날짜).
+   「했다」는 3초 뒤에 눌린다(잠깐이라도 실제로 해 보게). 「했다」는 하루 한 번 지갑에 방울 3개(fogspy2.ob{날짜:1}). 판의 방울과 순위에는 넣지 않는다.
+   「건너뛰기」는 벌이 없다. 보스 판에서는 띄우지 않는다. 선생님 모드는 매번 띄우고 아무것도 남기지 않는다 */
+let nowSeen=-1;
+function nowCheck(){ const d=DAYS[stageNo], o=ordNow(stageNo); if(!o||d.boss||d.train||room||!ov.hidden||!hv.hidden) return;
+  const sv=loadSave(); if(!teacher()&&sv.obs===today()) return;
+  if(teacher()&&nowSeen===stageNo) return; nowSeen=stageNo;   // 선생님 모드는 판마다 한 번만 보여 준다
+  if(!teacher()){ sv.obs=today(); putSave(sv); }
+  midCard(o); }
+function midCard(o){
+  card(`<div class="eyebrow">작전 중 10초 지령</div><h2>「${escH(o[0])}」</h2><p>${escH(o[1])}</p>
+  <div class="row"><button id="o1" disabled>했다 · 3</button><button id="o2" class="dk">건너뛰기</button></div>`);
+  try{ document.activeElement.blur(); }catch(e){}   // 누르고 있던 점프 키가 카드 버튼을 누르지 않게
+  const b=ov.querySelector('#o1'); let n=3; const tm=setInterval(()=>{ if(!b.isConnected){ clearInterval(tm); return; } n--; if(n>0) b.textContent='했다 · '+n; else { clearInterval(tm); b.disabled=false; b.textContent='했다'; b.classList.add('go'); } },1000);
+  on('o1',()=>{ let got=false; if(!teacher()){ const s2=loadSave(); s2.ob=s2.ob&&typeof s2.ob==='object'&&!Array.isArray(s2.ob)?s2.ob:{};
+      if(s2.ob[today()]!==1){ s2.ob[today()]=1; putSave(s2); got=true; hq('add','now_done',1); } }
+    SFX.coin(); closeCard(); say(got?'「'+o[0]+'」 확인. 지갑에 방울 '+OB_BONUS+'개 넣었다 삐약.':'「'+o[0]+'」 확인. 잘했다 삐약.',6); });
+  on('o2',()=>{ SFX.tick(); if(!teacher()) hq('add','now_skip',1); closeCard(); say('괜찮다. 생각날 때 해 봐도 된다 삐약.',5); }); }
+function reportCard(){ const o=ordReport(stageNo).map(escH), yest=new Date(kst()-864e5).toISOString().slice(0,10);
+  card(`<div class="eyebrow">${(loadSave().day||{})[prevSt(stageNo)]===yest?'어제의':'지난'} 지령 보고</div><h2>「${o[0]}」</h2><p>${o[1]} 해 봤나?</p>
   <div class="row"><button id="r1">했다</button><button id="r2">안 했다</button></div>`);
   // 서버에는 그 판의 첫 보고만 센다
   const pick=k=>{ const sv=loadSave(); sv.rep=sv.rep||{}; if(!sv.rep[stageNo]){ sv.rep[stageNo]=k; putSave(sv); hq('add','ord_'+k,1); } bonus=true; bonusNote='보고 완료. 색 방패 1개와 색 방울 5개'; SFX.tick();
@@ -1273,6 +1406,91 @@ function helpCard(){ if(!hv.hidden) return; clearTimeout(hvT); hq('once','phone'
   <div class="row"><button id="h1">${was?'게임으로 돌아가기':'닫기'}</button></div></div>`;
   hv.hidden=false; ov.inert=true; paused=true; K.l=K.r=K.j=K.b=false; const b=hvClose(); try{b.focus({preventScroll:true});}catch(e){}   // 떠 있는 동안 밑의 카드는 키보드로도 눌리지 않게 막는다
   try{ history.pushState(Object.assign({},history.state,{help:1}),''); }catch(e){} }   // 뒤로 가기를 누르면 도움전화만 닫히게 기록을 하나 쌓는다 (☎을 누를 때만 열린다)
+/* ---------- 🎒 배낭: 지갑·상점·꾸미기 (2주차, 2026-11-26 선생님 결정) ----------
+   지갑 = 판별 최고 방울의 합(순위와 같은 값) + 10초 지령 보너스(하루 한 번) − 산 물건 값. 저장해 두는 잔액은 없고 열 때마다 새로 센다.
+   그래서 1주차에 모은 방울은 저절로 들어오고, 같은 판을 되풀이해도 그 판 최고 기록을 넘긴 만큼만 늘어난다(두 번 받을 길이 없다).
+   물건을 사도 순위(판별 최고 방울)는 그대로다. 뽑기는 없다: 값이 적힌 물건을 고르면 그 물건이 온다.
+   fogspy2.own = 산 물건(겹치지 않게 거른다), look = 입은 것 {coat,hat,lens}, deco = 놓아 둔 공간 물건, ob = 10초 지령 보너스 {날짜:1}.
+   상점은 2주차 첫날(11.30 오후 3시)부터 열리고, 그날 마음 날씨를 고른 뒤에 살 수 있다. 선생님 모드는 모두 가진 것으로 보고 입어 보기만 한다 */
+const SHOP=[
+  {id:'s_plant',k:'room',n:'화분',p:30},{id:'s_cush',k:'room',n:'남색 방석',p:40},{id:'s_ball',k:'room',n:'축구공',p:50},{id:'s_lamp',k:'room',n:'작은 조명',p:60},
+  {id:'h_navy',k:'hat',n:'남색 모자',p:40,pal:{u:'#4a5a8a',U:'#2f3a5e',H:'#c9993f'}},{id:'h_white',k:'hat',n:'흰 모자',p:40,pal:{u:'#fff8e8',U:'#d6c198',H:'#1f1b18'}},
+  {id:'l_red',k:'lens',n:'주홍 선글라스',p:50,pal:{v:'#c43d1c'}},{id:'l_blue',k:'lens',n:'파란 선글라스',p:50,pal:{v:'#2f6fb0'}},
+  {id:'c_navy',k:'coat',n:'남색 코트',p:60,pal:{t:'#4a5a8a',T:'#2f3a5e'}},{id:'c_ink',k:'coat',n:'먹색 코트',p:60,pal:{t:'#5a524c',T:'#3a3430'}},
+  {id:'c_green',k:'coat',n:'초록 코트',p:80,pal:{t:'#6fae5c',T:'#3f7d45'}},{id:'c_kit',k:'coat',n:'축구 유니폼',p:200,pal:{t:'#3f86c2',T:'#2a5f8f',c:'#ffffff',o:'#ffffff'}}];
+const SLOT={coat:'코트',hat:'모자',lens:'선글라스'}, OB_BONUS=3, SHOP_OPEN=Date.parse('2026-11-30T15:00:00+09:00');
+const shopOpen=()=>teacher()||Date.now()>=SHOP_OPEN;
+const ownIds=sv=>Array.isArray(sv.own)?[...new Set(sv.own.filter(id=>SHOP.some(x=>x.id===id)))]:[];
+const owns=(sv,id)=>teacher()||ownIds(sv).includes(id);
+function wallet(sv){ sv=sv||loadSave(); let e=0, s=0;
+  for(const k in (sv.best||{})) if(/^\d{1,2}$/.test(k)) e+=Math.min(300,Math.max(0,Math.floor(+sv.best[k])||0));
+  const ob=sv.ob&&typeof sv.ob==='object'?sv.ob:{}; for(const d in ob) if(/^\d{4}-\d\d-\d\d$/.test(d)&&ob[d]===1) e+=OB_BONUS;
+  for(const id of ownIds(sv)) s+=SHOP.find(x=>x.id===id).p;
+  return {earned:e,spent:s,left:Math.max(0,e-s)}; }
+const moodToday=sv=>teacher()||(Array.isArray(sv.md)&&sv.md.some(e=>Array.isArray(e)&&e[0]===today()));
+// 사기: 열 때마다 지갑을 처음부터 다시 세어 모자라면 사지 않는다. 이미 산 것은 다시 사지 않는다
+function buy(id){ const sv=loadSave(), it=SHOP.find(x=>x.id===id);
+  if(!it||teacher()||!shopOpen()||!moodToday(sv)||ownIds(sv).includes(id)||wallet(sv).left<it.p) return false;
+  sv.own=ownIds(sv).concat(id); putSave(sv); return true; }
+function lookPal(sv){ sv=sv||loadSave(); const L=sv.look||{}, o={};
+  for(const k in SLOT){ const it=SHOP.find(x=>x.id===L[k]&&x.k===k); if(it&&owns(sv,it.id)) Object.assign(o,it.pal); } return o; }
+let LOOK=null, ROOM=null;
+const lookArt=()=>LOOK||(LOOK=A.bearLook(lookPal()));
+const roomOn=id=>{ if(!ROOM){ const sv=loadSave(); ROOM=(Array.isArray(sv.deco)?sv.deco:[]).filter(x=>owns(sv,x)); } return ROOM.includes(id); };
+function lookChanged(){ LOOK=null; ROOM=null; window.SITB=null; }
+// 그림 미리보기: 늘곰은 그 물건을 입혀 본 모습, 공간 물건은 그 물건
+function itemPic(cv,it,sv){ const c=cv.getContext('2d'); c.imageSmoothingEnabled=false;
+  if(it.k==='room'){ cv.width=36; cv.height=28; const s=it.id==='s_plant'?A.DECO.plant:it.id==='s_ball'?A.DECO.ball:it.id==='s_lamp'?A.DECO.lamp:null;
+    if(s) c.drawImage(s.c,Math.round((36-s.w)/2),Math.max(0,28-s.h)); else { c.fillStyle='#1f1b18'; c.fillRect(4,14,28,12); c.fillStyle='#4a5a8a'; c.fillRect(5,15,26,6); c.fillStyle='#2f3a5e'; c.fillRect(5,21,26,4); }
+    return; }
+  cv.width=36; cv.height=28; const pal=Object.assign({},lookPal(sv),it.pal); c.drawImage(A.bearLook(pal).idle.c,4,2); }
+let bpTab='bag';
+function bpCard(tab){ if(tab) bpTab=tab; const fresh=hv.hidden; if(fresh){ clearTimeout(hvT); } const under=fresh?!ov.hidden:hvUnder, was=running&&!under; if(fresh) hvUnder=under;
+  const sv=loadSave(), w=wallet(sv), open=shopOpen(), md=moodToday(sv);
+  const tabs=`<div class="tabs" role="tablist">${[['bag','가방'],['shop','상점'],['deco','꾸미기']].map(([k,n])=>`<button class="dk${bpTab===k?' on':''}" data-tab="${k}" role="tab" aria-selected="${bpTab===k}">${n}</button>`).join('')}</div>`;
+  let body='';
+  if(bpTab==='bag'){ const toys=ownToys().length, last=(()=>{ const cl=sv.clear||{}; let i=-1; DAYS.forEach((d,n)=>{ if(cl[n]&&d.next) i=n; }); return i<0?null:{nl:DAYS[i].nl,next:ordNext(i).map(escH)}; })();
+    body=`<div class="wal">${w.left}<small>색 방울</small></div>
+    <p class="note">판마다 가장 많이 모은 방울이 지갑에 모여요. 같은 판을 다시 하면 기록을 넘긴 만큼만 더 들어와요. 물건을 사도 순위는 줄지 않아요.</p>
+    ${last?`<div class="order"><div class="eyebrow">${last.nl||'받은 지령'}</div><p><b>「${last.next[0]}」</b> ${last.next[1]}</p></div>`:''}
+    <p class="note">말랑이 ${toys}/${TOYS.length}${w.spent?' · 쓴 방울 '+w.spent:''}</p>`; }
+  else if(bpTab==='shop'){
+    const why=!open?'상점은 11월 30일(월) 오후 3시에 열려요.':!md?'오늘 마음 날씨를 고르고 나면 살 수 있어요. 판을 하나 시작해 보세요.':'';
+    body=`<div class="wal">${w.left}<small>색 방울${teacher()?' · 선생님 모드는 사지 않고 꾸미기에서 입어 볼 수 있어요':''}</small></div>${why?`<p class="ntc">${why}</p>`:''}
+    <div class="bpl">${SHOP.map(it=>{ const own=ownIds(sv).includes(it.id), can=!own&&!why&&!teacher()&&w.left>=it.p;
+      return `<div class="it"><canvas data-pic="${it.id}"></canvas><b>${it.n}</b><small>${it.k==='room'?'공간':SLOT[it.k]} · ${it.p}방울</small><button class="dk" data-buy="${it.id}" ${can?'':'disabled'}>${own?'가짐':'사기'}</button></div>`; }).join('')}</div>`; }
+  else { const L=sv.look||{}, mine=SHOP.filter(it=>owns(sv,it.id));
+    const chip=(k,it)=>{ const on=it?L[k]===it.id:!L[k]; return `<div class="it${on?' on':''}"><canvas data-pic="${it?it.id:'base_'+k}"></canvas><b>${it?it.n:'기본 '+SLOT[k]}</b><button class="dk" data-wear="${k}" data-id="${it?it.id:''}" aria-pressed="${on}">${on?'입음':'입기'}</button></div>`; };
+    const roomChip=it=>{ const on=(sv.deco||[]).includes(it.id); return `<div class="it${on?' on':''}"><canvas data-pic="${it.id}"></canvas><b>${it.n}</b><small>방석 둘레</small><button class="dk" data-room="${it.id}" aria-pressed="${on}">${on?'치우기':'놓기'}</button></div>`; };
+    body=mine.length?`<div class="bpl">${Object.keys(SLOT).filter(k=>mine.some(it=>it.k===k)).map(k=>chip(k,null)+mine.filter(it=>it.k===k).map(it=>chip(k,it)).join('')).join('')}${mine.filter(it=>it.k==='room').map(roomChip).join('')}</div>`
+      :'<p class="note">아직 산 물건이 없어요. 상점에서 방울로 사면 여기서 늘곰에게 입히거나 방석 둘레에 놓을 수 있어요.</p>'; }
+  hv.innerHTML=`<div class="card bp"><div class="eyebrow">배낭${was?' · 게임은 멈춰 있어요':''}</div>${tabs}${body}<div class="row"><button id="h1">${was?'게임으로 돌아가기':'닫기'}</button></div></div>`;
+  hv.querySelectorAll('canvas[data-pic]').forEach(cv=>{ const id=cv.dataset.pic; if(id.startsWith('base_')){ const k=id.slice(5), pal=lookPal(sv); for(const it of SHOP) if(it.k===k&&it.pal) for(const q in it.pal) delete pal[q];
+      cv.width=36; cv.height=28; const c=cv.getContext('2d'); c.drawImage(A.bearLook(pal).idle.c,4,2); } else itemPic(cv,SHOP.find(x=>x.id===id),sv); });
+  hv.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ SFX.tick(); bpCard(b.dataset.tab); });
+  hv.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{ const it=SHOP.find(x=>x.id===b.dataset.buy);
+    if(b.dataset.sure!=='1'){ b.dataset.sure='1'; b.textContent=it.p+'방울 쓰기'; b.classList.add('on'); SFX.tick(); return; }   // 한 번 더 눌러야 산다
+    if(buy(it.id)){ SFX.coin(); const s2=loadSave(); if(it.k==='room'){ s2.deco=[...new Set((s2.deco||[]).concat(it.id))]; } else { s2.look=Object.assign({},s2.look,{[it.k]:it.id}); } putSave(s2); lookChanged(); bpCard('deco'); } else bpCard(); });
+  hv.querySelectorAll('[data-wear]').forEach(b=>b.onclick=()=>{ const s2=loadSave(), k=b.dataset.wear, id=b.dataset.id; if(id&&!owns(s2,id)) return;
+    s2.look=Object.assign({},s2.look); if(id) s2.look[k]=id; else delete s2.look[k]; putSave(s2); lookChanged(); SFX.tick(); bpCard(); });
+  hv.querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>{ const s2=loadSave(), id=b.dataset.room; if(!owns(s2,id)) return; const d=new Set(Array.isArray(s2.deco)?s2.deco:[]);
+    d.has(id)?d.delete(id):d.add(id); s2.deco=[...d]; putSave(s2); lookChanged(); SFX.tick(); bpCard(); });
+  if(fresh){ hv.hidden=false; ov.inert=true; paused=true; K.l=K.r=K.j=K.b=false; try{ history.pushState(Object.assign({},history.state,{help:1}),''); }catch(e){} }
+  const b=hvClose(); if(fresh) try{b.focus({preventScroll:true});}catch(e){} }
+/* ⚙ 설정 카드: 도움전화처럼 맨 위 칸(hv)에 띄우고, 판을 하던 중이면 게임을 멈춘다. 고르는 즉시 바뀌고 저장된다 */
+function optCard(){ if(!hv.hidden) return; clearTimeout(hvT); const under=!ov.hidden, was=running&&!under; hvUnder=under;
+  const seg=(k,ls)=>`<div class="seg" role="group" data-k="${k}">${ls.map((l,i)=>`<button data-v="${i}" class="dk${OPT[k]===i?' on':''}" aria-pressed="${OPT[k]===i}">${l}</button>`).join('')}</div>`;
+  hv.innerHTML=`<div class="card opt"><div class="eyebrow">설정${was?' · 게임은 멈춰 있어요':''}</div>
+  <div class="orow"><span>배경음악</span>${seg('m',['끔','작게','보통','크게'])}</div>
+  <div class="orow"><span>효과음</span>${seg('s',['끔','작게','보통','크게'])}</div>
+  <div class="orow"><span>화면 밝기</span>${seg('b',['어둡게','보통','밝게'])}</div>
+  <div class="row"><button id="h1">${was?'게임으로 돌아가기':'닫기'}</button></div></div>`;
+  hv.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{ const g=b.parentNode, k=g.dataset.k; OPT[k]=+b.dataset.v;
+    const sv=loadSave(); sv.opt={m:OPT.m,s:OPT.s,b:OPT.b}; sv.mute=!(OPT.m||OPT.s); putSave(sv); applyOpt();
+    g.querySelectorAll('button').forEach(x=>{ x.classList.toggle('on',x===b); x.setAttribute('aria-pressed',x===b); });
+    if(k==='s'&&OPT.s){ ac(); SFX.tick(); } });
+  hv.hidden=false; ov.inert=true; paused=true; K.l=K.r=K.j=K.b=false; const b=hvClose(); try{b.focus({preventScroll:true});}catch(e){}
+  try{ history.pushState(Object.assign({},history.state,{help:1}),''); }catch(e){} }
 function closeHelp(){ clearTimeout(hvT); if(hv.hidden) return; hv.hidden=true; ov.inert=false; hv.innerHTML=''; const late=hashLate; hashLate=false;
   if(hv.classList.contains('flat')){ hv.classList.remove('flat'); stage.appendChild(hv); }   // 무대 밖에 띄웠던 카드(오류·의견 보내기)는 무대 안으로 되돌린다
   if(!hvUnder){ if(running){ paused=false; last=performance.now(); } else home(); }
@@ -1444,13 +1662,13 @@ function finish(){ running=false; SFX.clear();
     if(!teacher()){ sv.best=sv.best||{}; sv.best[stageNo]=Math.max(+sv.best[stageNo]||0,P.coins); sv.agent=Object.assign({},agent(),{fixed:true}); }   // 순위는 판마다 가장 많이 모은 수의 합. 첫 판을 깨면 요원 코드가 굳는다
     if(first){ sv.day=sv.day||{}; sv.day[stageNo]=today(); } putSave(sv);   // 깬 날짜: 다음 판에서 지령 보고를 물을지 정할 때 쓴다
     if(first){ hq('add','raid',1); if(d.letter) hq('add','piece',1); if(d.boss) hq('once','decode'); if(d.date===today()) hq('once','brief'); }
-    const cnt=first&&HQ.on&&!teacher(), sn=weekDone(sv.clear)||(teacher()&&!!(d.boss||d.rest));
+    const cnt=first&&HQ.on&&!teacher(), sn=weekDone(sv.clear,wkOf(stageNo))||(teacher()&&!!(d.boss||d.rest));
     fr=[sn,cnt]; }
   rankDue=rankShow()&&!!d.final&&'final'; if(rankShow()) rankSend();   // 깬 기록은 바로 보내 둔다
   const pcs=P.pcs, coinsN=P.coins;
   const second=now=>{ const same=now===mood, t=now?(same?'그대로 「'+was+'」':'「'+was+'」에서 「'+MOODN[now]+'」'+(/[가-힣]/.test(MOODN[now])&&(MOODN[now].charCodeAt(MOODN[now].length-1)-44032)%28?'으로':'로')):(d.done||'글자 조각 「'+d.letter+'」 확보');
     card(`${head}<h2>${t}</h2>${now?`<p>${same?'그대로여도 괜찮다. 한 번 더 들여다봤으면 됐다.':'몇 분 사이에도 날씨는 바뀐다.'}</p>`:''}
-    <div class="order"><div class="eyebrow">${d.nl||'내일의 지령'}</div><p><b>「${d.next[0]}」</b> ${d.next[1]}</p></div>
+    <div class="order"><div class="eyebrow">${d.nl||'내일의 지령'}</div><p><b>「${escH(ordNext(stageNo)[0])}」</b> ${escH(ordNext(stageNo)[1])}</p></div>
     <p class="note" id="fr" hidden></p>
     <div class="row">${newToy?'<button class="go" id="f2">말랑이 받기</button><button id="f1">본부로</button>':'<button class="go" id="f1">본부로</button>'}</div>`);
     // 오늘의 곡 줄과 「전교 정화에 1 보탰어요」는 카드에 띄우지 않는다(2026-11-26 선생님: 굳이 필요 없다). 곡은 본부 문 앞 라디오에만
@@ -1524,13 +1742,14 @@ YT.addEventListener('click',()=>{ K.l=K.r=K.j=K.b=false; });   // 새 창으로 
 function music(){ const okay=sound&&running&&AC&&AC.state==='running'&&!document.hidden;
   if(!okay){ BGM.pause(); return; }
   const calm=room||P.charging||(P.ground&&Math.abs(P.vx)<8&&swarms.some(s=>s.state==='alert'));
-  BGM.set(med?0:paused?.3:(calm?.28:1),P.grey>0); BGM.play(AC); }
+  if(!OPT.m){ BGM.pause(); return; }
+  BGM.set((med?0:paused?.3:(calm?.28:1))*VOL[OPT.m],P.grey>0||!!noiseIn()); BGM.play(AC); }
 function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music(); ytShow();
   if(running&&!paused){ acc+=d; while(acc>=1/120){ step(1/120); acc-=1/120; if(!running||paused){ acc=0; break; } } }
   draw(); requestAnimationFrame(frame); }
 reset(); home(); requestAnimationFrame(frame);
 document.addEventListener('visibilitychange',()=>{ last=performance.now(); if(document.hidden) BGM.pause(); });
-window.G={get cush(){return cush;},get med(){return med;},get radio(){return radio;},get bolt(){return bolt;},boltSoon(){boltNext=tNow;},hold(v){paused=!!v;},get mood(){return mood;},set mood(v){mood=v;},get P(){return P;},K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},get warp(){return warp;},get stageNo(){return stageNo;},get lift(){return lift;},get stuck(){return stuck;},get flags(){return flags;},get cp(){return cp;},get cam(){return cam;},get maxX(){return maxX;},get camY(){return camY;},get W(){return W;},get H(){return H;},die(){respawn();},get bub(){return bubble&&{t:bubble.t,a:bubA};},get held(){return held;},get topR(){return topR;},get gusts(){return gusts;},get sign(){return sign;},get radio(){return radio;},say,get bubL(){return bubble&&bubble.lines?{n:bubble.lines.length,fs:bubble.fs,bw:bubble.bw,t:bubble.t}:null;},toHQ,get note(){return msg&&msg.until>tNow?msg.t:'';},
+window.G={get cush(){return cush;},get med(){return med;},get radio(){return radio;},get bolt(){return bolt;},boltSoon(){boltNext=tNow;},hold(v){paused=!!v;},get mood(){return mood;},set mood(v){mood=v;},get P(){return P;},lookChanged,K,step,reset,at,T,GY,press(){jBuf=.13;K.j=true;},get curtains(){return curtains;},get mungs(){return mungs;},get swarms(){return swarms;},get deaths(){return deaths;},get running(){return running;},get door(){return door;},get rot(){return rot;},get room(){return room;},get nook(){return nook;},get boss(){return bossC;},get walls(){return walls;},get AC(){return AC;},get warp(){return warp;},get stageNo(){return stageNo;},get lift(){return lift;},get stuck(){return stuck;},get flags(){return flags;},get cp(){return cp;},get cam(){return cam;},get maxX(){return maxX;},get camY(){return camY;},get W(){return W;},get H(){return H;},die(){respawn();},get bub(){return bubble&&{t:bubble.t,a:bubA};},get held(){return held;},get topR(){return topR;},get gusts(){return gusts;},get sign(){return sign;},get radio(){return radio;},say,get bubL(){return bubble&&bubble.lines?{n:bubble.lines.length,fs:bubble.fs,bw:bubble.bw,t:bubble.t}:null;},toHQ,get note(){return msg&&msg.until>tNow?msg.t:'';},
   get post(){return post;},
   go(n){stageNo=n||0;bonus=true;mood='sun';reset();play();}};
 })();

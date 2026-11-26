@@ -144,6 +144,25 @@ const RADIO=pair((P)=>{ const c=cvs(26,34),x=c.getContext('2d'); const R=(col,a,
   R(P.k,6,7,14,1); R(P.k,6,8,1,1); R(P.k,19,8,1,1);                                                                  // 손잡이
   R(P.k,21,7,1,2); R(P.k,22,5,1,2); R(P.k,23,3,1,2); R(P.k,24,1,1,2); R(P.r,24,0,2,1); return c; });                 // 안테나
 const COAT=set(['...kk.kk...','..krrkrrk..','.krrckcrrk.','krrrrcrrrrk','krkrrrrrkrk','kk.krrrk.kk','...kryrk...','...krrrk...','..krrrrrk..','..krrRrrk..','..kkkkkkk..'],'coat');
+/* ---------- 2주차 장소 소품 (안개가 옅어지며 보이는 학교 안 물건). 같은 거리 배경 위에 나무·덤불 대신 놓는다 ----------
+   hall = 복도: 사물함, 게시판, 교실 문 */
+const LOCKER=pair((P)=>{ const c=cvs(24,32),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,0,0,24,32); R(P.S,1,1,22,30); R(P.k,12,1,1,30); R(P.s,1,1,22,1);
+  for(const o of [1,13]){ for(let y=4;y<10;y+=2) R(P.k,o+2,y,7,1); R(P.c,o+8,15,2,5); R(P.f,o+2,24,7,4); R(P.k,o+2,24,7,1); }
+  return c; });
+const BOARD=pair((P)=>{ const c=cvs(36,34),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,4,18,3,16); R(P.k,29,18,3,16); R(P.B,5,18,1,16); R(P.B,30,18,1,16);
+  R(P.k,0,0,36,22); R(P.D,1,1,34,20); R(P.d,2,2,32,18);
+  R(P.k,4,4,10,8); R(P.c,5,5,8,6); R(P.k,6,7,6,1); R(P.k,6,9,4,1); R(P.r,8,3,2,2);
+  R(P.k,17,5,8,11); R(P.y,18,6,6,9); R(P.k,19,8,4,1); R(P.k,19,10,4,1); R(P.k,19,12,3,1);
+  R(P.k,27,4,7,7); R(P.q,28,5,5,5); R(P.k,5,14,9,5); R(P.s,6,15,7,3);
+  return c; });
+const CDOOR=pair((P)=>{ const c=cvs(30,44),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,0,6,30,38); R(P.T,1,7,28,37); R(P.k,3,9,24,35); R(P.d,4,10,22,34); R(P.D,4,10,1,34);
+  R(P.k,7,13,16,12); R(P.w,8,14,14,10); R(P.s,8,14,14,3); R(P.k,14,14,1,10); R(P.k,8,19,14,1);
+  R(P.k,21,29,3,2); R(P.y,22,29,1,1);
+  R(P.k,7,0,16,8); R(P.c,8,1,14,6); R(P.k,10,3,3,1); R(P.k,11,2,1,3); R(P.k,15,2,1,1); R(P.k,15,4,1,1); R(P.k,17,3,4,1);   // 반 팻말
+  return c; });
 /* ---------- 늘곰 꾸미기와 공간 꾸미기 (🎒 배낭) ----------
    bearLook(pal): 코트(t T c)·모자(u U H)·선글라스(v) 색을 바꾼 늘곰 한 벌. 같은 색 조합은 한 번만 그린다 */
 const LOOKS={};
@@ -155,5 +174,5 @@ const DECO={
   plant:set(['....kk.kk...','...kglkglk..','..kglgkgGgk.','.kgGlgkgGGk.','.kGgggkggGk.','..kkGgkGgk..','....kGGk....','..kkkkkkkk..','..kdddddDk..','...kddddDk..','...kddddDk..','....kkkkk...'],'plant'),
   ball:set(['..kkkk..','.kwkkwk.','kwwkkwwk','kkwwwwkk','kkwwwwkk','kwwkkwwk','.kwkkwk.','..kkkk..'],'ball'),
   lamp:set(['..kkkkk..','.kyyyyyk.','kyyyyyyyk','kYYYYYYYk','.kkkkkkk.','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','...kkk...','.kkxxxkk.','.kkkkkkk.'],'lamp')};
-window.ART={bearLook,DECO,PAL,GPAL,BEAR,BEARR,COAT,CHICK,MUNG,MUNG_SQ,BUG,GROUND,DIRT,BRICK,HARD,CRATE,USED,WALLB,WALLF,PAD,DROP,SHIELD,PIECE,BUSH,TREE,CLOUD,DOOR,RADIO,SCHOOL,grey,cvs};
+window.ART={bearLook,DECO,LOCKER,BOARD,CDOOR,PAL,GPAL,BEAR,BEARR,COAT,CHICK,MUNG,MUNG_SQ,BUG,GROUND,DIRT,BRICK,HARD,CRATE,USED,WALLB,WALLF,PAD,DROP,SHIELD,PIECE,BUSH,TREE,CLOUD,DOOR,RADIO,SCHOOL,grey,cvs};
 })();

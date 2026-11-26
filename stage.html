@@ -1181,7 +1181,6 @@ function toyCard(k,fresh){ if(!(window.WAX&&WAX.toy)) return hqCard();
   try{ ov.querySelector('[data-t].on').focus({preventScroll:true}); }catch(e){} }   // 키보드로 고를 때는 지금 고른 말랑이 버튼에서 시작한다
 // 본부 서버에서 받은 소식: 전교 정화 합계, 공지 한 줄, 오늘의 추천곡. 연결이 없으면 아무것도 보이지 않는다 (연결이 없을 때의 추천곡은 본부 문 앞 라디오에만 나온다)
 function hqInfo(){ const put=s=>{ const r=ov.querySelector('#raid'); if(!r||!s||!s.ok) return;
-    { const h=ov.querySelector('#hs'), sg=songEl(); h.textContent=''; if(sg) h.append(' ',sg); }
     if(window.HQ_NEWS!=='game'&&s.raid&&s.raid.goal>0){ r.querySelector('b').style.width=Math.min(100,Math.round(s.raid.total/s.raid.goal*100))+'%'; ov.querySelector('#raidn').textContent=s.raid.total+' / '+s.raid.goal; r.hidden=false; }
     const n=ov.querySelector('#ntc'); if(s.notice){ n.textContent='공지 · '+s.notice; n.hidden=false; } };
   put(HQ.cached()); HQ.state().then(put).catch(()=>{}); }
@@ -1457,7 +1456,7 @@ function finish(){ running=false; SFX.clear();
     <div class="order"><div class="eyebrow">${d.nl||'내일의 지령'}</div><p><b>「${d.next[0]}」</b> ${d.next[1]}</p></div>
     <p class="note" id="fr" hidden></p>
     <div class="row">${newToy?'<button class="go" id="f2">말랑이 받기</button><button id="f1">본부로</button>':'<button class="go" id="f1">본부로</button>'}</div>`);
-    { const n=ov.querySelector('#fr'), sg=songEl(), [sn,cnt]=fr; if(sn){ const b=document.createElement('b'); b.textContent=SNACK(); n.append(b); if(cnt||sg) n.append(' '); ov.firstChild.classList.add('sn'); }
+    { const n=ov.querySelector('#fr'), sg=null, [sn,cnt]=fr;   // 오늘의 곡 줄은 카드에 띄우지 않는다(2026-11-26 선생님: 굳이 필요 없다). 곡은 본부 문 앞 라디오에만 if(sn){ const b=document.createElement('b'); b.textContent=SNACK(); n.append(b); if(cnt||sg) n.append(' '); ov.firstChild.classList.add('sn'); }
       if(cnt) n.append('전교 정화에 1 보탰어요.'); if(cnt&&sg) n.append(' '); if(sg) n.append(sg); n.hidden=!(cnt||sg||sn); }
     ov.firstChild.classList.add('wide'); on('f1',()=>{ SFX.tick(); rankDue?rankCard(true):hqCard(); }); if(newToy) on('f2',()=>{ SFX.item(); toyCard(tk,true); }); };
   card(`${head}<h1>${d.done||'글자 조각 「'+d.letter+'」 확보'}</h1>
@@ -1512,8 +1511,6 @@ function rankCard(final){ rankDue=false;
     else t='요원 '+(j.code||agent().code)+' · 색 방울을 모으면 순위에 올라가요.';
     if(j.changed) t+=' 코드가 다른 요원과 겹쳐서 「'+j.code+'」로 바뀌었어요.';
     me.textContent=t; me.hidden=false; }); }
-// 카드에 붙는 오늘의 추천곡 한 줄: 관리 시트의 음악 탭에 그날 곡이 있을 때만 나온다 (게임에 들어 있는 요일별 곡은 본부 문 앞 라디오에만 나온다)
-function songEl(){ const st=HQ.cached(); if(!(st&&st.date===today()&&st.song&&cut(st.song.t,40))) return null; const o=songNow(), e=document.createElement('span'); e.className='song'; e.textContent='본부 라디오 오늘의 곡: '+o.t+(o.a?' · '+o.a:''); return e; }
 
 /* ---------- 라디오 곡 듣기 ----------
    곰이 땅을 딛고 라디오 앞에 서 있으면 아래 가운데에 「유튜브에서 듣기」가 뜬다. 누르면 새 창에서 그 곡을 유튜브에서 찾는다

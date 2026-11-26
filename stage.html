@@ -212,6 +212,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 </div>
 
 <script src="stage-art.js?v=1127"></script>
+<script src="stage-bg.js?v=1127"></script>   <!-- 2주차 장소 배경(실내 벽·명상 숲) -->
 <script src="stage-music.js?v=1120"></script>
 <script src="stage-wax.js?v=1127"></script>   <!-- ?v= 를 바꾸면 폰이 예전 파일을 붙들고 있지 않고 새로 받는다 -->
 <script src="stage-feel.js?v=1127"></script>
@@ -1186,9 +1187,13 @@ function draw(){ if(radio) radio.r=null;
   if(mood==='storm'){ if(tNow>=boltNext){ bolt={t0:tNow,x:Math.round(W*(.15+Math.random()*.7)),seed:Math.floor(Math.random()*1e4)}; boltNext=tNow+4+Math.random()*4; }
     if(bolt&&tNow-bolt.t0<.45) drawBolt(bolt,hz,tNow-bolt.t0); }
   // 먼 산, 학교, 가까운 언덕
+  const oldBg=()=>{
   bx.fillStyle=mix('#a3a9af','#9ec7a4',prog); for(let x=0;x<W;x+=2){ const wx=x+Math.floor(cx*.12), h=Math.round(26+Math.sin(wx*.018)*12+Math.sin(wx*.041)*6); bx.fillRect(x,hz-h,2,h); }
   for(let n=0;n<4;n++){ const x=Math.round(260+n*640-cx*.35); if(x>W||x<-130) continue; bx.drawImage(A.SCHOOL.g,x,hz-60); if(prog>0){ bx.globalAlpha=prog; bx.drawImage(A.SCHOOL.c,x,hz-60); bx.globalAlpha=1; } }
   bx.fillStyle=mix('#8f969c','#79b071',prog); for(let x=0;x<W;x+=2){ const wx=x+Math.floor(cx*.3), h=Math.round(12+Math.sin(wx*.026+2)*7+Math.sin(wx*.07)*3); bx.fillRect(x,hz-h,2,h); }
+  };
+  const pl=DAYS[stageNo].place;   // 2주차 장소 판은 stage-bg.js가 그린 장소 배경(실내 벽, 명상 숲)을 쓴다
+  if(pl&&window.BG2) BG2.draw(bx,{place:pl,cx,hz,W,H,prog,old:oldBg}); else oldBg();
   // 나무와 덤불
   for(const d of decor){ const sx=d.x-cx; if(sx<-40||sx>W+10) continue; const col=d.x<edge, [s,dh]=DECOR_S[d.kind]||DECOR_S.bush; bx.drawImage(col?s.c:s.g,sx,hz-dh); }
   // 소음 구름: 웅웅거리는 먹구름과 그 아래 흐린 기둥, 위로 튀는 빨간 소리 줄. 잔잔해지면 옅어지며 사라진다

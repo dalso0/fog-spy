@@ -1,7 +1,7 @@
 /* 말랑이: 수요일 통로 방의 왁뿌볼과 본부 말랑이 상자의 말랑이들. 기존 앱(index.html)의 것을 그대로 옮겨 왔다.
    왁뿌볼은 실물 그림 위에 조각 단위로 깨지는 사탕 껍질과 말랑한 속(누르면 금 간 실물 그림 sq-crack-*.webp가 번지고, 조각은 그 사진 속 금을 따라 나눈 지도 sq-lab-*.png대로 떨어진다), 나머지는 실물 그림을 그물망으로 감싸 누른 자리가 들어가고 출렁이는 장난감이다.
    쓰는 법: WAX.open(무대 요소, 안내 글 요소, 다 깼을 때 부를 함수) / WAX.toy(이름, 무대 요소, 안내 글 요소) / WAX.info(이름) / WAX.preload(이름)
-   소리는 게임의 ♪ 버튼을 따른다 (stage.html이 window.gameAudio를 내어 준다) */
+   소리는 게임의 ⚙ 설정(효과음 크기)을 따른다 (stage.html이 window.gameAudio를 내어 준다) */
 (()=>{
 let actx=null;
 function buzz(p){ try{ navigator.vibrate&&navigator.vibrate(p); }catch(e){} }
@@ -9,21 +9,21 @@ const SQIMG={};
 function sqImg(src){ if(SQIMG[src]) return SQIMG[src]; const i=new Image(); i.onerror=()=>{ if(SQIMG[src]===i) delete SQIMG[src]; }; i.src=src; return SQIMG[src]=i; }   // 못 받은 그림은 기억하지 않는다. 다음에 다시 받는다
 /* ---- 왁뿌볼: 캔버스 물리 버전 (조각 단위로 깨지는 사탕 껍질 + 말랑한 속) ---- */
 let wxNoise=null;
-// 게임과 같은 소리 통로를 쓴다. 게임에서 소리를 꺼 두었으면(♪ → ×) 말랑이도 조용하다. 게임 밖에서 따로 열었을 때만 제 것을 만든다
+// 게임과 같은 소리 통로를 쓴다. 게임 설정에서 소리를 모두 꺼 두었으면 말랑이도 조용하다. 게임 밖에서 따로 열었을 때만 제 것을 만든다
 function wxAudio(){ try{ const A=window.gameAudio?window.gameAudio():(actx=actx||new (window.AudioContext||window.webkitAudioContext)()); if(!A) return null; if(A.state==='suspended') A.resume();
   if(!wxNoise){ const n=A.sampleRate; wxNoise=A.createBuffer(1,n,n); const a=wxNoise.getChannelData(0); for(let i=0;i<n;i++) a[i]=Math.random()*2-1; } return A; }catch(e){ return null; } }
 function wxTick(vol,freq,dur,when,q){ const A=wxAudio(); if(!A) return; try{ const t=A.currentTime+(when||0), s=A.createBufferSource(); s.buffer=wxNoise;
   const f=A.createBiquadFilter(); f.type='bandpass'; f.frequency.value=freq; f.Q.value=q||6; const g=A.createGain();
   g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.002); g.gain.exponentialRampToValueAtTime(.0008,t+dur);
-  s.connect(f); f.connect(g); g.connect(A.destination); s.start(t,Math.random()*.8,dur+.02); }catch(e){} }
+  s.connect(f); f.connect(g); g.connect(window.gameOut?window.gameOut(A):A.destination); s.start(t,Math.random()*.8,dur+.02); }catch(e){} }
 function wxCrackle(power){ // 빠직: 아주 짧은 고음 알갱이 여러 개
   const k=2+Math.floor(power*5); for(let i=0;i<k;i++) wxTick(.25+Math.random()*.35*power+.1, 2600+Math.random()*4200, .012+Math.random()*.03, i?Math.random()*.07*(1+power):0, 5+Math.random()*8); }
 function wxSnap(power){ // 조각이 떨어질 때: 딱 + 낮은 울림
   const A=wxAudio(); if(!A) return; wxTick(.7,1500+Math.random()*900,.05,0,3); wxTick(.5,5200,.03,.004,4);
   try{ const t=A.currentTime, o=A.createOscillator(), g=A.createGain(); o.type='triangle'; o.frequency.setValueAtTime(260+Math.random()*80,t); o.frequency.exponentialRampToValueAtTime(90,t+.09);
-    g.gain.setValueAtTime(.22*power,t); g.gain.exponentialRampToValueAtTime(.001,t+.11); o.connect(g); g.connect(A.destination); o.start(t); o.stop(t+.12); }catch(e){} }
+    g.gain.setValueAtTime(.22*power,t); g.gain.exponentialRampToValueAtTime(.001,t+.11); o.connect(g); g.connect(window.gameOut?window.gameOut(A):A.destination); o.start(t); o.stop(t+.12); }catch(e){} }
 function wxBoing(p){ const A=wxAudio(); if(!A) return; try{ const t=A.currentTime, o=A.createOscillator(), g=A.createGain(); o.type='sine'; o.frequency.setValueAtTime(150+p*60,t); o.frequency.exponentialRampToValueAtTime(330+p*120,t+.13);
-  g.gain.setValueAtTime(.2,t); g.gain.exponentialRampToValueAtTime(.001,t+.22); o.connect(g); g.connect(A.destination); o.start(t); o.stop(t+.23); }catch(e){} }
+  g.gain.setValueAtTime(.2,t); g.gain.exponentialRampToValueAtTime(.001,t+.22); o.connect(g); g.connect(window.gameOut?window.gameOut(A):A.destination); o.start(t); o.stop(t+.23); }catch(e){} }
 
 function waxToy(st,cnt,finish){
   const COL=[ // [진한색, 밝은색, 속 젤리, 이름, 어두운색, 그림 번호]

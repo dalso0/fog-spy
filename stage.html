@@ -47,6 +47,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .top{background:rgba(246,234,208,.88);top:7px;width:36px;height:34px;font-size:15px;box-shadow:0 3px 0 var(--ink);border-width:3px}
 .top::before{inset:-5px}
 #bh{right:max(10px,env(safe-area-inset-right,0px));z-index:6}
+#bs{z-index:6}   /* ⚙ 설정은 첫 화면·본부 카드 위에서도 누를 수 있게 */
 #hv{z-index:7}
 #bs{right:calc(max(10px,env(safe-area-inset-right,0px)) + 46px)}
 #bq{right:calc(max(10px,env(safe-area-inset-right,0px)) + 92px)}
@@ -64,6 +65,12 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 .ql{margin-left:-.3em}.qr{margin-right:-.3em}
 .card p{margin:0;font-size:14.5px;line-height:1.55;text-wrap:pretty}
 .card h2,.card p,.tel span{word-break:keep-all;overflow-wrap:anywhere}   /* 낱말 가운데서 줄이 바뀌지 않게 */
+.card.opt{gap:9px}
+.orow{display:flex;align-items:center;gap:10px}
+.orow>span{flex:none;width:5.2em;font-size:14px;font-weight:700}
+.seg{display:flex;gap:6px;flex:1}
+.ov .seg button.dk{flex:1;padding:6px 2px;font-size:15px}
+@media (max-height:300px){ .card.opt{gap:5px} .ov .seg button.dk{padding:3px 2px} }
 .eyebrow{font-size:12px;letter-spacing:.08em;color:var(--red-d);font-weight:700}
 .row{display:flex;flex-wrap:wrap;gap:8px}
 .ov button{font-family:var(--f-display);font-size:18px;border:3px solid var(--ink);border-radius:6px;background:var(--paper);
@@ -181,7 +188,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
   <button id="bb" class="btn" aria-label="숨">숨</button>
   <button id="bj" class="btn" aria-label="점프">점프</button>
   <button id="bq" class="btn top" aria-label="본부로 (판 고르기)"><svg viewBox="0 0 9 8" width="18" height="16" aria-hidden="true" shape-rendering="crispEdges"><path fill="#1f1b18" d="M4 0h1v1h1v1h1v1h1v1h1v1H8v3H5V5H4v3H1V5H0V4h1V3h1V2h1V1h1z"/></svg></button>
-  <button id="bs" class="btn top" aria-label="소리 켜고 끄기">♪</button>
+  <button id="bs" class="btn top" aria-label="설정 (소리 크기, 화면 밝기)"><svg viewBox="0 0 11 11" width="19" height="19" aria-hidden="true" shape-rendering="crispEdges"><path fill="#1f1b18" d="M4 0h3v1H4zM1 1h2v1H1zM4 1h3v1H4zM8 1h2v1H8zM1 2h9v1H1zM2 3h7v1H2zM0 4h4v1H0zM7 4h4v1H7zM0 5h4v1H0zM7 5h4v1H7zM0 6h4v1H0zM7 6h4v1H7zM2 7h7v1H2zM1 8h9v1H1zM1 9h2v1H1zM4 9h3v1H4zM8 9h2v1H8zM4 10h3v1H4z"/></svg></button>
   <button id="bh" class="btn top" aria-label="도움전화">☎</button>
   <a id="yt" class="btn" hidden target="_blank" rel="noopener"><b>▶</b>유튜브에서 듣기</a>
   <div id="ov" class="ov" hidden></div>
@@ -190,7 +197,7 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
 
 <script src="stage-art.js?v=1120"></script>
 <script src="stage-music.js?v=1120"></script>
-<script src="stage-wax.js?v=1120b"></script>   <!-- ?v= 를 바꾸면 폰이 예전 파일을 붙들고 있지 않고 새로 받는다 -->
+<script src="stage-wax.js?v=1127"></script>   <!-- ?v= 를 바꾸면 폰이 예전 파일을 붙들고 있지 않고 새로 받는다 -->
 <script src="stage-feel.js?v=1123"></script>
 <!-- 본부 서버(운영 시트)와 잇는 두 줄.
      (1) config.js: 본부 주소만 읽는다. 이 줄을 켜면 「오류·의견 보내기」(학생이 보내기를 누른 글만 나간다)와 색 방울 순위(판을 깰 때 요원 코드와 판별 최고 방울 수)가 켜진다. 2026.11.18 선생님이 서버를 배포한 뒤 켬. 끄려면 이 줄을 주석으로 감싼다 -->
@@ -237,7 +244,7 @@ function layout(){
   cv.width=W*k; cv.height=H*k; buf.width=W; buf.height=H; camY=WH-H;
   topFit(sw);
 }
-// 위쪽 버튼(⌂ ♪ ☎)이 차지하는 오른쪽 폭 (게임 점)
+// 위쪽 버튼(⌂ ⚙ ☎)이 차지하는 오른쪽 폭 (게임 점)
 function topFit(sw){ topR=Math.ceil((sw-document.getElementById('bq').offsetLeft)*dprU/k)+4; }
 addEventListener('resize',layout); layout();
 addEventListener('orientationchange',()=>setTimeout(layout,300)); addEventListener('pageshow',layout);
@@ -249,18 +256,27 @@ let AC=null, sound=true;
 // 아이폰 사파리는 무음 스위치가 켜져 있으면 웹 게임 소리(WebAudio)를 끈다. 소리 종류를 '재생'으로 알려 두면 영상처럼 음량 버튼만 따른다 (iOS 17부터)
 function ac(){ if(!sound) return null; try{ if(!AC){ try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){} AC=new (window.AudioContext||window.webkitAudioContext)(); }
   if(AC.state!=='running') AC.resume(); }catch(e){} return AC; }
-window.gameAudio=()=>sound?ac():null;   // 말랑이(stage-wax.js)도 이 소리 통로를 쓴다. 소리를 꺼 두면 말랑이도 조용하다
+window.gameAudio=()=>sound?ac():null;
+/* ⚙ 설정: 배경음악·효과음 크기(0 끔~3 크게)와 화면 밝기(0 어둡게, 1 보통, 2 밝게). 이 폰에만 남긴다(fogspy2.opt).
+   예전 ♪ 버튼으로 소리를 꺼 둔 사람(fogspy2.mute)은 둘 다 끈 것으로 옮긴다. 둘 다 끄면 소리 통로(AC)도 쉬게 한다 */
+const VOL=[0,.35,.7,1], BRI=[.8,1,1.18];
+let OPT={m:3,s:3,b:1};   // 저장된 값은 아래 readOpt()로 읽는다 (저장 함수가 준비된 뒤)
+let SG=null;
+function sfxOut(){ if(!SG||SG.context!==AC){ SG=AC.createGain(); SG.connect(AC.destination); } SG.gain.value=VOL[OPT.s]; return SG; }
+window.gameOut=A=>(A===AC&&AC)?sfxOut():A.destination;   // 말랑이 소리도 효과음 크기를 따른다
+function applyOpt(){ sound=OPT.m>0||OPT.s>0; if(SG) SG.gain.value=VOL[OPT.s]; cv.style.filter=OPT.b===1?'':'brightness('+BRI[OPT.b]+')';
+  if(!sound&&AC){ try{ AC.suspend(); }catch(e){} } }   // 말랑이(stage-wax.js)도 이 소리 통로를 쓴다. 소리를 꺼 두면 말랑이도 조용하다
 // 다른 앱에 다녀오거나 전화가 오면 소리가 멈춘다. 아이폰은 손가락을 뗄 때나 누를 때만 다시 켤 수 있다
 ['touchend','pointerup','click','keydown'].forEach(n=>addEventListener(n,()=>{ if(AC&&AC.state!=='running') ac(); },true));
 function tone(f,d,type='square',v=.04,slide=0,delay=0){ if(!sound||!ac()) return; try{ const t0=AC.currentTime+delay, o=AC.createOscillator(), g=AC.createGain();
   o.type=type; o.frequency.setValueAtTime(f,t0); if(slide) o.frequency.linearRampToValueAtTime(Math.max(30,f+slide),t0+d);
-  g.gain.setValueAtTime(v,t0); g.gain.linearRampToValueAtTime(0,t0+d); o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0+d+.02);}catch(e){} }
+  g.gain.setValueAtTime(v,t0); g.gain.linearRampToValueAtTime(0,t0+d); o.connect(g); g.connect(sfxOut()); o.start(t0); o.stop(t0+d+.02);}catch(e){} }
 function noise(d,v){ if(!sound||!ac()) return; try{ const n=Math.floor(AC.sampleRate*d), b=AC.createBuffer(1,n,AC.sampleRate), a=b.getChannelData(0); for(let i=0;i<n;i++) a[i]=(Math.random()*2-1)*(1-i/n);
-  const s=AC.createBufferSource(), g=AC.createGain(); s.buffer=b; g.gain.value=v; s.connect(g); g.connect(AC.destination); s.start(); }catch(e){} }
+  const s=AC.createBufferSource(), g=AC.createGain(); s.buffer=b; g.gain.value=v; s.connect(g); g.connect(sfxOut()); s.start(); }catch(e){} }
 /* 싱잉볼: 사인파 몇 개를 살짝 어긋나게 겹쳐 길게 울린다 (소리 파일 없이 코드로) */
 function bowl(v=.07){ if(!sound||!ac()) return; try{ const t0=AC.currentTime, f=220;
   for(const [m,a,d] of [[1,1,8],[1.004,.8,8],[2.76,.4,5],[5.4,.16,3],[8.9,.06,1.6]]){ const o=AC.createOscillator(), g=AC.createGain(); o.type='sine'; o.frequency.value=f*m;
-    g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(v*a,t0+.03); g.gain.exponentialRampToValueAtTime(.0001,t0+d); o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0+d+.05); } }catch(e){} }
+    g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(v*a,t0+.03); g.gain.exponentialRampToValueAtTime(.0001,t0+d); o.connect(g); g.connect(sfxOut()); o.start(t0); o.stop(t0+d+.05); } }catch(e){} }
 const SFX={
   jump:()=>tone(330,.13,'square',.035,340), coin:()=>{ tone(1047,.06,'square',.03); tone(1568,.15,'square',.03,0,.06); },
   bump:()=>tone(140,.07,'triangle',.09,-50), brk:()=>{ noise(.16,.08); tone(190,.1,'square',.03,-100); },
@@ -553,9 +569,8 @@ document.addEventListener('contextmenu',e=>{ if(!inText(e)) e.preventDefault(); 
 ['gesturestart','gesturechange','gestureend','dblclick'].forEach(n=>document.addEventListener(n,e=>{ if(n!=='dblclick'||!inText(e)) e.preventDefault(); },{passive:false}));
 document.addEventListener('touchmove',e=>{ if(e.touches.length>1) e.preventDefault(); },{passive:false});
 { let lastEnd=0; document.addEventListener('touchend',e=>{ const now=performance.now(); if(now-lastEnd<350&&!e.target.closest('button,textarea,a')) e.preventDefault(); lastEnd=now; },{passive:false}); }
-{ const bs=document.getElementById('bs'); sound=!loadSave().mute; bs.textContent=sound?'♪':'×';   // 소리를 꺼 두면 다음에 열 때도 꺼져 있다
-  bs.onclick=()=>{ sound=!sound; bs.textContent=sound?'♪':'×'; const sv=loadSave(); sv.mute=!sound; putSave(sv);
-    if(sound){ ac(); SFX.tick(); } else if(AC){ try{ AC.suspend(); }catch(e){} } }; }
+OPT=(()=>{ const sv=loadSave(), o=sv.opt||{}, m=sv.mute?0:3, k=(v,d,n)=>(Number.isInteger(v)&&v>=0&&v<=n)?v:d; return {m:k(o.m,m,3),s:k(o.s,m,3),b:k(o.b,1,2)}; })();
+applyOpt(); document.getElementById('bs').onclick=()=>optCard();
 document.getElementById('bh').onclick=()=>helpCard();
 /* 본부로 나가기: 판을 하다가 위쪽 집 버튼(⌂), 폰의 뒤로 가기, 컴퓨터의 Esc를 누르면 판 고르기(본부)로 나간다.
    하던 판은 그 자리에 멈춰 두고(held), 본부에서 그 판을 다시 누르면 이어 한다. 다른 판을 고르면 멈춰 둔 판은 버린다 */
@@ -1273,6 +1288,20 @@ function helpCard(){ if(!hv.hidden) return; clearTimeout(hvT); hq('once','phone'
   <div class="row"><button id="h1">${was?'게임으로 돌아가기':'닫기'}</button></div></div>`;
   hv.hidden=false; ov.inert=true; paused=true; K.l=K.r=K.j=K.b=false; const b=hvClose(); try{b.focus({preventScroll:true});}catch(e){}   // 떠 있는 동안 밑의 카드는 키보드로도 눌리지 않게 막는다
   try{ history.pushState(Object.assign({},history.state,{help:1}),''); }catch(e){} }   // 뒤로 가기를 누르면 도움전화만 닫히게 기록을 하나 쌓는다 (☎을 누를 때만 열린다)
+/* ⚙ 설정 카드: 도움전화처럼 맨 위 칸(hv)에 띄우고, 판을 하던 중이면 게임을 멈춘다. 고르는 즉시 바뀌고 저장된다 */
+function optCard(){ if(!hv.hidden) return; clearTimeout(hvT); const under=!ov.hidden, was=running&&!under; hvUnder=under;
+  const seg=(k,ls)=>`<div class="seg" role="group" data-k="${k}">${ls.map((l,i)=>`<button data-v="${i}" class="dk${OPT[k]===i?' on':''}" aria-pressed="${OPT[k]===i}">${l}</button>`).join('')}</div>`;
+  hv.innerHTML=`<div class="card opt"><div class="eyebrow">설정${was?' · 게임은 멈춰 있어요':''}</div>
+  <div class="orow"><span>배경음악</span>${seg('m',['끔','작게','보통','크게'])}</div>
+  <div class="orow"><span>효과음</span>${seg('s',['끔','작게','보통','크게'])}</div>
+  <div class="orow"><span>화면 밝기</span>${seg('b',['어둡게','보통','밝게'])}</div>
+  <div class="row"><button id="h1">${was?'게임으로 돌아가기':'닫기'}</button></div></div>`;
+  hv.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{ const g=b.parentNode, k=g.dataset.k; OPT[k]=+b.dataset.v;
+    const sv=loadSave(); sv.opt={m:OPT.m,s:OPT.s,b:OPT.b}; sv.mute=!(OPT.m||OPT.s); putSave(sv); applyOpt();
+    g.querySelectorAll('button').forEach(x=>{ x.classList.toggle('on',x===b); x.setAttribute('aria-pressed',x===b); });
+    if(k==='s'&&OPT.s){ ac(); SFX.tick(); } });
+  hv.hidden=false; ov.inert=true; paused=true; K.l=K.r=K.j=K.b=false; const b=hvClose(); try{b.focus({preventScroll:true});}catch(e){}
+  try{ history.pushState(Object.assign({},history.state,{help:1}),''); }catch(e){} }
 function closeHelp(){ clearTimeout(hvT); if(hv.hidden) return; hv.hidden=true; ov.inert=false; hv.innerHTML=''; const late=hashLate; hashLate=false;
   if(hv.classList.contains('flat')){ hv.classList.remove('flat'); stage.appendChild(hv); }   // 무대 밖에 띄웠던 카드(오류·의견 보내기)는 무대 안으로 되돌린다
   if(!hvUnder){ if(running){ paused=false; last=performance.now(); } else home(); }
@@ -1524,7 +1553,8 @@ YT.addEventListener('click',()=>{ K.l=K.r=K.j=K.b=false; });   // 새 창으로 
 function music(){ const okay=sound&&running&&AC&&AC.state==='running'&&!document.hidden;
   if(!okay){ BGM.pause(); return; }
   const calm=room||P.charging||(P.ground&&Math.abs(P.vx)<8&&swarms.some(s=>s.state==='alert'));
-  BGM.set(med?0:paused?.3:(calm?.28:1),P.grey>0); BGM.play(AC); }
+  if(!OPT.m){ BGM.pause(); return; }
+  BGM.set((med?0:paused?.3:(calm?.28:1))*VOL[OPT.m],P.grey>0); BGM.play(AC); }
 function frame(now){ const d=Math.min(.05,(now-last)/1000); last=now; music(); ytShow();
   if(running&&!paused){ acc+=d; while(acc>=1/120){ step(1/120); acc-=1/120; if(!running||paused){ acc=0; break; } } }
   draw(); requestAnimationFrame(frame); }

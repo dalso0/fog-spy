@@ -163,6 +163,39 @@ const CDOOR=pair((P)=>{ const c=cvs(30,44),x=c.getContext('2d'); const R=(col,a,
   R(P.k,21,29,3,2); R(P.y,22,29,1,1);
   R(P.k,7,0,16,8); R(P.c,8,1,14,6); R(P.k,10,3,3,1); R(P.k,11,2,1,3); R(P.k,15,2,1,1); R(P.k,15,4,1,1); R(P.k,17,3,4,1);   // 반 팻말
   return c; });
+/* music = 음악실: 피아노, 보면대, 북 / lib = 도서관: 책장, 책 수레 / cast = 방송실: 스피커, 「방송 중」 등 */
+const PIANO=pair((P)=>{ const c=cvs(40,30),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,0,0,40,24); R(P.H,1,1,38,22); R(P.B,2,2,36,3); R(P.k,0,12,40,1);
+  R(P.w,2,13,36,6); for(let i=2;i<38;i+=4) R(P.k,i,13,1,6); for(const i of [4,8,16,20,24,32]) R(P.k,i,13,2,4);
+  R(P.k,3,24,3,6); R(P.k,34,24,3,6); R(P.k,1,19,38,1); R(P.c,10,4,8,6); R(P.k,11,6,6,1); R(P.k,11,8,4,1);
+  return c; });
+const STAND=pair((P)=>{ const c=cvs(18,32),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,0,0,18,13); R(P.x,1,1,16,11); R(P.c,3,2,12,9); for(let y=4;y<10;y+=2) R(P.k,4,y,10,1); R(P.k,6,3,1,2); R(P.k,11,7,1,2);
+  R(P.k,8,13,2,15); R(P.k,3,28,12,2); R(P.k,2,30,3,2); R(P.k,13,30,3,2);
+  return c; });
+const DRUM=pair((P)=>{ const c=cvs(24,22),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,1,4,22,16); R(P.r,2,7,20,12); R(P.c,2,4,20,3); R(P.k,2,7,20,1); R(P.k,2,18,20,1);
+  for(let i=3;i<22;i+=5){ R(P.y,i,8,1,10); } R(P.k,0,20,24,2); R(P.k,15,0,1,5); R(P.d,14,0,3,2);
+  return c; });
+const SHELF=pair((P)=>{ const c=cvs(32,40),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,0,0,32,40); R(P.d,1,1,30,38); const BK=[P.r,P.S,P.y,P.G,P.c,P.R,P.s,P.e];
+  for(const y of [2,15,28]){ R(P.D,2,y,28,11); let xx=3, i=y; while(xx<29){ const w=2+(i%3), h=7+(i%4); R(P.k,xx,y+11-h,w+1,h); R(BK[i%BK.length],xx,y+12-h,w,h-1); xx+=w+1; i+=3; } R(P.k,1,y+11,30,2); }
+  return c; });
+const CART=pair((P)=>{ const c=cvs(28,24),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,0,8,28,10); R(P.x,1,9,26,8); R(P.k,0,12,28,1); const BK=[P.r,P.S,P.y,P.G,P.c];
+  for(let i=0;i<6;i++){ R(P.k,2+i*4,1+(i%2)*2,4,8-(i%2)*2); R(BK[i%5],3+i*4,2+(i%2)*2,2,6-(i%2)*2); }
+  R(P.k,24,0,2,9); R(P.k,3,18,4,4); R(P.k,21,18,4,4); R(P.f,4,19,2,2); R(P.f,22,19,2,2);
+  return c; });
+const SPEAKER=pair((P)=>{ const c=cvs(20,34),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,0,0,20,30); R(P.H,1,1,18,28); R(P.k,5,3,10,8); R(P.x,6,4,8,6); R(P.F,8,6,4,2);
+  R(P.k,3,13,14,14); R(P.x,4,14,12,12); R(P.k,7,17,6,6); R(P.F,8,18,4,4); R(P.k,9,19,2,2);
+  R(P.k,4,30,3,4); R(P.k,13,30,3,4);
+  return c; });
+const ONAIR=pair((P)=>{ const c=cvs(32,40),x=c.getContext('2d'); const R=(col,a,b,w,h)=>{ x.fillStyle=col; x.fillRect(a,b,w,h); };
+  R(P.k,14,12,3,28); R(P.k,0,0,32,13); R(P.R,1,1,30,11); R(P.r,2,2,28,9);   // 방송실 문 위 빨간 등: 가운데 흰 마이크
+  R(P.w,14,3,4,5); R(P.w,15,8,2,1); R(P.w,12,6,1,2); R(P.w,19,6,1,2); R(P.w,13,8,6,1); R(P.w,15,9,2,1); R(P.q,4,4,3,3); R(P.q,25,4,3,3);
+  R(P.k,9,38,13,2);
+  return c; });
 /* ---------- 늘곰 꾸미기와 공간 꾸미기 (🎒 배낭) ----------
    bearLook(pal): 코트(t T c)·모자(u U H)·선글라스(v) 색을 바꾼 늘곰 한 벌. 같은 색 조합은 한 번만 그린다 */
 const LOOKS={};
@@ -174,5 +207,5 @@ const DECO={
   plant:set(['....kk.kk...','...kglkglk..','..kglgkgGgk.','.kgGlgkgGGk.','.kGgggkggGk.','..kkGgkGgk..','....kGGk....','..kkkkkkkk..','..kdddddDk..','...kddddDk..','...kddddDk..','....kkkkk...'],'plant'),
   ball:set(['..kkkk..','.kwkkwk.','kwwkkwwk','kkwwwwkk','kkwwwwkk','kwwkkwwk','.kwkkwk.','..kkkk..'],'ball'),
   lamp:set(['..kkkkk..','.kyyyyyk.','kyyyyyyyk','kYYYYYYYk','.kkkkkkk.','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','....k....','...kkk...','.kkxxxkk.','.kkkkkkk.'],'lamp')};
-window.ART={bearLook,DECO,LOCKER,BOARD,CDOOR,PAL,GPAL,BEAR,BEARR,COAT,CHICK,MUNG,MUNG_SQ,BUG,GROUND,DIRT,BRICK,HARD,CRATE,USED,WALLB,WALLF,PAD,DROP,SHIELD,PIECE,BUSH,TREE,CLOUD,DOOR,RADIO,SCHOOL,grey,cvs};
+window.ART={bearLook,DECO,LOCKER,BOARD,CDOOR,PIANO,STAND,DRUM,SHELF,CART,SPEAKER,ONAIR,PAL,GPAL,BEAR,BEARR,COAT,CHICK,MUNG,MUNG_SQ,BUG,GROUND,DIRT,BRICK,HARD,CRATE,USED,WALLB,WALLF,PAD,DROP,SHIELD,PIECE,BUSH,TREE,CLOUD,DOOR,RADIO,SCHOOL,grey,cvs};
 })();

@@ -55,11 +55,27 @@ function forestA(){
       blob(R,x+w/2-10,h+4,16,'#5f9157'); blob(R,x+w/2+12,h+2,14,'#5f9157'); blob(R,x+w/2,h+16,18,'#6f9f62'); blob(R,x+w/2-4,h+20,9,'#86b475'); }
     for(let x=0;x<240;x+=2){ const h=Math.round(10+Math.sin(x*.09)*4+Math.sin(x*.23)*2); R('#7fae6c',x,0,2,h); } })}; }
 
+
+/* ---------------- 실내 판 마루 (2026-11-27 달슈 님 요청: 실내 판은 잔디 대신 마루) ----------------
+   땅 맨 윗줄은 마루 판자, 그 아래 줄은 짙은 마루 밑. 16×16 타일, 회색·색 두 벌 */
+function tile16(rows,pal){ const o={}; for(const g of [0,1]){ const c=cvs(16,16), x=c.getContext('2d');
+  rows.forEach((r,y)=>{ for(let i=0;i<16;i++){ const col=pal[r[i]]; x.fillStyle=g?gcol(col):col; x.fillRect(i,y,1,1); } }); o[g?'g':'c']=c; } return o; }
+const FPAL={h:'#e8cfa6',e:'#cfa57a',o:'#b58357',O:'#86603c',b:'#8f6243',B:'#6f4a32',k:'#54392a'};   // 노란 벽돌 발판과 헷갈리지 않게 붉은 갈색 쪽으로
+const FLOOR={top:tile16([
+  'hhhhhhhhhhhhhhhh','eeeeeeeeeeeeeeee','oooooooooooOoooo','ooeoooooooooOooo','oooooooooooOoooo','OOOOOOOOOOOOOOOO',
+  'ooooOoooooooooeo','ooooOooeoooooooo','ooooOooooooooooo','OOOOOOOOOOOOOOOO','bbbbbbbbbbbbBbbb','bbbbbbbbbbbbBbbb',
+  'bbbBbbbbbbbbBbbb','bbbbbbbbbbbbBbbb','BBBBBBBBBBBBBBBB','kkkkkkkkkkkkkkkk'],FPAL),
+ fill:tile16([
+  'BBBBBBBBBBBBBBBB','BBBBBBBkBBBBBBBB','BBBBBBBkBBBBBBBB','BBBBBBBkBBBBBBBB','kkkkkkkkkkkkkkkk','BBBkBBBBBBBBBBBB',
+  'BBBkBBBBBBBBBBBB','BBBkBBBBBBBBBBBB','kkkkkkkkkkkkkkkk','BBBBBBBBBBBkBBBB','BBBBBBBBBBBkBBBB','BBBBBBBBBBBkBBBB',
+  'kkkkkkkkkkkkkkkk','BBBBBkBBBBBBBBBB','BBBBBkBBBBBBBBBB','BBBBBkBBBBBBBBBB'],FPAL)};
+
 const cache={};
 function get(place){ const key=place; if(cache[key]) return cache[key];
   return cache[key]=place==='forest'?forestA():{wall:wallA(place)}; }
 
 window.BG2={
+  floor(place){ return WALL[place]?FLOOR:null; },   // 실내 판(복도·음악실·도서관·방송실)만 마루. 명상 숲은 잔디 그대로
   // 하늘(마음 날씨)과 구름은 게임이 먼저 그린다. 그 위에 장소 띠를 얹는다. 회색 띠 위에 색 띠를 prog만큼 겹쳐 안개가 걷히는 만큼 색이 돌아온다
   draw(bx,o){ const {place,cx,hz,W,prog,old}=o; if(!WALL[place]&&place!=='forest'){ old(); return; } const L=get(place);
     if(place==='forest'){ tile(bx,L.far,.2,cx,hz,W,prog); tile(bx,L.near,.45,cx,hz,W,prog); } else tile(bx,L.wall,.5,cx,hz,W,prog); }

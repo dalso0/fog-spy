@@ -112,6 +112,7 @@ table.gt tr.today td:first-child{background:#fff3c4}
 table.gt tr.past{opacity:.6}
 table.gt tr.wk td{background:var(--bg);font-weight:800;font-size:12.5px}
 input.chg{background:#fff3c4;border-color:#b8860b}
+.gt.go input{display:block;width:100%;margin:2px 0} .gt.go td{vertical-align:top;min-width:170px} .gt.go td:first-child{min-width:0}
 .gsave.dirty{position:sticky;bottom:8px;z-index:2;border-color:#b8860b}
 .yt{font-size:12px;white-space:nowrap}
 </style>
@@ -220,6 +221,12 @@ input.chg{background:#fff3c4;border-color:#b8860b}
       <div class="card"><h2>금주의 표어</h2>
         <p class="note lead">판 출발 지점 간판에 걸리고, 병아리가 한 번 읽어 줘요. 주마다 하나(월요일 0시에 바뀜). 30자까지. 칸을 비우면 게임에 든 기본 표어가 나와요.</p>
         <div id="gMotto"></div></div>
+
+      <div class="card"><h2>지령</h2>
+        <p class="note lead">판마다 두 가지예요. <b>내일의 지령</b>은 판을 끝내면 받고, 다음 판을 시작할 때 했는지 보고해요. <b>10초 지령</b>은 판 중간 첫 깃발에서 게임을 멈추고 바로 해 보는 짧은 지령이에요(하루 한 번, 보스 판에는 안 떠요). 제목 20자, 설명 90자까지. 칸을 비우면 게임에 든 지령(흐린 글자)이 나와요.</p>
+        <p class="err" id="gOrdOld" hidden>서버 코드가 한 단계 예전 것이라 지령은 아직 보기만 돼요. Apps Script에 새 <code>server/Code.gs</code>를 붙여 넣고 「배포 → 배포 관리 → 연필(수정) → 버전: 새 버전 → 배포」를 해 주세요.</p>
+        <div class="tbl"><table class="gt go"><thead><tr><th>판</th><th>내일의 지령 (제목 · 설명)</th><th>10초 지령 (제목 · 설명)</th></tr></thead><tbody id="gOrd"></tbody></table></div>
+        <p class="note" id="gOrdNote"></p></div>
 
       <div class="card"><h2>문 앞 라디오 · 오늘의 곡</h2>
         <p class="note lead">본부 문 앞 라디오에 서면 곡 이름이 뜨고, 누르면 유튜브 검색이 열려요. 날마다 0시에 바뀌고, 그날 게임을 여는 동안(판은 오후 3시에 열리고 밤 10시~아침 6시는 소등) 보여요. 곡을 적은 날은 본부 화면에도 「본부 라디오 오늘의 곡」 한 줄이 나와요. 칸을 비우면 게임에 든 요일별 기본 곡이 나와요. 곡 제목 40자, 가수 20자까지.</p>
@@ -494,6 +501,17 @@ function renderGame(force){
   /* 표어 */
   $('#gMotto').innerHTML=GF.WEEKS.map((a,i)=>{ const b=i+1<GF.WEEKS.length?addDay(GF.WEEKS[i+1],-1):G_END, cur=(D.mottos||[])[i]||'';
     return `<div class="gm${i===w&&today<=G_END?' now':''}"><div class="w"><b>${i+1}주차</b><span>${md(a)} ~ ${md(b)}</span></div><div><input data-motto="${i}" maxlength="30" value="${esc(cur)}" data-orig="${esc(cur)}" placeholder="${esc(GF.MOTTOS[i]||'')}"><div class="note">비우면: ${esc(GF.MOTTOS[i]||'')}</div></div></div>`; }).join('');
+  /* 지령 (판별. 지난 판은 「지난 날짜도 보기」를 켜면 보여요) */
+  { const O=D.orders||{}, can=!!D.ord, sp=$('#gPast').checked; $('#gOrdOld').hidden=can||!D.game;
+    const rowsO=(GF.DAYS||[]).filter(d=>d.date&&(sp||d.date>=today)).map(d=>{
+      const cell=k=>{ const def=d[k], o=(O[d.date]||{})[k]||['',''];
+        if(k==='now'&&d.boss) return '<td class="note">보스 판에는 띄우지 않아요</td>';
+        if(k==='next'&&!d.next) return '<td class="note">-</td>';
+        const dis=can?'':' disabled';
+        return `<td><input data-od="${d.date}" data-ok="${k}" data-f="t" maxlength="20" value="${esc(o[0])}" data-orig="${esc(o[0])}" placeholder="${esc(def?def[0]:'(없음 · 적으면 생겨요)')}"${dis}><input data-od="${d.date}" data-ok="${k}" data-f="x" maxlength="90" value="${esc(o[1])}" data-orig="${esc(o[1])}" placeholder="${esc(def?def[1]:'')}"${dis}></td>`; };
+      return `<tr class="${d.date===today?'today':''}${d.date<today?' past':''}"><td><b>${esc(d.d||'')}</b><br>${esc(d.name||'')}${d.nl?'<br><span class="note">'+esc(d.nl)+'</span>':''}</td>${cell('next')}${cell('now')}</tr>`; }).join('');
+    $('#gOrd').innerHTML=rowsO||'<tr><td colspan="3" class="empty">남은 판이 없어요. 지난 판은 「지난 날짜도 보기」를 켜면 보여요.</td></tr>';
+    $('#gOrdNote').textContent='내일의 지령을 바꾸면 다음 판을 시작할 때 묻는 보고도 같은 지령으로 바뀌어요. 판이 게임에 더해지면 여기에 줄이 생겨요.'; }
   /* 곡 */
   const showPast=$('#gPast').checked, showWk=$('#gWkend').checked; let rows='', lastW=-2, hidWk=0;
   for(let s=GF.WEEKS[0];s<=G_END;s=addDay(s,1)){
@@ -519,7 +537,7 @@ function renderGame(force){
     $('#gDaysNote').textContent=lastD&&lastD<G_END?'지금 게임에는 '+md(lastD)+' 판까지 들어 있어요. 그 뒤 판(2·3주차)은 게임 코드에 더해야 생겨요.':'';
   } else { $('#gDays').innerHTML='<tr><td colspan="4" class="empty">게임 파일을 읽지 못해 판 일정을 못 보여 줘요. 새로고침해 보세요.</td></tr>'; $('#gDaysNote').textContent=''; }
   $('#gFixed').innerHTML=[
-    ['배경음악','게임 안에서 코드로 만든 8비트 곡 하나(래그타임풍, 2026.11.20 0.75배 느리게). 모든 판에서 같은 곡이 돌아요. 소리는 학생이 게임에서 켜고 끌 수 있어요.'],
+    ['배경음악','게임 안에서 코드로 만든 8비트 곡 하나(래그타임풍, 2026.11.20 0.75배 느리게). 모든 판에서 같은 곡이 돌아요. 학생이 게임 위쪽 ⚙ 설정에서 배경음악·효과음 크기와 화면 밝기를 고를 수 있어요.'],
     ['간식 안내',GF.SNACK?esc(GF.SNACK)+' (그 주 월~목 판을 다 깨면 나와요)':'-'],
     ['하늘 게시판','11.24(화) 판부터, 길 위 높은 발판에서 「구름 위 하늘」로 올라가요. 글 공개·숨김은 「하늘 게시판」 탭에서.'],
     ['운영 기간','11.23(월) 1주차 시작 ~ 12.10(목) 마음돌봄 팝업 날까지']
@@ -541,6 +559,10 @@ $('#gSave').onclick=()=>{
   const songs=Object.values(by).filter(o=>o.chg).map(o=>({d:o.d,t:o.t,a:o.t?o.a:''}));
   const bad=songs.find(o=>!o.t&&o.a); if(bad){ $('#gMsg').innerHTML='<span class="err">'+esc(md(bad.d))+': 가수만 적고 곡 제목이 비어 있어요. 곡 제목을 적거나 둘 다 비워 주세요.</span>'; return; }
   if(songs.length){ body.songs=songs; n++; }
+  const bo={}; document.querySelectorAll('[data-od]').forEach(x=>{ const key=x.dataset.od+'|'+x.dataset.ok; (bo[key]=bo[key]||{d:x.dataset.od,k:x.dataset.ok,t:'',x:''})[x.dataset.f]=x.value.trim(); bo[key].chg=bo[key].chg||x.classList.contains('chg'); });
+  const orders=Object.values(bo).filter(o=>o.chg).map(o=>({d:o.d,k:o.k,t:o.t,x:o.t?o.x:''}));
+  const badO=orders.find(o=>!o.t&&bo[o.d+'|'+o.k].x); if(badO){ $('#gMsg').innerHTML='<span class="err">'+esc(md(badO.d))+' '+(badO.k==='now'?'10초 지령':'내일의 지령')+': 설명만 적고 제목이 비어 있어요. 제목을 적거나 둘 다 비워 주세요.</span>'; return; }
+  if(orders.length){ if(!D.ord){ $('#gMsg').innerHTML='<span class="err">지령은 서버 새 버전을 배포한 뒤에 저장할 수 있어요.</span>'; return; } body.orders=orders; n++; }
   const nt=$('#notice'); if(nt.value.trim()!==nt.dataset.orig){ body.notice=nt.value.trim(); n++; }
   if(!n){ $('#gMsg').textContent='바꾼 칸이 없어요.'; return; }
   $('#gSave').disabled=true; $('#gMsg').textContent='저장 중…';

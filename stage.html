@@ -755,7 +755,7 @@ function step(dt){
       if(it.kind==='coat'){ P.coat=true; P.grey=0; freeze=.12; note('주홍 코트를 입었다'); puff(P.x+6,P.y+11,18,'#d9512c',80); say('주홍 코트다. 숨 버튼을 톡 누르면 바람이 나간다 삐약.'); }
       else { P.shield=1; note('색 방패를 얻었다'); } } }
   // 깃발, 말풍선
-  if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; stuck=0; if(bossC) bossC.blk=bossC.wk=bossC.hits=0; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); }
+  if(!room) for(const f of flags) if(!f.on&&P.x>f.x){ f.on=true; cp={x:f.x,y:GTOP-P.h}; stuck=0; if(bossC) bossC.blk=bossC.wk=bossC.hits=0; note('깃발! 여기서 이어 한다'); puff(f.x+8,GTOP-30,14,'#d9512c',60); SFX.flag(); nowCheck(); }
   if(!room) for(const s of says) if(!s.done&&P.x>s.x){ s.done=true; say(s.t); }
   // 말풍선은 한 번 뜨면 적어도 1.6초는(표어는 1초) 그대로 두고, 다음 말은 그 뒤에 한 번에 바꾼다
   if(bubble&&tNow>=bubble.until) bubble=null;
@@ -911,6 +911,13 @@ const MOTTOS=['너는 하늘, 다른 건 모두 날씨일 뿐','급할수록 숨
 const SONGS=[['가을 아침','아이유'],['하늘바라기','정은지'],['길','god'],['한숨','이하이'],['수고했어, 오늘도','옥상달빛']];   // 월~금. 1주차 지령에 맞춘 곡 (월요일은 선생님이 고름, 2026-11-20)
 const tiny=()=>k/dprU<1.5?7.5:6.5;   // 게임 점 하나가 1.5px보다 작게 찍히는 화면(주소창이 보이는 안드로이드 가로 화면)에서는 작은 글자를 한 단계 키운다
 const cut=(t,n)=>{ t=String(t==null?'':t).replace(/\s+/g,' ').trim(); return t.length>n?t.slice(0,n-1)+'…':t; };
+/* 지령: 관리실 「게임 설정」에서 고친 지령(본부 서버의 orders, 판 날짜로 찾음)이 있으면 그것을, 없으면 게임에 든 지령(DAYS)을 쓴다.
+   next = 판 끝에 받는 내일의 지령, now = 판 중간 깃발의 10초 지령. 보고(report)는 앞 판의 내일의 지령을 그대로 묻는다 */
+function ordOv(i,kind){ const d=DAYS[i], st=HQ.cached(), o=d&&st&&st.orders&&st.orders[d.date], v=o&&o[kind];
+  return Array.isArray(v)&&cut(v[0],20)?[cut(v[0],20),cut(v[1],90)]:null; }
+const ordNext=i=>DAYS[i].next&&(ordOv(i,'next')||DAYS[i].next);
+const ordNow=i=>ordOv(i,'now')||DAYS[i].now||null;
+function ordReport(i){ const d=DAYS[i]; if(!d.report) return null; let j=i-1; while(j>=0&&!DAYS[j].next) j--; const o=j>=0&&ordOv(j,'next'); return o||d.report; }
 function mottoNow(){ const t=Date.now(), w=t>=Date.parse('2026-12-07T00:00:00+09:00')?2:t>=Date.parse('2026-11-30T00:00:00+09:00')?1:0, st=HQ.cached();
   return (st&&Array.isArray(st.mottos)&&cut(st.mottos[w],30))||MOTTOS[w]; }
 function songNow(){ const st=HQ.cached(), o=st&&st.date===today()&&st.song, t=o?cut(o.t,40):''; if(t) return {t,a:cut(o.a,20)};
@@ -1230,7 +1237,24 @@ function briefing(){ const sv=loadSave(), cl=sv.clear||{}, rp=(sv.rep||{})[stage
 /* 지원 물자(색 방패와 색 방울)는 「했다」든 「안 했다」든 똑같이 준다: 지령을 한 값이 아니라 있는 그대로 보고한 값이다 (「했다」에만 주면 안 하고도 누르게 된다).
    「했다」 뒤에는 해 보니 어땠는지 한 번 더 묻고, 「안 했다」 뒤에는 집에서 바로 할 수 있는 지령(DAYS의 report 셋째 칸)이면 지금 해 보겠느냐고 묻는다.
    어땠는지 고른 것과 지금 해 본 것은 어디에도 남기지 않는다. 서버에는 예전처럼 그 판의 첫 보고(했다/안 했다)만 간다 */
-function reportCard(){ const o=DAYS[stageNo].report, yest=new Date(kst()-864e5).toISOString().slice(0,10);
+/* 판 중간 10초 지령 (2주차, 2026-11-26 선생님이 ①안을 기본으로 고름).
+   그 판의 첫 깃발에 닿으면 게임을 멈추고 지금 바로 해 볼 짧은 지령 카드를 띄운다. 하루에 한 번만 뜬다(fogspy2.obs = 띄운 날짜).
+   「했다」는 3초 뒤에 눌린다(잠깐이라도 실제로 해 보게). 「했다」는 하루 한 번 지갑에 방울 3개(fogspy2.ob{날짜:1}). 판의 방울과 순위에는 넣지 않는다.
+   「건너뛰기」는 벌이 없다. 보스 판에서는 띄우지 않는다. 선생님 모드는 매번 띄우고 아무것도 남기지 않는다 */
+function nowCheck(){ const d=DAYS[stageNo], o=ordNow(stageNo); if(!o||d.boss||d.train||room||!ov.hidden||!hv.hidden) return;
+  const sv=loadSave(); if(!teacher()&&sv.obs===today()) return;
+  if(!teacher()){ sv.obs=today(); putSave(sv); }
+  midCard(o); }
+function midCard(o){
+  card(`<div class="eyebrow">작전 중 10초 지령</div><h2>「${escH(o[0])}」</h2><p>${escH(o[1])}</p>
+  <div class="row"><button id="o1" disabled>했다 · 3</button><button id="o2" class="dk">건너뛰기</button></div>`);
+  try{ document.activeElement.blur(); }catch(e){}   // 누르고 있던 점프 키가 카드 버튼을 누르지 않게
+  const b=ov.querySelector('#o1'); let n=3; const tm=setInterval(()=>{ if(!b.isConnected){ clearInterval(tm); return; } n--; if(n>0) b.textContent='했다 · '+n; else { clearInterval(tm); b.disabled=false; b.textContent='했다'; b.classList.add('go'); } },1000);
+  on('o1',()=>{ let got=false; if(!teacher()){ const s2=loadSave(); s2.ob=s2.ob&&typeof s2.ob==='object'&&!Array.isArray(s2.ob)?s2.ob:{};
+      if(s2.ob[today()]!==1){ s2.ob[today()]=1; putSave(s2); got=true; hq('add','now_done',1); } }
+    SFX.coin(); closeCard(); say(got?'「'+o[0]+'」 확인. 지갑에 방울 '+OB_BONUS+'개 넣었다 삐약.':'「'+o[0]+'」 확인. 잘했다 삐약.',6); });
+  on('o2',()=>{ SFX.tick(); if(!teacher()) hq('add','now_skip',1); closeCard(); say('괜찮다. 생각날 때 해 봐도 된다 삐약.',5); }); }
+function reportCard(){ const o=ordReport(stageNo).map(escH), yest=new Date(kst()-864e5).toISOString().slice(0,10);
   card(`<div class="eyebrow">${(loadSave().day||{})[stageNo-1]===yest?'어제의':'지난'} 지령 보고</div><h2>「${o[0]}」</h2><p>${o[1]} 해 봤나?</p>
   <div class="row"><button id="r1">했다</button><button id="r2">안 했다</button></div>`);
   // 서버에는 그 판의 첫 보고만 센다
@@ -1353,7 +1377,7 @@ function bpCard(tab){ if(tab) bpTab=tab; const fresh=hv.hidden; if(fresh){ clear
   const sv=loadSave(), w=wallet(sv), open=shopOpen(), md=moodToday(sv);
   const tabs=`<div class="tabs" role="tablist">${[['bag','가방'],['shop','상점'],['deco','꾸미기']].map(([k,n])=>`<button class="dk${bpTab===k?' on':''}" data-tab="${k}" role="tab" aria-selected="${bpTab===k}">${n}</button>`).join('')}</div>`;
   let body='';
-  if(bpTab==='bag'){ const toys=ownToys().length, last=(()=>{ const cl=sv.clear||{}; let i=-1; DAYS.forEach((d,n)=>{ if(cl[n]&&d.next) i=n; }); return i<0?null:DAYS[i]; })();
+  if(bpTab==='bag'){ const toys=ownToys().length, last=(()=>{ const cl=sv.clear||{}; let i=-1; DAYS.forEach((d,n)=>{ if(cl[n]&&d.next) i=n; }); return i<0?null:{nl:DAYS[i].nl,next:ordNext(i).map(escH)}; })();
     body=`<div class="wal">${w.left}<small>색 방울</small></div>
     <p class="note">판마다 가장 많이 모은 방울이 지갑에 모여요. 같은 판을 다시 하면 기록을 넘긴 만큼만 더 들어와요. 물건을 사도 순위는 줄지 않아요.</p>
     ${last?`<div class="order"><div class="eyebrow">${last.nl||'받은 지령'}</div><p><b>「${last.next[0]}」</b> ${last.next[1]}</p></div>`:''}
@@ -1572,7 +1596,7 @@ function finish(){ running=false; SFX.clear();
   const pcs=P.pcs, coinsN=P.coins;
   const second=now=>{ const same=now===mood, t=now?(same?'그대로 「'+was+'」':'「'+was+'」에서 「'+MOODN[now]+'」'+(/[가-힣]/.test(MOODN[now])&&(MOODN[now].charCodeAt(MOODN[now].length-1)-44032)%28?'으로':'로')):(d.done||'글자 조각 「'+d.letter+'」 확보');
     card(`${head}<h2>${t}</h2>${now?`<p>${same?'그대로여도 괜찮다. 한 번 더 들여다봤으면 됐다.':'몇 분 사이에도 날씨는 바뀐다.'}</p>`:''}
-    <div class="order"><div class="eyebrow">${d.nl||'내일의 지령'}</div><p><b>「${d.next[0]}」</b> ${d.next[1]}</p></div>
+    <div class="order"><div class="eyebrow">${d.nl||'내일의 지령'}</div><p><b>「${escH(ordNext(stageNo)[0])}」</b> ${escH(ordNext(stageNo)[1])}</p></div>
     <p class="note" id="fr" hidden></p>
     <div class="row">${newToy?'<button class="go" id="f2">말랑이 받기</button><button id="f1">본부로</button>':'<button class="go" id="f1">본부로</button>'}</div>`);
     // 오늘의 곡 줄과 「전교 정화에 1 보탰어요」는 카드에 띄우지 않는다(2026-11-26 선생님: 굳이 필요 없다). 곡은 본부 문 앞 라디오에만

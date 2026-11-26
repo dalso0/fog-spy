@@ -50,10 +50,12 @@ var METRICS = [
   ['game', '미니게임 완료'],
   ['breath', '호흡실 이용'],
   ['vid', '세계관 영상 연 폰'],
-  ['vid_end', '영상 끝까지 본 폰']
+  ['vid_end', '영상 끝까지 본 폰'],
+  ['now_done', '10초 지령 했다'],
+  ['now_skip', '10초 지령 건너뜀']
 ];
 /* 하루에 한 휴대폰이 한 번만 올릴 수 있는 항목의 1회 최대치 (부풀리기 방지) */
-var MAX_INC = { piece: 4, raid: 10, game: 6, breath: 5, heart: 1 };
+var MAX_INC = { piece: 4, raid: 10, game: 6, breath: 5, heart: 1, now_done: 1, now_skip: 1 };
 var MOOD_KEYS = ['m_sun', 'm_cloud', 'm_fog', 'm_rain', 'm_storm'];
 
 var RISK = /죽고|죽을|죽어|죽는|자살|자해|극단|사라지고|없어지고|살기\s*싫|살고\s*싶지|끝내고\s*싶|힘들어서\s*못|때리|때려|맞았|맞고|괴롭|따돌|왕따|협박|무서워/;
@@ -113,7 +115,8 @@ function publicState() {
     visitToday: num(trow.visit),
     sky: approvedSky(20),
     song: todaySong(today),
-    mottos: cfg.mottos
+    mottos: cfg.mottos,
+    orders: cfg.orders
   };
   cache.put('state', JSON.stringify(s), 60);
   return s;
@@ -470,6 +473,7 @@ function admin(req) {
 
 /* ================= 게임 설정 (관리실 「게임 설정」 탭) ================= */
 var MOTTO_KEYS = ['표어 1주차', '표어 2주차', '표어 3주차'];
+var ORD_KEY = /^지령 (\d{4}-\d\d-\d\d) (내일|10초)$/;
 function cleanLine(t, n) { return String(t == null ? '' : t).replace(/[\u0000-\u001f<>&]/g, '').replace(/\s+/g, ' ').trim().slice(0, n); }
 /* req.mottos: 세 주의 표어(빈 칸 = 게임 기본값). req.songs: [{d:'2026-11-23', t:'곡', a:'가수'}] (t가 비면 그날 줄을 지움 = 게임 기본값) */
 function saveGame(req) {
@@ -480,6 +484,16 @@ function saveGame(req) {
     });
   }
   if (req.notice !== undefined && req.notice !== null) setConfig('공지 한 줄', cleanLine(req.notice, 60));
+  /* req.orders: [{d:'2026-11-30', k:'next'|'now', t:'제목', x:'설명'}]. 설정 탭에 「지령 2026-11-30 내일」·「지령 2026-11-30 10초」 줄로 「제목 | 설명」을 적는다. t가 비면 줄을 지움(= 게임에 든 지령) */
+  if (Array.isArray(req.orders)) {
+    req.orders.slice(0, 60).forEach(function (o) {
+      var d = String((o && o.d) || ''), kk = o && o.k === 'now' ? '10초' : o && o.k === 'next' ? '내일' : '';
+      if (!/^\d{4}-\d\d-\d\d$/.test(d) || !kk) return;
+      var key = '지령 ' + d + ' ' + kk, tt = cleanLine(o.t, 20).replace(/\|/g, ' '), xx = cleanLine(o.x, 90).replace(/\|/g, ' ');
+      if (!tt) delConfig(key);
+      else setConfig(key, safeCell(tt + ' | ' + xx), kk === '10초' ? '그 판 중간 깃발에서 뜨는 10초 지령. 지우면 게임에 든 지령' : '그 판을 끝내면 받는 내일의 지령(다음 판 시작 때 보고). 지우면 게임에 든 지령');
+    });
+  }
   if (Array.isArray(req.songs)) {
     var sh = sheet(SH.songs);
     req.songs.slice(0, 120).forEach(function (o) {
@@ -534,7 +548,9 @@ function adminData() {
     notice: cfg.notice || '',
     goal: cfg.goal || 900,
     game: 1, /* 「게임 설정」 탭을 아는 서버 */
+    ord: 1, /* 판별 지령을 고칠 수 있는 서버 */
     mottos: cfg.mottos,
+    orders: cfg.orders,
     songs: songRows(),
     sheetUrl: SpreadsheetApp.getActive().getUrl(),
     metrics: METRICS,
@@ -588,15 +604,24 @@ function initSheet(name, sh) {
   }
 }
 function readConfig() {
-  var v = sheet(SH.cfg).getDataRange().getValues(), c = { mottos: ['', '', ''] };
+  var v = sheet(SH.cfg).getDataRange().getValues(), c = { mottos: ['', '', ''], orders: {} };
   v.forEach(function (r) {
-    var k = String(r[0]).trim();
+    var k = String(r[0]).trim(), om = ORD_KEY.exec(k);
+    if (om) {
+      var s = String(r[1] || '').replace(/^'/, ''), i = s.indexOf('|'), tt = cleanLine(i < 0 ? s : s.slice(0, i), 20), xx = cleanLine(i < 0 ? '' : s.slice(i + 1), 90);
+      if (tt) { (c.orders[om[1]] = c.orders[om[1]] || {})[om[2] === '10초' ? 'now' : 'next'] = [tt, xx]; }
+      return;
+    }
     if (k === '관리 비밀번호') c.pw = String(r[1]).trim();
     else if (k === '공지 한 줄') c.notice = String(r[1] || '').trim();
     else if (k === '전교 정화 목표') c.goal = num(r[1]) || 900;
     else if (MOTTO_KEYS.indexOf(k) >= 0) c.mottos[MOTTO_KEYS.indexOf(k)] = String(r[1] || '').replace(/^'/, '').trim();
   });
   return c;
+}
+function delConfig(key) {
+  var sh = sheet(SH.cfg), v = sh.getDataRange().getValues();
+  for (var i = v.length - 1; i >= 0; i--) if (String(v[i][0]).trim() === key) sh.deleteRow(i + 1);
 }
 function setConfig(key, val, note) {
   var sh = sheet(SH.cfg), v = sh.getDataRange().getValues();

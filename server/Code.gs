@@ -12,10 +12,11 @@
  *    요원 코드는 학생이 고르는 글이 아니라 정해진 목록에서 뽑힌 말이라, 누가 어떤 코드인지는 학생 본인만 압니다.
  *
  * 시트 탭 (처음 실행할 때 자동으로 만들어집니다)
- *  - 설정       : 관리 비밀번호, 공지 한 줄, 전교 정화 목표
+ *  - 설정       : 관리 비밀번호, 공지 한 줄, 전교 정화 목표, 표어 1~3주차(비워 두면 게임에 든 표어)
  *  - 하늘게시판 : 번호 | 받은 시각 | 내용 | 상태(대기/공개/숨김) | 확인 필요
  *  - 통계       : 날짜 | 접속 | 브리핑 완료 | ... (서버가 자동 기록)
  *  - 음악       : 날짜 | 곡 제목 | 가수 | 늘곰 한마디 (비워 두면 앱에 들어 있는 곡이 나옴)
+ *  표어와 오늘의 곡은 관리실(admin.html)의 「게임 설정」 탭에서 보고 바꾸는 것이 가장 쉽습니다. 시트에 직접 적어도 됩니다.
  *  - 의견       : 번호 | 받은 시각 | 종류(오류/의견) | 내용 | 어디서(자동) | 상태(새 글/확인함/고침) | 확인 필요
  *  - 순위       : 기록 번호 | 요원 코드 | 방울 합계 | 판별 최고 | 숨김 | 처음 | 마지막 (첫 기록이 오면 생김)
  *
@@ -111,7 +112,8 @@ function publicState() {
     moods: moods,
     visitToday: num(trow.visit),
     sky: approvedSky(20),
-    song: todaySong(today)
+    song: todaySong(today),
+    mottos: cfg.mottos
   };
   cache.put('state', JSON.stringify(s), 60);
   return s;
@@ -186,7 +188,7 @@ function todaySong(today) {
   if (last < 2) return null;
   var v = sh.getRange(2, 1, last - 1, 4).getValues();
   for (var i = 0; i < v.length; i++) {
-    if (dstr(v[i][0]) === today && v[i][1]) return { t: String(v[i][1]), a: String(v[i][2] || ''), note: String(v[i][3] || '') };
+    if (dstr(v[i][0]).replace(/^'/, '') === today && v[i][1]) return { t: String(v[i][1]).replace(/^'/, ''), a: String(v[i][2] || '').replace(/^'/, ''), note: String(v[i][3] || '') };
   }
   return null;
 }
@@ -459,8 +461,54 @@ function admin(req) {
   } else if (op === 'notice') {
     setConfig('공지 한 줄', String(req.notice || '').replace(/[<>&]/g, '').slice(0, 60));
     dropCache();
+  } else if (op === 'game') {
+    withLock(function () { saveGame(req); });
+    dropCache();
   }
   return adminData();
+}
+
+/* ================= 게임 설정 (관리실 「게임 설정」 탭) ================= */
+var MOTTO_KEYS = ['표어 1주차', '표어 2주차', '표어 3주차'];
+function cleanLine(t, n) { return String(t == null ? '' : t).replace(/[\u0000-\u001f<>&]/g, '').replace(/\s+/g, ' ').trim().slice(0, n); }
+/* req.mottos: 세 주의 표어(빈 칸 = 게임 기본값). req.songs: [{d:'2026-11-23', t:'곡', a:'가수'}] (t가 비면 그날 줄을 지움 = 게임 기본값) */
+function saveGame(req) {
+  if (Array.isArray(req.mottos)) {
+    MOTTO_KEYS.forEach(function (k, i) {
+      if (req.mottos[i] === undefined || req.mottos[i] === null) return;
+      setConfig(k, safeCell(cleanLine(req.mottos[i], 30)), (i + 1) + '주차 판 출발 지점 간판. 비우면 게임에 든 표어');
+    });
+  }
+  if (req.notice !== undefined && req.notice !== null) setConfig('공지 한 줄', cleanLine(req.notice, 60));
+  if (Array.isArray(req.songs)) {
+    var sh = sheet(SH.songs);
+    req.songs.slice(0, 120).forEach(function (o) {
+      var d = String((o && o.d) || '');
+      if (!/^\d{4}-\d\d-\d\d$/.test(d)) return;
+      var t = cleanLine(o.t, 40), a = cleanLine(o.a, 20);
+      var last = sh.getLastRow(), rows = [];
+      if (last >= 2) {
+        var v = sh.getRange(2, 1, last - 1, 1).getValues();
+        for (var i = 0; i < v.length; i++) if (dstr(v[i][0]) === d) rows.push(i + 2);
+      }
+      if (!t) { for (var j = rows.length - 1; j >= 0; j--) sh.deleteRow(rows[j]); return; }
+      if (rows.length) {
+        sh.getRange(rows[0], 2, 1, 2).setValues([[safeCell(t), safeCell(a)]]);
+        for (var k = rows.length - 1; k >= 1; k--) sh.deleteRow(rows[k]); /* 같은 날짜가 두 줄이면 첫 줄만 남김 */
+      } else {
+        sh.appendRow(["'" + d, safeCell(t), safeCell(a), '']);
+      }
+    });
+    var n = sh.getLastRow();
+    if (n > 2) sh.getRange(2, 1, n - 1, 4).sort(1);
+  }
+}
+function songRows() {
+  var sh = sheet(SH.songs), last = sh.getLastRow();
+  if (last < 2) return [];
+  return sh.getRange(2, 1, last - 1, 3).getValues().map(function (r) {
+    return { d: dstr(r[0]).replace(/^'/, ''), t: String(r[1] || '').replace(/^'/, ''), a: String(r[2] || '').replace(/^'/, '') };
+  }).filter(function (o) { return o.d && o.t; });
 }
 
 function setSkyStatus(id, status) {
@@ -485,6 +533,9 @@ function adminData() {
     now: nowStr(),
     notice: cfg.notice || '',
     goal: cfg.goal || 900,
+    game: 1, /* 「게임 설정」 탭을 아는 서버 */
+    mottos: cfg.mottos,
+    songs: songRows(),
     sheetUrl: SpreadsheetApp.getActive().getUrl(),
     metrics: METRICS,
     stats: st.rows,
@@ -537,19 +588,20 @@ function initSheet(name, sh) {
   }
 }
 function readConfig() {
-  var v = sheet(SH.cfg).getDataRange().getValues(), c = {};
+  var v = sheet(SH.cfg).getDataRange().getValues(), c = { mottos: ['', '', ''] };
   v.forEach(function (r) {
     var k = String(r[0]).trim();
     if (k === '관리 비밀번호') c.pw = String(r[1]).trim();
     else if (k === '공지 한 줄') c.notice = String(r[1] || '').trim();
     else if (k === '전교 정화 목표') c.goal = num(r[1]) || 900;
+    else if (MOTTO_KEYS.indexOf(k) >= 0) c.mottos[MOTTO_KEYS.indexOf(k)] = String(r[1] || '').replace(/^'/, '').trim();
   });
   return c;
 }
-function setConfig(key, val) {
+function setConfig(key, val, note) {
   var sh = sheet(SH.cfg), v = sh.getDataRange().getValues();
   for (var i = 0; i < v.length; i++) if (String(v[i][0]).trim() === key) { sh.getRange(i + 1, 2).setValue(val); return; }
-  sh.appendRow([key, val, '']);
+  sh.appendRow([key, val, note || '']);
 }
 function statRows() {
   var sh = sheet(SH.stats), last = sh.getLastRow(), rows = [], byDate = {};

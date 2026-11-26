@@ -196,8 +196,9 @@ body{background:var(--ink);color:var(--ink);font-family:var(--f-body);
      (1) config.js: 본부 주소만 읽는다. 이 줄을 켜면 「오류·의견 보내기」(학생이 보내기를 누른 글만 나간다)와 색 방울 순위(판을 깰 때 요원 코드와 판별 최고 방울 수)가 켜진다. 2026.11.18 선생님이 서버를 배포한 뒤 켬. 끄려면 이 줄을 주석으로 감싼다 -->
 <script src="config.js"></script>
 <!-- (2) hq.js: 이름 없는 합계 숫자(접속, 판 깸, 마음 날씨, 지령 보고 등)를 운영 시트 「통계」 탭에 보낸다. 관리실의 「실시간 현황판」(live.html)이 이 숫자를 쓴다. 2026.11.23 선생님이 참여 현황을 보고 싶다고 해서 켬.
-     본부 소식(공지, 전교 정화, 금주의 표어, 오늘의 곡)은 받지 않는다(HQ_NEWS=false). 게임에 든 표어·곡이 그대로 나온다. 소식까지 받으려면 HQ_NEWS 줄을 지운다. 합계도 끄려면 아래 두 줄을 주석으로 감싼다 -->
-<script>window.HQ_NEWS=false;</script>
+     본부 소식은 금주의 표어, 오늘의 곡, 공지 한 줄만 받는다(HQ_NEWS='game', 2026.11.25 선생님이 관리실 「게임 설정」 탭에서 바꾸고 싶다고 해서 켬). 전교 정화 막대는 보이지 않는다.
+     서버에 값이 없거나 연결이 안 되면 게임에 든 표어·곡이 그대로 나온다. 소식을 끄려면 'game'을 false로 바꾼다. 합계도 끄려면 아래 두 줄을 주석으로 감싼다 -->
+<script>window.HQ_NEWS='game';</script>
 <script src="hq.js?v=1124"></script>
 <script>
 (()=>{
@@ -858,7 +859,7 @@ const tiny=()=>k/dprU<1.5?7.5:6.5;   // 게임 점 하나가 1.5px보다 작게 
 const cut=(t,n)=>{ t=String(t==null?'':t).replace(/\s+/g,' ').trim(); return t.length>n?t.slice(0,n-1)+'…':t; };
 function mottoNow(){ const t=Date.now(), w=t>=Date.parse('2026-12-07T00:00:00+09:00')?2:t>=Date.parse('2026-11-30T00:00:00+09:00')?1:0, st=HQ.cached();
   return (st&&Array.isArray(st.mottos)&&cut(st.mottos[w],30))||MOTTOS[w]; }
-function songNow(){ const st=HQ.cached(), o=st&&st.song, t=o?cut(o.t,40):''; if(t) return {t,a:cut(o.a,20)};
+function songNow(){ const st=HQ.cached(), o=st&&st.date===today()&&st.song, t=o?cut(o.t,40):''; if(t) return {t,a:cut(o.a,20)};
   const b=SONGS[(kst().getUTCDay()+4)%SONGS.length]; return {t:b[0],a:b[1]}; }
 // 낱말 단위로 줄을 나누되 줄 길이를 고르게 맞춘다
 function wrapBal(t,maxW){ const mw=x=>ctx.measureText(x).width, full=mw(t), n=Math.ceil(full/maxW); if(n<=1) return [t];
@@ -1137,7 +1138,7 @@ function toyCard(k,fresh){ if(!(window.WAX&&WAX.toy)) return hqCard();
 // 본부 서버에서 받은 소식: 전교 정화 합계, 공지 한 줄, 오늘의 추천곡. 연결이 없으면 아무것도 보이지 않는다 (연결이 없을 때의 추천곡은 본부 문 앞 라디오에만 나온다)
 function hqInfo(){ const put=s=>{ const r=ov.querySelector('#raid'); if(!r||!s||!s.ok) return;
     { const h=ov.querySelector('#hs'), sg=songEl(); h.textContent=''; if(sg) h.append(' ',sg); }
-    if(s.raid&&s.raid.goal>0){ r.querySelector('b').style.width=Math.min(100,Math.round(s.raid.total/s.raid.goal*100))+'%'; ov.querySelector('#raidn').textContent=s.raid.total+' / '+s.raid.goal; r.hidden=false; }
+    if(window.HQ_NEWS!=='game'&&s.raid&&s.raid.goal>0){ r.querySelector('b').style.width=Math.min(100,Math.round(s.raid.total/s.raid.goal*100))+'%'; ov.querySelector('#raidn').textContent=s.raid.total+' / '+s.raid.goal; r.hidden=false; }
     const n=ov.querySelector('#ntc'); if(s.notice){ n.textContent='공지 · '+s.notice; n.hidden=false; } };
   put(HQ.cached()); HQ.state().then(put).catch(()=>{}); }
 /* 판에 들어가는 순서: 지령 보고(보고할 지령이 있을 때만) → 마음 날씨 → 판.
@@ -1468,7 +1469,7 @@ function rankCard(final){ rankDue=false;
     if(j.changed) t+=' 코드가 다른 요원과 겹쳐서 「'+j.code+'」로 바뀌었어요.';
     me.textContent=t; me.hidden=false; }); }
 // 카드에 붙는 오늘의 추천곡 한 줄: 관리 시트의 음악 탭에 그날 곡이 있을 때만 나온다 (게임에 들어 있는 요일별 곡은 본부 문 앞 라디오에만 나온다)
-function songEl(){ const st=HQ.cached(); if(!(st&&st.song&&cut(st.song.t,40))) return null; const o=songNow(), e=document.createElement('span'); e.className='song'; e.textContent='본부 라디오 오늘의 곡: '+o.t+(o.a?' · '+o.a:''); return e; }
+function songEl(){ const st=HQ.cached(); if(!(st&&st.date===today()&&st.song&&cut(st.song.t,40))) return null; const o=songNow(), e=document.createElement('span'); e.className='song'; e.textContent='본부 라디오 오늘의 곡: '+o.t+(o.a?' · '+o.a:''); return e; }
 
 /* ---------- 라디오 곡 듣기 ----------
    곰이 땅을 딛고 라디오 앞에 서 있으면 아래 가운데에 「유튜브에서 듣기」가 뜬다. 누르면 새 창에서 그 곡을 유튜브에서 찾는다

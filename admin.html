@@ -223,7 +223,7 @@ input.chg{background:#fff3c4;border-color:#b8860b}
 
       <div class="card"><h2>문 앞 라디오 · 오늘의 곡</h2>
         <p class="note lead">본부 문 앞 라디오에 서면 곡 이름이 뜨고, 누르면 유튜브 검색이 열려요. 날마다 0시에 바뀌고, 그날 게임을 여는 동안(판은 오후 3시에 열리고 밤 10시~아침 6시는 소등) 보여요. 곡을 적은 날은 본부 화면에도 「본부 라디오 오늘의 곡」 한 줄이 나와요. 칸을 비우면 게임에 든 요일별 기본 곡이 나와요. 곡 제목 40자, 가수 20자까지.</p>
-        <div class="row" style="margin-bottom:8px"><label class="note"><input type="checkbox" id="gPast" style="width:18px;height:18px;padding:0;display:inline-block;vertical-align:-3px;margin:0 6px 0 0">지난 날짜도 보기</label></div>
+        <div class="row" style="margin-bottom:8px"><label class="note"><input type="checkbox" id="gPast" style="width:18px;height:18px;padding:0;display:inline-block;vertical-align:-3px;margin:0 6px 0 0">지난 날짜도 보기</label><label class="note"><input type="checkbox" id="gWkend" style="width:18px;height:18px;padding:0;display:inline-block;vertical-align:-3px;margin:0 6px 0 0">주말(토·일)도 보기</label></div>
         <div class="tbl"><table class="gt"><thead><tr><th>날짜</th><th>곡 제목</th><th>가수</th><th>지금 값</th><th></th></tr></thead><tbody id="gSong"></tbody></table></div>
         <p class="note" id="gSongExtra"></p></div>
 
@@ -495,9 +495,10 @@ function renderGame(force){
   $('#gMotto').innerHTML=GF.WEEKS.map((a,i)=>{ const b=i+1<GF.WEEKS.length?addDay(GF.WEEKS[i+1],-1):G_END, cur=(D.mottos||[])[i]||'';
     return `<div class="gm${i===w&&today<=G_END?' now':''}"><div class="w"><b>${i+1}주차</b><span>${md(a)} ~ ${md(b)}</span></div><div><input data-motto="${i}" maxlength="30" value="${esc(cur)}" data-orig="${esc(cur)}" placeholder="${esc(GF.MOTTOS[i]||'')}"><div class="note">비우면: ${esc(GF.MOTTOS[i]||'')}</div></div></div>`; }).join('');
   /* 곡 */
-  const showPast=$('#gPast').checked; let rows='', lastW=-2;
+  const showPast=$('#gPast').checked, showWk=$('#gWkend').checked; let rows='', lastW=-2, hidWk=0;
   for(let s=GF.WEEKS[0];s<=G_END;s=addDay(s,1)){
     const past=s<today, wk=weekOf(s); if(past&&!showPast) continue;
+    if(!showWk&&(wdOf(s)===0||wdOf(s)===6)&&!S[s]){ hidWk++; continue; }   /* 주말에는 새 판이 없어서 접어 둔다(지난 판·훈련장은 열려 있어 라디오에는 기본 곡이 나온다). 곡을 적어 둔 주말은 늘 보인다 */
     if(wk!==lastW){ rows+=`<tr class="wk"><td colspan="5">${wk+1}주차 · ${md(GF.WEEKS[wk])}부터</td></tr>`; lastW=wk; }
     const o=S[s]||{t:'',a:''}, d=defSong(s), cur=songFor(s,S);
     rows+=`<tr class="${s===today?'today':''}${past?' past':''}"><td><b>${md(s)}</b>${s===today?' 오늘':''}</td>
@@ -507,6 +508,7 @@ function renderGame(force){
   $('#gSong').innerHTML=rows;
   const extra=Object.keys(S).filter(s=>s<GF.WEEKS[0]||s>G_END).sort();
   $('#gSongExtra').textContent=extra.length?'시트 「음악」 탭에 운영 기간 밖 날짜의 곡도 있어요(게임에는 그날에만 나와요): '+extra.map(s=>s+' '+S[s].t).join(', '):'비어 있는 칸의 흐린 글자가 그날 나오는 기본 곡이에요. 기본 곡은 요일마다 같아요(월 '+GF.SONGS[0][0]+', 화 '+(GF.SONGS[1]||[''])[0]+', 수 '+(GF.SONGS[2]||[''])[0]+', 목 '+(GF.SONGS[3]||[''])[0]+', 금 '+(GF.SONGS[4]||[''])[0]+', 토 '+GF.SONGS[(6+4)%GF.SONGS.length][0]+', 일 '+GF.SONGS[4%GF.SONGS.length][0]+').';
+  if(hidWk) $('#gSongExtra').textContent='주말(토·일)은 새 판이 없어서 접어 두었어요. 주말에도 지난 판을 하면 라디오에 기본 곡이 나와요. 바꾸려면 「주말(토·일)도 보기」를 켜세요. '+$('#gSongExtra').textContent;
   /* 공지 */
   $('#notice').value=D.notice||''; $('#notice').dataset.orig=D.notice||'';
   /* 판 일정 */
@@ -527,6 +529,7 @@ function renderGame(force){
 function gWire(){
   document.querySelectorAll('section[data-p=game] input[data-orig]').forEach(x=>x.oninput=()=>{ x.classList.toggle('chg',x.value.trim()!==x.dataset.orig); gDirty=!!document.querySelector('section[data-p=game] input.chg'); document.querySelector('.gsave').classList.toggle('dirty',gDirty); });
 }
+$('#gWkend').onchange=()=>{ if(gDirty&&!confirmLose()) { $('#gWkend').checked=!$('#gWkend').checked; return; } renderGame(true); };
 $('#gPast').onchange=()=>{ if(gDirty&&!confirmLose()) { $('#gPast').checked=!$('#gPast').checked; return; } renderGame(true); };
 function confirmLose(){ $('#gMsg').innerHTML='<span class="err">저장하지 않은 칸이 있어요. 먼저 저장하거나 「되돌리기」를 눌러 주세요.</span>'; return false; }
 $('#gUndo').onclick=()=>renderGame(true);

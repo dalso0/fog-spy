@@ -180,6 +180,14 @@ body.thin #bb,body.thin #bj{opacity:.45}
 .skyl li:nth-child(even){align-self:flex-end}
 .skyl li.wait{background:none;border:0;color:#1f1b18;align-self:stretch}
 @supports (display:contents){ .fb2,.fb2>div{display:contents} }   /* 한 칸일 때는 칸 틀을 없앤다. 그래야 아래 단추 줄이 카드 어디에서든 화면 아래에 붙는다 */
+/* 하늘 게시판 카드(한 칸): 글 칸 → 친구에게 건넬 말 → 단추. 폭을 좁혀 눈이 위에서 아래로만 움직이게 */
+.ov.flat .card.sk1{max-width:520px}
+.skw{position:relative} .skw textarea{padding-right:56px!important}
+.skn{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:#5c5348;pointer-events:none}
+.skk{display:flex;flex-direction:column;gap:6px} .skk .row{gap:6px}
+.ov button.kw{flex:0 1 auto;font:700 13.5px/1.3 var(--f-body);border:2px solid var(--ink);border-radius:999px;background:var(--paper);color:var(--ink);padding:8px 12px;min-height:36px;box-shadow:none;text-align:left}
+.ov button.kw[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.ov button.kw:active{transform:translateY(1px);box-shadow:none}
 /* 화면이 낮아 카드가 넘쳐도 아래 단추 줄(보내기, 닫기)은 늘 보이게 화면 아래에 붙여 둔다 */
 .ov.flat .card>.row:last-child,.ov.flat .fb2 .row{position:sticky;bottom:0;z-index:1;background:var(--panel);padding:6px 0 5px;margin:-6px 0 -5px}
 /* 가로로 눕힌 키 낮은 폰: 글 칸과 안내·단추를 두 칸으로 나눠 「보내기」까지 한 화면에 들어오게 하고, 도움전화 네 줄은 두 줄로 놓는다.
@@ -1761,6 +1769,8 @@ function drawPost(x,y){ x=Math.round(x); y=Math.round(y); if(x<-30||x>W+10) retu
   const t=tNow*2.4, a=Math.floor(t)%3; if(!post.sent||a===0){ const sy=-6-Math.round(Math.abs(Math.sin(t))*3); f(7,sy,2,2,'#fff3c4'); f(6,sy+.5,4,1,'#fff3c4'); f(7.5,sy-1,1,4,'#fff3c4'); } }
 /* 하늘 게시판 카드: 선생님이 공개한 글을 보고, 한 줄(30자)을 띄운다. 이름 없이 보내고, 선생님이 확인해야 다른 요원에게 보인다.
    걱정되는 말은 보내지 않고 도움전화를 먼저 보여 준다(오류·의견과 같은 검사). 하루 세 번, 30초에 한 번 */
+/* 친구에게 건넬 말(자애 문구). 학교용 자애 명상 활동(UC버클리 Greater Good in Education 등)의 May you be happy / May we be happy 구절을 옮긴 것. 30자 안 */
+const SKY_KIND=['오늘 너에게 좋은 일이 있길 바라.','걱정하는 일이 잘 풀리길 바라.','우리 모두 오늘 행복하길.'];
 let skyMem=null, skyList=null, skyAt=0;
 function skyQuota(){ const s=loadSave().sky, d=today(), a=s&&s.d===d?s:null, b=skyMem&&skyMem.d===d?skyMem:null;
   return {d,n:Math.max(a?+a.n||0:0,b?b.n:0),t:Math.max(a?+a.t||0:0,b?b.t:0)}; }
@@ -1774,21 +1784,20 @@ function skyCard(){ if(!hv.hidden) return; clearTimeout(hvT); hvUnder=!ov.hidden
   const live=FB_ON&&!teacher();
   const shut=(eye,h,body,extra)=>{ hv.innerHTML=`<div class="card"><div class="eyebrow">${eye}</div><h2>${h}</h2>${body}<div class="row">${extra||''}<button id="h1">닫기</button></div></div>`; hv.scrollTop=0;
     const b=hvClose(); try{b.focus({preventScroll:true});}catch(e){} };
-  const form=text=>{ hv.innerHTML=`<div class="card"><div class="eyebrow">하늘 게시판 · 높은 구름 위 우체통</div><h2>하늘에 한 줄 띄우기</h2>
-  <div class="fb2"><div><ul class="skyl" id="sl"><li class="wait">${FB_ON?'하늘에 떠 있는 글을 불러오는 중이에요.':'본부와 연결하면 다른 요원들이 띄운 글이 여기 떠요.'}</li></ul>
-  <textarea id="ft" rows="2" maxlength="30" aria-label="하늘에 띄울 한 줄" placeholder="예) 오늘 하늘 진짜 파랗다"></textarea></div>
-  <div><p class="note" id="fn">이름 없이 보내요. 선생님이 읽고 나서 하늘에 떠요. 이름이나 연락처는 쓰지 마세요. 30자까지.${live?'':FB_ON?' 선생님 미리보기: 선생님 모드에서는 실제로 보내지지 않아요.':' 선생님 미리보기: 아직 본부와 연결하지 않아서 실제로 보내지지는 않아요.'}</p>
+  // 2026-11-27 선생님 요청(A-1 시안): 카드 안의 하늘 글 목록은 뺀다(같은 글이 하늘 방 배경에 이미 떠 있다). 위에서 아래로 글 칸 → 친구에게 건넬 말(자애 문구) → 단추 한 줄
+  const form=text=>{ hv.innerHTML=`<div class="card sk1"><h2>하늘에 한 줄 띄우기</h2>
+  <p class="note" id="fn">선생님이 읽은 뒤 하늘에 떠요.${live?'':FB_ON?' 선생님 미리보기: 선생님 모드에서는 실제로 보내지지 않아요.':' 선생님 미리보기: 아직 본부와 연결하지 않아서 실제로 보내지지는 않아요.'}</p>
+  <div class="skw"><textarea id="ft" rows="1" maxlength="30" aria-label="하늘에 띄울 한 줄" placeholder="오늘 본 하늘, 고마운 일, 응원 한마디"></textarea><span class="skn" id="skn" aria-hidden="true"></span></div>
+  <div class="skk"><p class="note"><b>친구에게 건넬 말 고르기</b></p><div class="row" role="group" aria-label="친구에게 건넬 말">${SKY_KIND.map((k,i)=>`<button class="kw" data-i="${i}" aria-pressed="false">${k}</button>`).join('')}</div></div>
   <p class="note" id="fm2" role="status" hidden></p>
-  <div class="row"><button class="go" id="f3">띄우기</button><button id="h1">닫기</button></div></div></div></div>`; hv.scrollTop=0;
+  <div class="row"><button class="go" id="f3">띄우기</button><button id="h1">닫기</button></div></div>`; hv.scrollTop=0;
     hvClose();
     const ta=hv.querySelector('#ft'), go=hv.querySelector('#f3'), m=hv.querySelector('#fm2'), tell=t=>{ m.textContent=t; m.hidden=!t; if(t) fbLift(m); };
-    ta.onfocus=()=>fbLiftSoon(ta); ta.value=text; ta.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); go.click(); } };
-    const ul=hv.querySelector('#sl');
-    skyLoad().then(L=>{ if(!hv.contains(ul)) return; ul.innerHTML='';
-      const add=(t,cls)=>{ const li=document.createElement('li'); if(cls) li.className=cls; li.textContent=t; ul.append(li); };
-      if(L===null) add('지금은 하늘을 불러오지 못했어요. 글은 띄울 수 있어요.','wait');
-      else if(!L.length) add(FB_ON?'아직 하늘에 뜬 글이 없어요. 첫 줄을 띄워 보세요.':'본부와 연결하면 다른 요원들이 띄운 글이 여기 떠요.','wait');
-      else L.slice().reverse().forEach(t=>add(t)); });
+    const kws=[...hv.querySelectorAll('.kw')], cnt=hv.querySelector('#skn');
+    const sync=()=>{ const v=ta.value.trim(); kws.forEach(b=>b.setAttribute('aria-pressed',String(SKY_KIND[b.dataset.i]===v))); cnt.textContent=ta.value.length+'/30'; };
+    kws.forEach(b=>b.onclick=()=>{ SFX.tick(); ta.value=SKY_KIND[b.dataset.i]; sync(); tell(''); });   // 누르면 글 칸이 채워진다. 그대로 띄우거나 고쳐 써도 된다
+    ta.oninput=sync;
+    ta.onfocus=()=>fbLiftSoon(ta); ta.value=text; sync(); ta.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); go.click(); } };
     go.onclick=()=>{ const raw=ta.value, t=raw.replace(/[\u0000-\u001f<>&]/g,' ').replace(/\s+/g,' ').trim().slice(0,30); tell('');
       if(t.length<2) return tell('두 글자 이상 적어 주세요.');
       const bad=fbRisk(t);

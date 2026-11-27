@@ -331,7 +331,7 @@ function initFb(sh) {
 var CODE_C = ['파란', '하늘', '초록', '연두', '노란', '주황', '빨간', '분홍', '보라', '남색', '하얀', '까만', '회색', '은빛', '금빛', '민트', '살구', '밤색', '청록', '무지개'];
 var CODE_A = ['돌고래', '수달', '너구리', '고슴도치', '펭귄', '올빼미', '다람쥐', '여우', '판다', '코알라', '거북이', '고래', '해달', '참새', '두루미', '호랑이', '사슴', '토끼', '물개', '카멜레온', '나무늘보', '미어캣', '라쿤', '부엉이', '치타', '늑대', '까치', '문어', '도마뱀', '햄스터'];
 /* 판 번호(0부터) → 한 판에서 받을 수 있는 방울의 위 끝. 목록에 없는 판(앞으로 생길 판)은 RANK_CAP_ELSE */
-var RANK_CAP = [130, 120, 110, 150, 170];
+var RANK_CAP = [90, 80, 75, 35, 122, 30, 75, 70, 85, 30, 122];   // 2026-11-27 판별 상한 (게임 stage.html의 COIN_CAP과 같게)
 var RANK_CAP_ELSE = 200, RANK_STAGES = 30;
 function codeOk(c) {
   c = String(c || '');
@@ -356,7 +356,7 @@ function rankRead(sh) {
 }
 function rankBest(old, inc) {
   var b = {}, k, n;
-  for (k in old) if (/^\d{1,2}$/.test(k)) b[k] = Math.max(0, Math.floor(num(old[k])));
+  for (k in old) if (/^\d{1,2}$/.test(k)) b[k] = Math.min(Math.max(0, Math.floor(num(old[k]))), +k < RANK_CAP.length ? RANK_CAP[+k] : RANK_CAP_ELSE);   // 예전에 저장된 기록도 지금 상한으로 자른다
   if (inc && typeof inc === 'object') for (k in inc) {
     if (!/^\d{1,2}$/.test(k) || +k >= RANK_STAGES) continue;
     n = Math.max(0, Math.floor(num(inc[k])));

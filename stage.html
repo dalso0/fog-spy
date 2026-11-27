@@ -736,7 +736,10 @@ function medStep(dt){ playT-=dt; med.t+=dt;
     if(first){ for(let i=0;i<3;i++) popCoin(P.x+6+(i-1)*9,P.y-16,i+1); note('숨 고르기 끝. 색 방울 3개'); } else note('숨 고르기 끝'); } }
 function say(t,dur=4.6,min=1.6){ if(bubble&&bubble.t===t){ bubble.until=tNow+dur; return; } bq=bq.filter(q=>q.t!==t); bq.push({t,dur,min}); if(bq.length>2) bq.shift(); }
 function note(t){ msg={t,until:tNow+1.7}; }
-function popCoin(x,y,h){ P.coins++; parts.push({pop:true,x:x-4,y:y-10,vx:0,vy:-175,t:.42,T0:.42,h:(h||0)%4,g:520}); SFX.coin(); }
+/* 판마다 방울 상한 (2026-11-27 선생님 결정). 판에서 실제로 모을 수 있는 수에 조금 여유를 둔 값. 금요일은 그날 최고 기록 122개.
+   보스 판은 11.26 밤에 막은 틈(보스 뭉치 방울) 때문에 많이 모은 기록이 있어서 상한으로 맞춘다. 지갑·순위·판 안 방울 수 모두 이 값을 넘지 않는다 */
+const COIN_CAP=[90,80,75,35,122,30,75,70,85,30,122], capOf=i=>COIN_CAP[i]??90, addCoin=()=>{ if(P.coins<capOf(stageNo)) P.coins++; };
+function popCoin(x,y,h){ addCoin(); parts.push({pop:true,x:x-4,y:y-10,vx:0,vy:-175,t:.42,T0:.42,h:(h||0)%4,g:520}); SFX.coin(); }
 function hurt(dir,bm){   // bm: 보스가 내보낸 뭉치에 맞았다
   if(P.inv>0) return;
   if(P.shield){ P.shield=0; P.inv=1.2; note('색 방패가 막았다'); puff(P.x+6,P.y+11,12,'#69b4e6',60); tone(520,.12,'triangle',.06); return; }
@@ -854,7 +857,7 @@ function step(dt){
   if(P.x>maxX&&!room) maxX=P.x;
   const still=P.ground&&Math.abs(P.vx)<8;
   // 모으기
-  for(const c of coins) if(!c.got&&Math.abs(c.x-P.x-6)<10&&Math.abs(c.y-P.y-11)<14){ c.got=true; P.coins++; SFX.coin(); puff(c.x,c.y,4,'#ffffff',30,1); }
+  for(const c of coins) if(!c.got&&Math.abs(c.x-P.x-6)<10&&Math.abs(c.y-P.y-11)<14){ c.got=true; addCoin(); SFX.coin(); puff(c.x,c.y,4,'#ffffff',30,1); }
   for(const p of pieces) if(!p.got&&Math.abs(p.x-P.x-6)<12&&Math.abs(p.y-P.y-11)<16){ p.got=true; P.pcs++; note('숨은 색 조각 '+P.pcs+'/3'); puff(p.x,p.y,16,'#d9512c',70); SFX.item(); }
   if(post&&room&&room.kind==='top'){ const over=P.x+P.w>post.x-2&&P.x<post.x+post.w+2&&P.y<post.y+post.h&&P.y+P.h>post.y-4;
     if(over&&!post.busy){ post.busy=true; SFX.item(); puff(post.x+8,post.y,10,'#ffffff',50); skyCard(); }
@@ -1352,7 +1355,7 @@ function draw(){ if(radio) radio.r=null;
   { const fd=!warp?0:warp.ph==='close'?Math.min(1,warp.t/.25):warp.ph==='wait'?1:warp.ph==='open'?1-Math.min(1,warp.t/.25):0;
     if(fd>0){ const a=dark=Math.ceil(fd*4)/4; bx.globalAlpha=a; bx.fillStyle='#1f1b18'; bx.fillRect(0,0,W,H); bx.globalAlpha=1; for(const t of texts) t.al=1-a; } }
   // 위쪽 표시
-  box(4,4,96,16,'#fff8e8','#1f1b18'); bx.drawImage(A.DROP[3].c,8,7); texts.push({t:String(P.coins),x:19,y:16.5,s:10,c:'#1f1b18',f:DISP});
+  box(4,4,96,16,'#fff8e8','#1f1b18'); bx.drawImage(A.DROP[3].c,8,7); texts.push({t:P.coins>=capOf(stageNo)?P.coins+' 최대':String(P.coins),x:19,y:16.5,s:10,c:'#1f1b18',f:DISP});
   for(let i=0;i<3;i++){ const x=50+i*11, on=i<P.pcs; bx.fillStyle=on?'#1f1b18':'#cdbf9f'; bx.fillRect(x+2,8,3,1); bx.fillRect(x+1,9,5,1); bx.fillRect(x,10,7,3); bx.fillRect(x+1,13,5,1); bx.fillRect(x+2,14,3,1); if(on){ bx.fillStyle='#d9512c'; bx.fillRect(x+2,9,3,1); bx.fillRect(x+1,10,5,3); bx.fillRect(x+2,13,3,1); } }
   if(P.shield){ bx.fillStyle='#1f1b18'; bx.fillRect(86,7,9,7); bx.fillRect(87,14,7,2); bx.fillRect(89,16,3,1); bx.fillStyle='#69b4e6'; bx.fillRect(87,8,7,6); bx.fillRect(88,14,5,1); bx.fillRect(89,15,3,1); }
   { const x0=108, x1=W-topR; if(x1>x0+30){ bx.fillStyle='#1f1b18'; bx.fillRect(x0,11,x1-x0,3); bx.fillStyle='#8b9198'; bx.fillRect(x0,12,x1-x0,1); bx.fillStyle='#d9512c'; bx.fillRect(x0,12,Math.round((x1-x0)*Math.min(1,(room?room.ret:P.x)/door.x)),1);
@@ -1589,7 +1592,7 @@ const shopOpen=()=>teacher()||Date.now()>=SHOP_OPEN;
 const ownIds=sv=>Array.isArray(sv.own)?[...new Set(sv.own.filter(id=>SHOP.some(x=>x.id===id)))]:[];
 const owns=(sv,id)=>teacher()||ownIds(sv).includes(id);
 function wallet(sv){ sv=sv||loadSave(); let e=0, s=0;
-  for(const k in (sv.best||{})) if(/^\d{1,2}$/.test(k)) e+=Math.min(300,Math.max(0,Math.floor(+sv.best[k])||0));
+  for(const k in (sv.best||{})) if(/^\d{1,2}$/.test(k)) e+=Math.min(capOf(+k),Math.max(0,Math.floor(+sv.best[k])||0));
   const ob=sv.ob&&typeof sv.ob==='object'?sv.ob:{}; for(const d in ob) if(OB_DAYS.has(d)&&ob[d]===1) e+=OB_BONUS;   // 판이 있는 날짜만 센다(폰 날짜를 바꿔 날마다 다시 받는 것 막기)
   for(const id of ownIds(sv)) s+=SHOP.find(x=>x.id===id).p;
   return {earned:e,spent:s,left:Math.max(0,e-s)}; }
@@ -1827,7 +1830,7 @@ function finish(){ running=false; SFX.clear();
   let fr=[];
   // 처음 깬 판만 센다: 전교 정화 +1, 글자 조각, 보스 통과, 그리고 그날 판을 그날 깼으면 '오늘 판 통과'
   { const sv=loadSave(); sv.clear=sv.clear||{}; const first=!sv.clear[stageNo]; sv.clear[stageNo]=true; sv.coins=(sv.coins||0)+P.coins;
-    if(!teacher()){ sv.best=sv.best||{}; sv.best[stageNo]=Math.max(+sv.best[stageNo]||0,P.coins); sv.agent=Object.assign({},agent(),{fixed:true}); }   // 순위는 판마다 가장 많이 모은 수의 합. 첫 판을 깨면 요원 코드가 굳는다
+    if(!teacher()){ sv.best=sv.best||{}; sv.best[stageNo]=Math.min(capOf(stageNo),Math.max(+sv.best[stageNo]||0,P.coins)); sv.agent=Object.assign({},agent(),{fixed:true}); }   // 순위는 판마다 가장 많이 모은 수의 합. 첫 판을 깨면 요원 코드가 굳는다
     if(first){ sv.day=sv.day||{}; sv.day[stageNo]=today(); } putSave(sv);   // 깬 날짜: 다음 판에서 지령 보고를 물을지 정할 때 쓴다
     if(first){ hq('add','raid',1); if(d.letter) hq('add','piece',1); if(d.boss) hq('once','decode'); if(d.date===today()) hq('once','brief'); }
     const cnt=first&&HQ.on&&!teacher(), sn=weekDone(sv.clear,wkOf(stageNo))||(teacher()&&!!(d.boss||d.rest));
@@ -1866,7 +1869,7 @@ function agent(){ const sv=loadSave(), a=sv.agent;
 const rankShow=()=>FB_ON&&(teacher()||!!agent().fixed);
 let rankDue=false, RK=null;
 function rankSend(){ const a=agent(), sv=loadSave(), best={};
-  for(const k in (sv.best||{})) if(/^\d{1,2}$/.test(k)) best[k]=Math.max(0,Math.floor(+sv.best[k])||0);
+  for(const k in (sv.best||{})) if(/^\d{1,2}$/.test(k)) best[k]=Math.min(capOf(+k),Math.max(0,Math.floor(+sv.best[k])||0));
   const body=JSON.stringify(teacher()?{a:'rank',view:1}:{a:'rank',id:a.id,code:a.code,best});
   const p=Promise.race([fetch(FB_URL,{method:'POST',body,headers:{'Content-Type':'text/plain;charset=utf-8'}}).then(r=>r.json()).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),12000))])
     .then(j=>{ if(j&&j.ok&&!teacher()&&typeof j.code==='string'&&/^[가-힣0-9]{3,14}$/.test(j.code)&&j.code!==a.code){ const s2=loadSave(); s2.agent=Object.assign({},agent(),{code:j.code}); putSave(s2); } return j; });
